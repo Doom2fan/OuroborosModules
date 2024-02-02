@@ -1,0 +1,40 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.7z",
+				"*.backup*",
+				"*.bak",
+				"*.bmp",
+				"*.dbs",
+				"*.gif",
+				"*.jpg",
+				"*.lnk",
+				"*.mp3",
+				"*.ogg",
+				"*.pk3",
+				"*.pk7",
+				"*.png",
+				"*.wad",
+				"*.wav",
+				"*.zip",
+				"thumbs.db",
+			],
+			"folder_exclude_patterns":
+			[
+				".cache",
+				"build",
+				"dist",
+			],
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"default_line_ending": "windows",
+		"tab_size": 4,
+		"translate_tabs_to_spaces": true
+	}
+}
