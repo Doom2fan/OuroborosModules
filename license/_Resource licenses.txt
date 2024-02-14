@@ -1,0 +1,6 @@
+res/Jack_Connect.wav [CC-BY-SA 4.0] - Made from "plugging_audioJack_into_mixer.wav" (CC-BY 4.0) by elvish_paisley at freesound.org
+res/Jack_Disconnect.wav [CC-BY-SA 4.0] - Made from "plug in jack 6.3mm plug in and pull out sound effect" (CC-BY 4.0) by Garuda1982 at freesound.org
+
+res/icons/BleedingEye.svg [CC-BY 3.0] - Made by lorc (@ http://lorcblog.blogspot.com), from game-icons.net
+res/icons/Dragon.svg [CC-BY 3.0] - Made by lorc (@ http://lorcblog.blogspot.com), from game-icons.net
+res/icons/InfoCircle.svg [CC-BY 3.0] - Made by Delapouite (@ https://delapouite.com), from game-icons.net
