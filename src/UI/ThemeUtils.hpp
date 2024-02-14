@@ -18,25 +18,8 @@
 
 #pragma once
 
-#include <string>
+#include "../PluginDef.hpp"
+#include "../Utils.hpp"
 
-enum class ThemeKind {
-    Unknown = 0,
-    FirstTheme = 1,
-    Light = FirstTheme,
-    Dark,
-    BlackAndGold,
-    ThemeCount,
-};
-
-enum class EmblemKind {
-    Unknown = 0,
-    FirstEmblem = 1,
-    None = FirstEmblem,
-    Dragon,
-    BleedingEye,
-    EmblemCount,
-};
-
-std::string getThemeLabel (ThemeKind theme);
-std::string getEmblemLabel (EmblemKind emblem);
+std::string getThemedSvg (std::string filePath, ThemeKind theme);
+std::string getEmblem (EmblemKind emblem, ThemeKind theme);

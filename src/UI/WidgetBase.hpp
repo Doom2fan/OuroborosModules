@@ -20,15 +20,10 @@
 
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
+#include "ThemeUtils.hpp"
 #include <SvgHelper.hpp>
 
-std::string getThemedSvg (std::string filePath, ThemeKind theme);
-std::string getEmblem (EmblemKind emblem);
-
-std::string getThemeLabel (ThemeKind theme);
 std::string getLocalThemeLabel (ThemeKind theme);
-
-std::string getEmblemLabel (EmblemKind emblem);
 std::string getLocalEmblemLabel (EmblemKind emblem);
 
 template<typename T>
@@ -96,17 +91,16 @@ struct ModuleWidgetBase : TBase, SvgHelper<ModuleWidgetBase<TSelf, TModule, TBas
     virtual void createPluginSettingsMenu (TSelf* widget, Menu* menu) {
         menu->addChild (createSubmenuItem ("Theme settings", "", [=] (Menu* menu) {
             menu->addChild (createMenuLabel ("Default light theme"));
-            menu->addChild (createThemeMenuItem ("Light", "", &pluginSettings.global_ThemeLight, ThemeKind::Light));
-            menu->addChild (createThemeMenuItem ("Dark", "", &pluginSettings.global_ThemeLight, ThemeKind::Dark));
+            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
 
             menu->addChild (createMenuLabel ("Default dark theme"));
-            menu->addChild (createThemeMenuItem ("Light", "", &pluginSettings.global_ThemeDark, ThemeKind::Light));
-            menu->addChild (createThemeMenuItem ("Dark", "", &pluginSettings.global_ThemeDark, ThemeKind::Dark));
+            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
 
             menu->addChild (createMenuLabel ("Default emblem"));
-            menu->addChild (createThemeMenuItem ("None", "", &pluginSettings.global_DefaultEmblem, EmblemKind::None));
-            menu->addChild (createThemeMenuItem ("Dragon", "", &pluginSettings.global_DefaultEmblem, EmblemKind::Dragon));
-            menu->addChild (createThemeMenuItem ("Bleeding eye", "", &pluginSettings.global_DefaultEmblem, EmblemKind::BleedingEye));
+            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
+                menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
         }));
     }
 
@@ -131,14 +125,13 @@ struct ModuleWidgetBase : TBase, SvgHelper<ModuleWidgetBase<TSelf, TModule, TBas
         menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) {
             menu->addChild (createMenuLabel ("Theme"));
             menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
-            menu->addChild (createThemeOverrideItem ("Light", ThemeKind::Light));
-            menu->addChild (createThemeOverrideItem ("Dark", ThemeKind::Dark));
+            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
 
             menu->addChild (createMenuLabel ("Emblem"));
             menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
-            menu->addChild (createEmblemOverrideItem ("None", EmblemKind::None));
-            menu->addChild (createEmblemOverrideItem ("Dragon", EmblemKind::Dragon));
-            menu->addChild (createEmblemOverrideItem ("Bleeding eye", EmblemKind::BleedingEye));
+            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
+                menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
         }));
 
         /*theme_Override

@@ -18,56 +18,11 @@
 
 #include "WidgetBase.hpp"
 #include "../Utils.hpp"
-#include <fmt/format.h>
-
-std::string getThemedSvg (std::string filePath, ThemeKind theme) {
-    std::string nameSuffix;
-    switch (theme) {
-        case ThemeKind::Dark: nameSuffix = "_Dark"; break;
-
-        default:
-        case ThemeKind::Light:
-            nameSuffix = "";
-            break;
-    }
-
-    return fmt::format (FMT_STRING ("res/{:s}{:s}.svg"), filePath, nameSuffix);
-}
-
-std::string getEmblem (EmblemKind emblem) {
-    switch (emblem) {
-        case EmblemKind::None: return "";
-        default:
-        case EmblemKind::Dragon: return "res/icons/Dragon.svg";
-        case EmblemKind::BleedingEye: return "res/icons/BleedingEye.svg";
-    }
-}
-
-std::string getThemeLabel (ThemeKind theme) {
-    switch (theme) {
-        case ThemeKind::Unknown: return "Unknown";
-        case ThemeKind::Light: return "Light";
-        case ThemeKind::Dark: return "Dark";
-
-        default: return "[UNDEFINED THEME]";
-    }
-}
 
 std::string getLocalThemeLabel (ThemeKind theme) {
     if (theme == ThemeKind::Unknown)
         return "Use default theme";
     return getThemeLabel (theme);
-}
-
-std::string getEmblemLabel (EmblemKind emblem) {
-    switch (emblem) {
-        case EmblemKind::Unknown: return "Unknown";
-        case EmblemKind::None: return "None";
-        case EmblemKind::Dragon: return "Dragon";
-        case EmblemKind::BleedingEye: return "Bleeding eye";
-
-        default: return "[UNDEFINED EMBLEM]";
-    }
 }
 
 std::string getLocalEmblemLabel (EmblemKind emblem) {

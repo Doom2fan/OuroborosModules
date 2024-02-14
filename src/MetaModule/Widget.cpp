@@ -49,15 +49,15 @@ struct PremuterTimeQuantity : Quantity {
 
 MetaModuleWidget::MetaModuleWidget (MetaModule* module)
     : ModuleWidgetBase<MetaModuleWidget, MetaModule> (module, "MetaModule") {
-    addChild (createWidget<ScrewSilver> (Vec (RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ScrewSilver> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ScrewSilver> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-    addChild (createWidget<ScrewSilver> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild (createWidget<ThemedScrew> (Vec (RACK_GRID_WIDTH, 0)));
+    addChild (createWidget<ThemedScrew> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+    addChild (createWidget<ThemedScrew> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild (createWidget<ThemedScrew> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
     auto emblemPos = findNamed ("widgetLogo");
 
     emblemWidget = createWidgetCentered<ImageWidget> (emblemPos.value_or (Vec ()));
-    emblemWidget->svg = APP->window->loadSvg (asset::plugin (pluginInstance, getEmblem (curEmblem)));
+    updateEmblem (curTheme, curEmblem);
     emblemWidget->setZoom (75);
     emblemWidget->setSize (Vec (75));
     emblemWidget->box.pos = emblemWidget->box.pos.minus (emblemWidget->box.size.div (2));
@@ -66,18 +66,35 @@ MetaModuleWidget::MetaModuleWidget (MetaModule* module)
 
     forEachMatched ("input_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
         int i = stoi (captures [0]) - 1;
-        addInput (createInputCentered<PJ301MPort> (pos, module, MetaModule::INPUTL_INPUT + i));
+        addInput (createInputCentered<ThemedPJ301MPort> (pos, module, MetaModule::INPUTL_INPUT + i));
     });
     forEachMatched ("output_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
         int i = stoi (captures [0]) - 1;
-        addOutput (createOutputCentered<PJ301MPort> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
+        addOutput (createOutputCentered<ThemedPJ301MPort> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
     });
+}
+
+void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
+    if (emblemWidget == nullptr)
+        return;
+
+    if (emblem == EmblemKind::None) {
+        emblemWidget->hide ();
+        return;
+    } else
+        emblemWidget->show ();
+
+    emblemWidget->svg = APP->window->loadSvg (asset::plugin (pluginInstance, getEmblem (emblem, theme)));
+}
+
+void MetaModuleWidget::onChangeTheme (ThemeKind kind) {
+    ModuleWidgetBase<MetaModuleWidget, MetaModule>::onChangeTheme (kind);
+    updateEmblem (kind, curEmblem);
 }
 
 void MetaModuleWidget::onChangeEmblem (EmblemKind kind) {
     ModuleWidgetBase<MetaModuleWidget, MetaModule>::onChangeEmblem (kind);
-    if (emblemWidget != nullptr)
-        emblemWidget->svg = APP->window->loadSvg (asset::plugin (pluginInstance, getEmblem (kind)));
+    updateEmblem (curTheme, kind);
 }
 
 void MetaModuleWidget::appendContextMenu (Menu* menu) {

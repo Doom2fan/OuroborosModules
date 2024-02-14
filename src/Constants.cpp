@@ -16,27 +16,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "PluginDef.hpp"
+#include "Constants.hpp"
 
-#include <string>
+std::string getThemeLabel (ThemeKind theme) {
+    switch (theme) {
+        case ThemeKind::Unknown: return "Unknown";
+        case ThemeKind::Light: return "Light";
+        case ThemeKind::Dark: return "Dark";
+        case ThemeKind::BlackAndGold: return "Black and Gold";
 
-enum class ThemeKind {
-    Unknown = 0,
-    FirstTheme = 1,
-    Light = FirstTheme,
-    Dark,
-    BlackAndGold,
-    ThemeCount,
-};
+        default: return "[UNDEFINED THEME]";
+    }
+}
 
-enum class EmblemKind {
-    Unknown = 0,
-    FirstEmblem = 1,
-    None = FirstEmblem,
-    Dragon,
-    BleedingEye,
-    EmblemCount,
-};
+std::string getEmblemLabel (EmblemKind emblem) {
+    switch (emblem) {
+        case EmblemKind::Unknown: return "Unknown";
+        case EmblemKind::None: return "None";
+        case EmblemKind::Dragon: return "Dragon";
+        case EmblemKind::BleedingEye: return "Bleeding eye";
 
-std::string getThemeLabel (ThemeKind theme);
-std::string getEmblemLabel (EmblemKind emblem);
+        default: return "[UNDEFINED EMBLEM]";
+    }
+}
