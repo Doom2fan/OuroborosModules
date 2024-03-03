@@ -1,0 +1,57 @@
+{
+    "comment_LICENSE": "CC-BY-SA 3.0",
+
+    "name": "Light",
+    "styles": {
+        "hidden": {
+            "fill": "none",
+            "stroke": "none"
+        },
+
+        "background-fill": {
+            "fill": "#ebebeb"
+        },
+
+        "output-fill": {
+            "fill": "#1f1f1f"
+        },
+
+        "text": {
+            "fill": "#1f1f1f"
+        },
+
+        "text-output": {
+            "fill": "#f0f0f0"
+        },
+
+        ".emblem-image": {
+            "fill": "#1f1f1f"
+        },
+
+        ".screw-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#3d3d3d" },
+                { "index": 1, "color": "#4a4a4a" }
+            ]}
+        },
+
+        ".screw-mid": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#474747" },
+                { "index": 1, "color": "#5c5c5c" }
+            ]}
+        },
+
+        ".screw-inner": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#525252" },
+                { "index": 1, "color": "#606060" }
+            ]}
+        },
+
+        ".screw-socket": {
+            "fill": "#3d3d3d",
+            "stroke": "#1a1a1a"
+        }
+    }
+}

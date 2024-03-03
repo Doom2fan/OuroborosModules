@@ -22,22 +22,25 @@ void ImageWidget::setZoom (float zoom) {
     if (zoom == this->zoom)
         return;
 
+    box.size /= this->zoom;
+    box.size *= zoom;
+
     this->zoom = zoom;
 }
 
 /** Sets the box size to the SVG image size */
 void ImageWidget::wrap () {
-    box.size = svg ? svg->getSize () : Vec ();
+    box.size = svg.getSize () * zoom;
 }
 
 /** Sets and wraps the SVG */
-void ImageWidget::setSvg (std::shared_ptr<window::Svg> svg) {
+void ImageWidget::setSvg (rack_themer::ThemedSvg svg) {
     this->svg = svg;
     wrap ();
 }
 
 void ImageWidget::draw (const DrawArgs& args) {
-    if (!svg)
+    if (!svg.isValid ())
         return;
 
     DrawArgs zoomCtx = args;
@@ -46,5 +49,10 @@ void ImageWidget::draw (const DrawArgs& args) {
     // No need to save the state because that is done in the parent
     nvgScale (args.vg, zoom, zoom);
 
-    window::svgDraw (zoomCtx.vg, svg->handle);
+    svg.draw (zoomCtx.vg);
+}
+
+void ImageWidget::onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) {
+    if (autoSwitchTheme)
+        svg = svg.withTheme (theme);
 }

@@ -17,6 +17,7 @@
  */
 
 #include "MetaModule.hpp"
+#include "../UI/CommonWidgets.hpp"
 
 struct PremuterTimeQuantity : Quantity {
     float* timeSrc;
@@ -48,11 +49,11 @@ struct PremuterTimeQuantity : Quantity {
 };
 
 MetaModuleWidget::MetaModuleWidget (MetaModule* module)
-    : ModuleWidgetBase<MetaModuleWidget, MetaModule> (module, "MetaModule") {
-    addChild (createWidget<ThemedScrew> (Vec (RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ThemedScrew> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ThemedScrew> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-    addChild (createWidget<ThemedScrew> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    : ModuleWidgetBase<MetaModuleWidget, MetaModule> (module, "panels/MetaModule") {
+    addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, 0)));
+    addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+    addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
     auto emblemPos = findNamed ("widgetLogo");
 
@@ -84,7 +85,7 @@ void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
     } else
         emblemWidget->show ();
 
-    emblemWidget->svg = APP->window->loadSvg (asset::plugin (pluginInstance, getEmblem (emblem, theme)));
+    emblemWidget->setSvg (getEmblem (emblem, theme));
 }
 
 void MetaModuleWidget::onChangeTheme (ThemeKind kind) {

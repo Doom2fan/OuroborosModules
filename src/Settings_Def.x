@@ -1,3 +1,5 @@
+DEFINE_BOOL (debug_Logging, "debug::Logging", false)
+
 DEFINE_ENUM (ThemeKind, global_ThemeLight, "global::ThemeLight", ThemeKind::Light)
 DEFINE_ENUM (ThemeKind, global_ThemeDark, "global::ThemeDark", ThemeKind::Dark)
 DEFINE_ENUM (EmblemKind, global_DefaultEmblem, "global::DefaultEmblem", EmblemKind::Dragon)

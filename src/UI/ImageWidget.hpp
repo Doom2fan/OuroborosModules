@@ -19,15 +19,17 @@
 #pragma once
 
 #include "../PluginDef.hpp"
+#include <rack_themer.hpp>
 
-struct ImageWidget : TransparentWidget {
+struct ImageWidget : TransparentWidget, rack_themer::IThemedWidget {
   private:
     float zoom = 1.f;
 
   public:
-    std::shared_ptr<window::Svg> svg;
+    rack_themer::ThemedSvg svg;
+    bool autoSwitchTheme = true;
 
-    ImageWidget () { box.size = Vec (); }
+    ImageWidget () : svg (nullptr, nullptr) { box.size = Vec (); }
 
     float getZoom () { return zoom; }
 
@@ -38,7 +40,9 @@ struct ImageWidget : TransparentWidget {
     void wrap ();
 
     /** Sets and wraps the SVG. */
-    void setSvg (std::shared_ptr<window::Svg> svg);
+    void setSvg (rack_themer::ThemedSvg svg);
 
     void draw (const DrawArgs& args) override;
+
+    void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
 };

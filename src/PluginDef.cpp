@@ -19,10 +19,43 @@
 #include "PluginDef.hpp"
 #include "Utils.hpp"
 
+#include <fmt/format.h>
+#include <rack_themer.hpp>
+
+#include <string>
+
 Plugin* pluginInstance;
+
+/*typedef std::function<void (Severity severity, ErrorCode code, std::string info)> LogCallback;
+
+void setLogger (LogCallback logger);
+const char* severityName (Severity severity);*/
+
+void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::logging::ErrorCode code, std::string info) {
+    using namespace rack_themer::logging;
+
+    if (!pluginSettings.debug_Logging)
+        return;
+
+    auto message = fmt::format (FMT_STRING ("[vcv-rackthemer: {}] {}"), severityName (severity), info);
+    switch (severity) {
+        default:
+        case Severity::Info:
+            INFO ("%s", message.c_str ());
+            break;
+
+        case Severity::Warn:
+        case Severity::Error:
+        case Severity::Critical:
+            WARN ("%s", message.c_str ());
+            break;
+    }
+}
 
 void init (Plugin* p) {
     pluginInstance = p;
+
+    rack_themer::logging::setLogger (&rackThemerLogger);
 
     // Module models.
     p->addModel (modelMetaModule);

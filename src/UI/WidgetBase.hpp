@@ -21,7 +21,7 @@
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
 #include "ThemeUtils.hpp"
-#include <SvgHelper.hpp>
+#include <rack_themer.hpp>
 
 std::string getLocalThemeLabel (ThemeKind theme);
 std::string getLocalEmblemLabel (EmblemKind emblem);
@@ -32,7 +32,7 @@ MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumP
 }
 
 template<typename TSelf, typename TModule, typename TBase = ModuleWidget>
-struct ModuleWidgetBase : TBase, SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
+struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
   protected:
     TModule* module;
 
@@ -51,8 +51,6 @@ struct ModuleWidgetBase : TBase, SvgHelper<ModuleWidgetBase<TSelf, TModule, TBas
             return module->theme_Emblem;
         return pluginSettings.global_DefaultEmblem;
     }
-
-    std::string getLocalThemedSvg (std::string filePath) { return getThemedSvg (filePath, curTheme); }
 
     ModuleWidgetBase (TModule* module, std::string panelName) {
         this->module = module;
@@ -82,11 +80,13 @@ struct ModuleWidgetBase : TBase, SvgHelper<ModuleWidgetBase<TSelf, TModule, TBas
         onChangeEmblem (emblem);
     }
 
-    virtual void onChangeTheme (ThemeKind theme) {
-        this->loadPanel (asset::plugin (pluginInstance, getLocalThemedSvg (panelName)));
-    }
+    virtual void onChangeTheme (ThemeKind theme) { handleThemeChange (this, getTheme (theme), true); }
 
     virtual void onChangeEmblem (EmblemKind emblem) { }
+
+    void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override {
+        this->loadPanel (getThemedSvg (panelName, theme));
+    }
 
     virtual void createPluginSettingsMenu (TSelf* widget, Menu* menu) {
         menu->addChild (createSubmenuItem ("Theme settings", "", [=] (Menu* menu) {

@@ -19,12 +19,29 @@
 #pragma once
 
 #include "../PluginDef.hpp"
-#include "../Utils.hpp"
-#include <memory>
-#include <string>
 #include <rack_themer.hpp>
 
-std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme);
-rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
-rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeKind theme);
-rack_themer::ThemedSvg getEmblem (EmblemKind emblem, ThemeKind theme);
+struct ScrewWidget : widget::Widget {
+    widget::FramebufferWidget* framebuffer;
+    rack_themer::widgets::SvgWidget* svgWidget;
+
+    ScrewWidget () {
+        framebuffer = new widget::FramebufferWidget;
+        addChild (framebuffer);
+
+        svgWidget = new rack_themer::widgets::SvgWidget;
+        framebuffer->addChild (svgWidget);
+
+        setSvg (getThemedSvg ("components/Screw", getCurrentTheme ()));
+    }
+
+    void setSvg (rack_themer::ThemedSvg svg) {
+        if (svgWidget->svg == svg)
+            return;
+
+        svgWidget->setSvg (svg);
+        box.size = framebuffer->box.size = svgWidget->box.size;
+
+        framebuffer->setDirty ();
+    }
+};

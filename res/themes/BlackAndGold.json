@@ -1,0 +1,57 @@
+{
+    "comment_LICENSE": "CC-BY-SA 3.0",
+
+    "name": "Black and Gold",
+    "styles": {
+        "hidden": {
+            "fill": "none",
+            "stroke": "none"
+        },
+
+        "background-fill": {
+            "fill": "#1f1f1f"
+        },
+
+        "output-fill": {
+            "fill": "#bf9b30"
+        },
+
+        "text": {
+            "fill": "#bf9b30"
+        },
+
+        "text-output": {
+            "fill": "#1f1f1f"
+        },
+
+        ".emblem-image": {
+            "fill": "#bf9b30"
+        },
+
+        ".screw-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#685c12" },
+                { "index": 1, "color": "#7e7016" }
+            ]}
+        },
+
+        ".screw-mid": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#796b15" },
+                { "index": 1, "color": "#9c8b1c" }
+            ]}
+        },
+
+        ".screw-inner": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#8b7c19" },
+                { "index": 1, "color": "#a5921d" }
+            ]}
+        },
+
+        ".screw-socket": {
+            "fill": "#685c12",
+            "stroke": "#2b2608"
+        }
+    }
+}

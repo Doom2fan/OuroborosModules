@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 25.2.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.0"
+   id="svg18800"
+   x="0px"
+   y="0px"
+   width="15px"
+   height="14.9989px"
+   viewBox="0 0 15 14.9989"
+   enable-background="new 0 0 15 14.9989"
+   xml:space="preserve"
+   sodipodi:docname="Screw.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs6"><linearGradient
+     id="linearGradient21"
+     inkscape:collect="always"><stop
+       style="stop-color:#666666;stop-opacity:1;"
+       offset="0"
+       id="stop21" /><stop
+       style="stop-color:#858585;stop-opacity:1;"
+       offset="1"
+       id="stop22" /></linearGradient><linearGradient
+     id="linearGradient20"
+     inkscape:collect="always"><stop
+       style="stop-color:#5c5c5c;stop-opacity:1;"
+       offset="0"
+       id="stop19" /><stop
+       style="stop-color:#8f8f8f;stop-opacity:1;"
+       offset="1"
+       id="stop20" /></linearGradient><linearGradient
+     id="linearGradient17"
+     inkscape:collect="always"><stop
+       style="stop-color:#525252;stop-opacity:1;"
+       offset="0"
+       id="stop17" /><stop
+       style="stop-color:#6b6b6b;stop-opacity:1;"
+       offset="1"
+       id="stop18" /></linearGradient><linearGradient
+     id="SVGID_1_"
+     gradientUnits="userSpaceOnUse"
+     x1="219.99944"
+     y1="6477.3999"
+     x2="232.99944"
+     y2="6477.3999"
+     gradientTransform="matrix(6.123234e-17 1 1 -6.123234e-17 -6469.8999 -219)">
+	<stop
+   offset="0"
+   style="stop-color:#6c6c6c;stop-opacity:1;"
+   id="stop11" />
+	<stop
+   offset="1"
+   style="stop-color:#c7c7c7;stop-opacity:1;"
+   id="stop12" />
+</linearGradient><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient17"
+     id="linearGradient18"
+     x1="7.5"
+     y1="14.000237"
+     x2="7.5"
+     y2="0.99866295"
+     gradientUnits="userSpaceOnUse" /><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient20"
+     id="linearGradient19"
+     gradientUnits="userSpaceOnUse"
+     x1="7.5"
+     y1="14.000237"
+     x2="7.5"
+     y2="0.99866295"
+     gradientTransform="matrix(0.87209282,0,0,0.87209282,0.95930136,0.95923124)" /><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient21"
+     id="linearGradient22"
+     x1="7.5"
+     y1="12.790789"
+     x2="7.5"
+     y2="2.2081118"
+     gradientUnits="userSpaceOnUse"
+     gradientTransform="matrix(0.98329497,0,0,0.98329497,0.12528717,0.1252779)" /></defs>
+<sodipodi:namedview
+   bordercolor="#666666"
+   borderopacity="1.0"
+   fit-margin-bottom="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-top="0"
+   id="base"
+   inkscape:current-layer="svg18800"
+   inkscape:cx="5.9883105"
+   inkscape:cy="8.1648736"
+   inkscape:document-units="mm"
+   inkscape:pageopacity="0.0"
+   inkscape:pageshadow="2"
+   inkscape:window-height="1027"
+   inkscape:window-maximized="1"
+   inkscape:window-width="1920"
+   inkscape:window-x="-8"
+   inkscape:window-y="22"
+   inkscape:zoom="45.254834"
+   pagecolor="#ffffff"
+   showgrid="false"
+   units="px"
+   inkscape:showpageshadow="2"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1">
+	</sodipodi:namedview>
+
+
+
+
+
+
+
+<circle
+   style="fill:url(#linearGradient18);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.63373;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   id="screw-outer"
+   cx="7.5"
+   cy="7.4994502"
+   r="6.5007873" /><circle
+   style="fill:url(#linearGradient19);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.552673;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   id="screw-mid"
+   cx="7.5"
+   cy="7.4994502"
+   r="5.6692915" /><circle
+   style="fill:url(#linearGradient22);fill-rule:nonzero;stroke:none;stroke-width:0.507213;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   id="screw-inner"
+   cx="7.5"
+   cy="7.4994502"
+   r="5.2029462" /><path
+   sodipodi:type="star"
+   style="fill:#525252;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.90230022;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+   id="screw-socket"
+   sodipodi:sides="6"
+   inkscape:flatsided="true"
+   sodipodi:cx="0"
+   sodipodi:cy="0"
+   sodipodi:r1="5.0157833"
+   sodipodi:r2="0.5"
+   sodipodi:arg1="-1.859e-08"
+   sodipodi:arg2="0.52359879"
+   inkscape:rounded="0"
+   inkscape:randomized="0"
+   d="M 5.0157833,-9.3243412e-8 2.5078917,4.3437957 -2.5078916,4.3437958 -5.0157833,9.3243413e-8 -2.5078917,-4.3437957 l 5.0157833,-10e-8 z"
+   transform="matrix(0.70694463,-0.19382742,0.19382742,0.70694463,7.4999999,7.4994501)" /></svg>
