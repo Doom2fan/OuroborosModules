@@ -20,6 +20,8 @@
 
 #include "PluginDef.hpp"
 
+#include <fmt/format.h>
+
 struct SimpleSlider : rack::ui::Slider {
     SimpleSlider (rack::Quantity* quantity) {
         this->quantity = quantity;
@@ -48,7 +50,7 @@ struct UpdateFrequencyQuantity : rack::Quantity {
     }
 
     void setValue (float value) override {
-        *freqSrc = math::clamp (std::roundl (value), minFreq, maxFreq);
+        *freqSrc = rack::math::clamp (std::roundl (value), minFreq, maxFreq);
 
         if (setAction != nullptr)
             setAction (value);
@@ -61,8 +63,8 @@ struct UpdateFrequencyQuantity : rack::Quantity {
     float getDisplayValue () override { return getValue (); }
 
     std::string getDisplayValueString () override {
-        float valTime = getDisplayValue ();
-        return string::f ("%.0f", valTime);
+        float valFreq = getDisplayValue ();
+        return fmt::format (FMT_STRING ("{:.0F}"), valFreq);
     }
 
     void setDisplayValue (float displayValue) override { setValue (displayValue); }
@@ -72,7 +74,7 @@ struct UpdateFrequencyQuantity : rack::Quantity {
 
 struct FloatQuantity : rack::Quantity {
   private:
-    std::string format;
+    int precision;
     std::string labelText;
     float* valueSrc;
     float minValue;
@@ -86,12 +88,12 @@ struct FloatQuantity : rack::Quantity {
         this->minValue = minValue;
         this->maxValue = maxValue;
 
-        this->format = string::f ("%%.%df", precision);
+        this->precision = precision;
         this->setAction = setAction;
     }
 
     void setValue (float value) override {
-        *valueSrc = math::clamp (value, getMinValue (), getMaxValue ());
+        *valueSrc = rack::math::clamp (value, getMinValue (), getMaxValue ());
 
         if (setAction != nullptr)
             setAction (value);
@@ -104,8 +106,8 @@ struct FloatQuantity : rack::Quantity {
     float getDisplayValue () override { return getValue (); }
 
     std::string getDisplayValueString () override {
-        float valTime = getDisplayValue ();
-        return string::f (format.c_str (), valTime);
+        float value = getDisplayValue ();
+        return fmt::format (FMT_STRING ("{:.{}f}"), value, precision);
     }
 
     void setDisplayValue (float displayValue) override { setValue (displayValue); }

@@ -21,12 +21,12 @@
 #include "../PluginDef.hpp"
 #include <rack_themer.hpp>
 
-struct ScrewWidget : widget::Widget {
-    widget::FramebufferWidget* framebuffer;
+struct ScrewWidget : rack::widget::Widget {
+    rack::widget::FramebufferWidget* framebuffer;
     rack_themer::widgets::SvgWidget* svgWidget;
 
     ScrewWidget () {
-        framebuffer = new widget::FramebufferWidget;
+        framebuffer = new rack::widget::FramebufferWidget;
         addChild (framebuffer);
 
         svgWidget = new rack_themer::widgets::SvgWidget;

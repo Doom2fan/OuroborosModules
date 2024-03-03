@@ -30,12 +30,12 @@ std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme) {
     }
 
     auto themePath = fmt::format (FMT_STRING ("res/themes/{:s}.json"), themeName);
-    return rack_themer::loadRackTheme (asset::plugin (pluginInstance, themePath));
+    return rack_themer::loadRackTheme (rack::asset::plugin (pluginInstance, themePath));
 }
 
 rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme) {
     auto svgPath = fmt::format (FMT_STRING ("res/{:s}.svg"), filePath);
-    auto svg = rack_themer::loadSvg (asset::plugin (pluginInstance, svgPath));
+    auto svg = rack_themer::loadSvg (rack::asset::plugin (pluginInstance, svgPath));
 
     return rack_themer::ThemedSvg (svg, theme);
 }

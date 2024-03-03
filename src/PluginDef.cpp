@@ -24,7 +24,7 @@
 
 #include <string>
 
-Plugin* pluginInstance;
+rack::plugin::Plugin* pluginInstance;
 
 /*typedef std::function<void (Severity severity, ErrorCode code, std::string info)> LogCallback;
 
@@ -52,7 +52,7 @@ void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::log
     }
 }
 
-void init (Plugin* p) {
+void init (rack::plugin::Plugin* p) {
     pluginInstance = p;
 
     rack_themer::logging::setLogger (&rackThemerLogger);

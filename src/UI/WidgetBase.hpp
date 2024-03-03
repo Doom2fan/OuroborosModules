@@ -27,11 +27,11 @@ std::string getLocalThemeLabel (ThemeKind theme);
 std::string getLocalEmblemLabel (EmblemKind emblem);
 
 template<typename T>
-MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumPtr, T selectedVal) {
-    return createCheckMenuItem (text, rightText, [=] { return *enumPtr == selectedVal; }, [=] { *enumPtr = selectedVal; });
+rack::ui::MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumPtr, T selectedVal) {
+    return rack::createCheckMenuItem (text, rightText, [=] { return *enumPtr == selectedVal; }, [=] { *enumPtr = selectedVal; });
 }
 
-template<typename TSelf, typename TModule, typename TBase = ModuleWidget>
+template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
 struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
   protected:
     TModule* module;
@@ -88,17 +88,17 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
         this->loadPanel (getThemedSvg (panelName, theme));
     }
 
-    virtual void createPluginSettingsMenu (TSelf* widget, Menu* menu) {
-        menu->addChild (createSubmenuItem ("Theme settings", "", [=] (Menu* menu) {
-            menu->addChild (createMenuLabel ("Default light theme"));
+    virtual void createPluginSettingsMenu (TSelf* widget, rack::ui::Menu* menu) {
+        menu->addChild (rack::createSubmenuItem ("Theme settings", "", [=] (rack::ui::Menu* menu) {
+            menu->addChild (rack::createMenuLabel ("Default light theme"));
             for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                 menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
 
-            menu->addChild (createMenuLabel ("Default dark theme"));
+            menu->addChild (rack::createMenuLabel ("Default dark theme"));
             for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                 menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
 
-            menu->addChild (createMenuLabel ("Default emblem"));
+            menu->addChild (rack::createMenuLabel ("Default emblem"));
             for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
                 menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
         }));
@@ -111,7 +111,12 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
         TBase::step ();
     }
 
-    void appendContextMenu (Menu* menu) override {
+    void appendContextMenu (rack::ui::Menu* menu) override {
+        using rack::Menu;
+        using rack::createMenuLabel;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
         auto createThemeOverrideItem = [=] (std::string name, ThemeKind theme) {
             return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { module->theme_Override = theme; updateTheme (); });
         };

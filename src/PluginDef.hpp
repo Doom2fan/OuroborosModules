@@ -22,9 +22,10 @@
 #include "Constants.hpp"
 #include "PluginSettings.hpp"
 
-using namespace rack;
+using rack::app::RACK_GRID_WIDTH;
+using rack::app::RACK_GRID_HEIGHT;
 
-extern Plugin* pluginInstance;
+extern rack::plugin::Plugin* pluginInstance;
 
 // Models
-extern Model* modelMetaModule;
+extern rack::plugin::Model* modelMetaModule;

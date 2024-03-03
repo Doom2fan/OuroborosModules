@@ -20,7 +20,7 @@
 
 #include "PluginDef.hpp"
 
-struct ModuleBase : Module {
+struct ModuleBase : rack::engine::Module {
   public:
     ThemeKind theme_Override = ThemeKind::Unknown;
     EmblemKind theme_Emblem = EmblemKind::Unknown;

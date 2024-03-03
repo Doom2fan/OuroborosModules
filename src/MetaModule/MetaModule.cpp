@@ -19,7 +19,7 @@
 #include "MetaModule.hpp"
 #include "../JsonUtils.hpp"
 
-Model* modelMetaModule = createModel<MetaModule, MetaModuleWidget> ("MetaModule");
+rack::plugin::Model* modelMetaModule = rack::createModel<MetaModule, MetaModuleWidget> ("MetaModule");
 constexpr int plugSound_SampleCheckRate = 60;
 
 MetaModule::MetaModule () {
@@ -67,7 +67,7 @@ void MetaModule::premuter_Process (float sampleTime, float& audioLeft, float& au
     const float popBlockerTime = .25f;
     float totalTime = premuter_SelectedTime + popBlockerTime;
 
-    float volume = math::clamp ((premuter_SampleTime - premuter_SelectedTime) / popBlockerTime, 0.f, 1.f);
+    float volume = rack::math::clamp ((premuter_SampleTime - premuter_SelectedTime) / popBlockerTime, 0.f, 1.f);
     volume *= volume;
 
     audioLeft *= volume;

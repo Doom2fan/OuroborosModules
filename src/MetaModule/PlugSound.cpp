@@ -33,7 +33,7 @@ std::string plugSound_GetConfigPath (MetaModule::PlugSound_Buffers buffer) {
     }
 
     if (retPath == "<Default>")
-        retPath = asset::plugin (pluginInstance, DefaultPlugSounds [buffer]);
+        retPath = rack::asset::plugin (pluginInstance, DefaultPlugSounds [buffer]);
 
     return retPath;
 }

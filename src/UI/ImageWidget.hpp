@@ -21,7 +21,7 @@
 #include "../PluginDef.hpp"
 #include <rack_themer.hpp>
 
-struct ImageWidget : TransparentWidget, rack_themer::IThemedWidget {
+struct ImageWidget : rack::widget::TransparentWidget, rack_themer::IThemedWidget {
   private:
     float zoom = 1.f;
 
@@ -29,7 +29,7 @@ struct ImageWidget : TransparentWidget, rack_themer::IThemedWidget {
     rack_themer::ThemedSvg svg;
     bool autoSwitchTheme = true;
 
-    ImageWidget () : svg (nullptr, nullptr) { box.size = Vec (); }
+    ImageWidget () : svg (nullptr, nullptr) { box.size = rack::math::Vec (); }
 
     float getZoom () { return zoom; }
 

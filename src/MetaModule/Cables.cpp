@@ -34,7 +34,7 @@ void MetaModule::cables_Process (const ProcessArgs& args, bool& cableConnected, 
     int cableCount = 0;
 
     for (auto it = cableContainer->children.begin (), it_end = cableContainer->children.end (); it != it_end; ++it) {
-        auto cable = dynamic_cast<CableWidget*> (*it);
+        auto cable = dynamic_cast<rack::app::CableWidget*> (*it);
         if (cable == nullptr || !cable->isComplete ())
             continue;
 

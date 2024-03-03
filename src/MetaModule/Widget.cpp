@@ -19,7 +19,9 @@
 #include "MetaModule.hpp"
 #include "../UI/CommonWidgets.hpp"
 
-struct PremuterTimeQuantity : Quantity {
+#include <fmt/format.h>
+
+struct PremuterTimeQuantity : rack::Quantity {
     float* timeSrc;
     float maxTime;
 
@@ -29,7 +31,7 @@ struct PremuterTimeQuantity : Quantity {
     }
 
     void setValue (float value) override {
-        *timeSrc = math::clamp (value, getMinValue (), getMaxValue ());
+        *timeSrc = rack::math::clamp (value, getMinValue (), getMaxValue ());
     }
 
     float getValue () override { return *timeSrc; }
@@ -40,7 +42,7 @@ struct PremuterTimeQuantity : Quantity {
 
     std::string getDisplayValueString () override {
         float valTime = getDisplayValue ();
-        return string::f ("%.2f", valTime);
+        return fmt::format (FMT_STRING ("{:.2F}"), valTime);
     }
 
     void setDisplayValue (float displayValue) override { setValue (displayValue); }
@@ -50,6 +52,13 @@ struct PremuterTimeQuantity : Quantity {
 
 MetaModuleWidget::MetaModuleWidget (MetaModule* module)
     : ModuleWidgetBase<MetaModuleWidget, MetaModule> (module, "panels/MetaModule") {
+    using rack::math::Vec;
+    using rack::createWidget;
+    using rack::createWidgetCentered;
+    using rack::createInputCentered;
+    using rack::createOutputCentered;
+    using rack::componentlibrary::ThemedPJ301MPort;
+
     addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, 0)));
     addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
     addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
@@ -98,22 +107,25 @@ void MetaModuleWidget::onChangeEmblem (EmblemKind kind) {
     updateEmblem (curTheme, kind);
 }
 
-void MetaModuleWidget::appendContextMenu (Menu* menu) {
+void MetaModuleWidget::appendContextMenu (rack::ui::Menu* menu) {
     ModuleWidgetBase<MetaModuleWidget, MetaModule>::appendContextMenu (menu);
 
     // Pre-muter
-    menu->addChild (new MenuSeparator);
-    menu->addChild (createMenuLabel ("Pre-muter settings"));
+    menu->addChild (new rack::ui::MenuSeparator);
+    menu->addChild (rack::createMenuLabel ("Pre-muter settings"));
 
     auto premuterTimeSlider = new SimpleSlider (new PremuterTimeQuantity (&module->premuter_SelectedTime, 15.f));
     premuterTimeSlider->box.size.x = 200.f;
     menu->addChild (premuterTimeSlider);
 }
 
-void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, Menu* menu) {
+void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, rack::ui::Menu* menu) {
+    using rack::createMenuItem;
+    using rack::createMenuLabel;
+
     ModuleWidgetBase<MetaModuleWidget, MetaModule>::createPluginSettingsMenu (widget, menu);
 
-    menu->addChild (new MenuSeparator);
+    menu->addChild (new rack::ui::MenuSeparator);
 
     // Cable
     menu->addChild (createMenuLabel ("Cable settings"));
@@ -128,9 +140,9 @@ void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, Menu*
     menu->addChild (cableCalcRateSlide);
 
     // Plug sound
-    menu->addChild (new MenuSeparator);
+    menu->addChild (new rack::ui::MenuSeparator);
     menu->addChild (createMenuLabel ("Plug sound settings"));
-    menu->addChild (createBoolMenuItem ("Enabled", "",
+    menu->addChild (rack::createBoolMenuItem ("Enabled", "",
         [=] () { return pluginSettings.plugSound_Enable; },
         [=] (bool enable) {
             pluginSettings.plugSound_Enable = enable;
