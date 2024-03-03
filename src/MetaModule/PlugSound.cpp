@@ -19,8 +19,8 @@
 #include "MetaModule.hpp"
 
 const std::string DefaultPlugSounds [] = {
-    "res/Jack_Connect.wav",
-    "res/Jack_Disconnect.wav",
+    "res/sounds/Jack_Connect.wav",
+    "res/sounds/Jack_Disconnect.wav",
 };
 
 std::string plugSound_GetConfigPath (MetaModule::PlugSound_Buffers buffer) {
