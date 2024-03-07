@@ -45,7 +45,7 @@ void MetaModule::plugSound_SetSound (MetaModule::PlugSound_Buffers bufferIdx, st
     plugSound_Paths [bufferIdx] = path;
     plugSound_LoadStatus [bufferIdx] = plugSound_Buffers [bufferIdx]->load (path);
 
-    if (plugSound_LoadStatus [bufferIdx] != AudioSample::LoadStatus::Success)
+    if (plugSound_LoadStatus [bufferIdx] != AudioSample::LoadStatus::Success) // TODO: Report sample loading errors.
         plugSound_Buffers [bufferIdx]->clear ();
 }
 

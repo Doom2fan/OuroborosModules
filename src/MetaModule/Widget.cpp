@@ -50,8 +50,9 @@ struct PremuterTimeQuantity : rack::Quantity {
     std::string getUnit () override { return " seconds"; }
 };
 
-MetaModuleWidget::MetaModuleWidget (MetaModule* module)
-    : ModuleWidgetBase<MetaModuleWidget, MetaModule> (module, "panels/MetaModule") {
+MetaModuleWidget::MetaModuleWidget (MetaModule* module) { constructor (module, "panels/MetaModule"); }
+
+void MetaModuleWidget::initializeWidget () {
     using rack::math::Vec;
     using rack::createWidget;
     using rack::createWidgetCentered;
@@ -64,13 +65,8 @@ MetaModuleWidget::MetaModuleWidget (MetaModule* module)
     addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
     addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    auto emblemPos = findNamed ("widgetLogo");
-
-    emblemWidget = createWidgetCentered<ImageWidget> (emblemPos.value_or (Vec ()));
+    emblemWidget = createWidget<ImageWidget> (Vec ());
     updateEmblem (curTheme, curEmblem);
-    emblemWidget->setZoom (75);
-    emblemWidget->setSize (Vec (75));
-    emblemWidget->box.pos = emblemWidget->box.pos.minus (emblemWidget->box.size.div (2));
 
     addChild (emblemWidget);
 
@@ -95,6 +91,12 @@ void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
         emblemWidget->show ();
 
     emblemWidget->setSvg (getEmblem (emblem, theme));
+
+    auto emblemPos = findNamed ("widgetLogo");
+
+    emblemWidget->setZoom (75);
+    emblemWidget->setSize (rack::math::Vec (75));
+    emblemWidget->box.pos = emblemPos.value_or (rack::math::Vec ()).minus (emblemWidget->box.size.div (2));
 }
 
 void MetaModuleWidget::onChangeTheme (ThemeKind kind) {

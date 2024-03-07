@@ -31,6 +31,26 @@ rack::ui::MenuItem* createThemeMenuItem (std::string text, std::string rightText
     return rack::createCheckMenuItem (text, rightText, [=] { return *enumPtr == selectedVal; }, [=] { *enumPtr = selectedVal; });
 }
 
+struct HistoryThemeChange : rack::history::ModuleAction {
+    ThemeKind oldTheme;
+    ThemeKind newTheme;
+
+    HistoryThemeChange () { name = "change theme override"; }
+
+    void undo () override;
+    void redo () override;
+};
+
+struct HistoryEmblemChange : rack::history::ModuleAction {
+    EmblemKind oldEmblem;
+    EmblemKind newEmblem;
+
+    HistoryEmblemChange () { name = "change emblem override"; }
+
+    void undo () override;
+    void redo () override;
+};
+
 template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
 struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
   protected:
@@ -52,15 +72,24 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
         return pluginSettings.global_DefaultEmblem;
     }
 
-    ModuleWidgetBase (TModule* module, std::string panelName) {
+  protected:
+    void constructor (TModule* module, std::string panelName) {
         this->module = module;
         this->panelName = panelName;
 
+        this->loadPanel (getThemedSvg (panelName, nullptr));
         this->setModule (module);
+
+        curTheme = ThemeKind::INVALID;
+        curEmblem = EmblemKind::INVALID;
+
+        initializeWidget ();
 
         updateTheme ();
         updateEmblem ();
     }
+
+    virtual void initializeWidget () = 0;
 
     void updateTheme () {
         auto theme = getLocalTheme ();
@@ -78,6 +107,36 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
 
         curEmblem = emblem;
         onChangeEmblem (emblem);
+    }
+
+    void setTheme (ThemeKind theme) {
+        auto oldTheme = module->theme_Override;
+        module->theme_Override = theme;
+
+        auto themeChange = new HistoryThemeChange;
+
+        themeChange->moduleId = module->id;
+        themeChange->oldTheme = oldTheme;
+        themeChange->newTheme = theme;
+
+        APP->history->push (themeChange);
+
+        updateTheme ();
+    }
+
+    void setEmblem (EmblemKind emblem) {
+        auto oldEmblem = module->theme_Emblem;
+        module->theme_Emblem = emblem;
+
+        auto emblemChange = new HistoryEmblemChange;
+
+        emblemChange->moduleId = module->id;
+        emblemChange->oldEmblem = oldEmblem;
+        emblemChange->newEmblem = emblem;
+
+        APP->history->push (emblemChange);
+
+        updateEmblem ();
     }
 
     virtual void onChangeTheme (ThemeKind theme) { handleThemeChange (this, getTheme (theme), true); }
@@ -118,10 +177,10 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
         using rack::createCheckMenuItem;
 
         auto createThemeOverrideItem = [=] (std::string name, ThemeKind theme) {
-            return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { module->theme_Override = theme; updateTheme (); });
+            return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { setTheme (theme); });
         };
         auto createEmblemOverrideItem = [=] (std::string name, EmblemKind emblem) {
-            return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { module->theme_Emblem = emblem; updateEmblem (); });
+            return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
         };
 
         TBase::appendContextMenu (menu);
@@ -138,9 +197,6 @@ struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHel
             for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
                 menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
         }));
-
-        /*theme_Override
-theme_Emblem*/
     }
 };
 

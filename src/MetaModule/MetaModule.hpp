@@ -105,6 +105,9 @@ struct MetaModuleWidget : ModuleWidgetBase<MetaModuleWidget, MetaModule> {
     void setEmblem (EmblemKind emblem);
     void setEmblem ();
 
+  protected:
+    void initializeWidget () override;
+
     void updateEmblem (ThemeKind theme, EmblemKind emblem);
     void onChangeTheme (ThemeKind kind) override;
     void onChangeEmblem (EmblemKind emblem) override;

@@ -17,6 +17,7 @@
  */
 
 #include "WidgetBase.hpp"
+#include "../ModuleBase.hpp"
 #include "../Utils.hpp"
 
 std::string getLocalThemeLabel (ThemeKind theme) {
@@ -29,4 +30,36 @@ std::string getLocalEmblemLabel (EmblemKind emblem) {
     if (emblem == EmblemKind::Unknown)
         return "Use default emblem";
     return getEmblemLabel (emblem);
+}
+
+void HistoryThemeChange::undo () {
+    auto module = dynamic_cast<ModuleBase*> (APP->engine->getModule (moduleId));
+    if (module == nullptr)
+        return;
+
+    module->theme_Override = oldTheme;
+}
+
+void HistoryThemeChange::redo () {
+    auto module = dynamic_cast<ModuleBase*> (APP->engine->getModule (moduleId));
+    if (module == nullptr)
+        return;
+
+    module->theme_Override = newTheme;
+}
+
+void HistoryEmblemChange::undo () {
+    auto module = dynamic_cast<ModuleBase*> (APP->engine->getModule (moduleId));
+    if (module == nullptr)
+        return;
+
+    module->theme_Emblem = oldEmblem;
+}
+
+void HistoryEmblemChange::redo () {
+    auto module = dynamic_cast<ModuleBase*> (APP->engine->getModule (moduleId));
+    if (module == nullptr)
+        return;
+
+    module->theme_Emblem = newEmblem;
 }
