@@ -60,10 +60,8 @@ void MetaModuleWidget::initializeWidget () {
     using rack::createOutputCentered;
     using rack::componentlibrary::ThemedPJ301MPort;
 
-    addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-    addChild (createWidget<ScrewWidget> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-    addChild (createWidget<ScrewWidget> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild (createWidget<ScrewWidget> (Vec ()));
+    addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
     emblemWidget = createWidget<ImageWidget> (Vec ());
     updateEmblem (curTheme, curEmblem);
