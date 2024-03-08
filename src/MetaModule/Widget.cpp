@@ -58,7 +58,6 @@ void MetaModuleWidget::initializeWidget () {
     using rack::createWidgetCentered;
     using rack::createInputCentered;
     using rack::createOutputCentered;
-    using rack::componentlibrary::ThemedPJ301MPort;
 
     addChild (createWidget<ScrewWidget> (Vec ()));
     addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
@@ -70,11 +69,11 @@ void MetaModuleWidget::initializeWidget () {
 
     forEachMatched ("input_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
         int i = stoi (captures [0]) - 1;
-        addInput (createInputCentered<ThemedPJ301MPort> (pos, module, MetaModule::INPUTL_INPUT + i));
+        addInput (createInputCentered<CableJackWidget> (pos, module, MetaModule::INPUTL_INPUT + i));
     });
     forEachMatched ("output_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
         int i = stoi (captures [0]) - 1;
-        addOutput (createOutputCentered<ThemedPJ301MPort> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
+        addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
     });
 }
 

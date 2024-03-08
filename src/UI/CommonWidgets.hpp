@@ -45,3 +45,7 @@ struct ScrewWidget : rack::widget::Widget {
         framebuffer->setDirty ();
     }
 };
+
+struct CableJackWidget : rack_themer::widgets::SvgPort {
+    CableJackWidget () { setSvg (getThemedSvg ("components/CableJack", getCurrentTheme ())); }
+};
