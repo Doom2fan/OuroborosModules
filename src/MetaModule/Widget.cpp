@@ -77,6 +77,26 @@ void MetaModuleWidget::initializeWidget () {
     });
 }
 
+void MetaModuleWidget::updateCableHandler () {
+    auto isEnabled = false;
+
+    isEnabled |= pluginSettings.plugSound_Enable;
+
+    if (isEnabled && cables_Handler == nullptr)
+        cables_Handler = CableHandler::getHandler ();
+    else if (!isEnabled && cables_Handler != nullptr)
+        cables_Handler = nullptr;
+}
+
+void MetaModuleWidget::step () {
+    _WidgetBase::step ();
+
+    updateCableHandler ();
+
+    module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
+    module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
+}
+
 void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
     if (emblemWidget == nullptr)
         return;
@@ -128,15 +148,6 @@ void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, rack:
 
     // Cable
     menu->addChild (createMenuLabel ("Cable settings"));
-
-    auto cableCalcRateSlide = new SimpleSlider (new UpdateFrequencyQuantity (
-        "Update frequency",
-        &pluginSettings.cables_CalcRate,
-        15, 250,
-        [=] (float v) { module->CalcIntervals (); }
-    ));
-    cableCalcRateSlide->box.size.x = 200.f;
-    menu->addChild (cableCalcRateSlide);
 
     // Plug sound
     menu->addChild (new rack::ui::MenuSeparator);

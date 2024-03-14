@@ -18,12 +18,13 @@
 
 #pragma once
 
-#include "../PluginDef.hpp"
+#include "../CableHandler.hpp"
 #include "../ModuleBase.hpp"
+#include "../PluginDef.hpp"
 #include "../SampleChannel.hpp"
-#include "../Utils.hpp"
-#include "../UI/WidgetBase.hpp"
 #include "../UI/ImageWidget.hpp"
+#include "../UI/WidgetBase.hpp"
+#include "../Utils.hpp"
 
 struct MetaModule : ModuleBase {
     enum ParamId {
@@ -53,9 +54,8 @@ struct MetaModule : ModuleBase {
     bool outputtingAudio = false;
 
     // Cable data
-    int cable_CheckInterval = 0;
-    int cable_PrevCableCount = 0;
-    bool cable_HadIncompleteCable = false;
+    std::atomic<bool> cables_NewConnected = false;
+    std::atomic<bool> cables_NewDisconnected = false;
 
     // Plug sound data
     bool plugSound_PrevEnabled = false;
@@ -79,6 +79,7 @@ struct MetaModule : ModuleBase {
 
     void CalcIntervals ();
 
+    void cables_UpdateSettings ();
     void cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected);
 
     void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
@@ -98,8 +99,11 @@ struct MetaModule : ModuleBase {
 };
 
 struct MetaModuleWidget : ModuleWidgetBase<MetaModuleWidget, MetaModule> {
+  private:
     ImageWidget* emblemWidget;
+    std::shared_ptr<CableHandler> cables_Handler;
 
+  public:
     MetaModuleWidget (MetaModule* module);
 
     void setEmblem (EmblemKind emblem);
@@ -108,6 +112,9 @@ struct MetaModuleWidget : ModuleWidgetBase<MetaModuleWidget, MetaModule> {
   protected:
     void initializeWidget () override;
 
+    void step () override;
+
+    void updateCableHandler ();
     void updateEmblem (ThemeKind theme, EmblemKind emblem);
     void onChangeTheme (ThemeKind kind) override;
     void onChangeEmblem (EmblemKind emblem) override;

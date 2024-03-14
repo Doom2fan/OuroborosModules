@@ -16,9 +16,33 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MetaModule.hpp"
+#pragma once
 
-void MetaModule::cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected) {
-    cableConnected = cables_NewConnected.exchange (false);
-    cableDisconnected = cables_NewDisconnected.exchange (false);
+#include "PluginDef.hpp"
+
+#include <memory>
+
+namespace {
+    struct CableHandlerWidget;
 }
+
+struct CableHandler {
+    friend CableHandlerWidget;
+
+private:
+    int prevCableCount = 0;
+    bool hadIncompleteCable = false;
+
+    bool cableConnected = false;
+    bool cableDisconnected = false;
+
+    CableHandler ();
+
+    void update ();
+
+public:
+    static std::shared_ptr<CableHandler> getHandler ();
+
+    bool checkCableConnected () { return cableConnected; }
+    bool checkCableDisconnected () { return cableDisconnected; }
+};

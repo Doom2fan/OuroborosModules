@@ -99,7 +99,6 @@ void MetaModule::process (const ProcessArgs& args) {
 void MetaModule::CalcIntervals () {
     auto engineSampleRate = APP->engine->getSampleRate ();
     plugSound_SampleCheckInterval = engineSampleRate / plugSound_SampleCheckRate;
-    cable_CheckInterval = engineSampleRate / pluginSettings.cables_CalcRate;
 }
 
 void MetaModule::onSampleRateChange (const SampleRateChangeEvent& e) {
