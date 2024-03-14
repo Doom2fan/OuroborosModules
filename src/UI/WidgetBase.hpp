@@ -54,6 +54,8 @@ struct HistoryEmblemChange : rack::history::ModuleAction {
 template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
 struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
   protected:
+    typedef ModuleWidgetBase<TSelf, TModule, TBase> _WidgetBase;
+
     TModule* module;
 
     std::string panelName;

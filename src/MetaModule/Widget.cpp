@@ -97,17 +97,17 @@ void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
 }
 
 void MetaModuleWidget::onChangeTheme (ThemeKind kind) {
-    ModuleWidgetBase<MetaModuleWidget, MetaModule>::onChangeTheme (kind);
+    _WidgetBase::onChangeTheme (kind);
     updateEmblem (kind, curEmblem);
 }
 
 void MetaModuleWidget::onChangeEmblem (EmblemKind kind) {
-    ModuleWidgetBase<MetaModuleWidget, MetaModule>::onChangeEmblem (kind);
+    _WidgetBase::onChangeEmblem (kind);
     updateEmblem (curTheme, kind);
 }
 
 void MetaModuleWidget::appendContextMenu (rack::ui::Menu* menu) {
-    ModuleWidgetBase<MetaModuleWidget, MetaModule>::appendContextMenu (menu);
+    _WidgetBase::appendContextMenu (menu);
 
     // Pre-muter
     menu->addChild (new rack::ui::MenuSeparator);
@@ -122,7 +122,7 @@ void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, rack:
     using rack::createMenuItem;
     using rack::createMenuLabel;
 
-    ModuleWidgetBase<MetaModuleWidget, MetaModule>::createPluginSettingsMenu (widget, menu);
+    _WidgetBase::createPluginSettingsMenu (widget, menu);
 
     menu->addChild (new rack::ui::MenuSeparator);
 
