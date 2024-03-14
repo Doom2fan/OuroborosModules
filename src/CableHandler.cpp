@@ -18,40 +18,22 @@
 
 #include "CableHandler.hpp"
 
+#include "UISystemUpdater.hpp"
+
 namespace {
+    static bool initialized;
     static std::weak_ptr<CableHandler> currentHandler;
-    static CableHandlerWidget* currentWidget = nullptr;
-
-    struct CableHandlerWidget : rack::widget::TransparentWidget {
-        static void tryCreate () {
-            if (currentWidget != nullptr)
-                return;
-
-            auto widget = new CableHandlerWidget;
-            APP->scene->rack->addChild (widget);
-        }
-
-        CableHandlerWidget () {
-            if (currentWidget == nullptr)
-                currentWidget = this;
-
-            box.pos = box.size = rack::math::Vec ();
-        }
-
-        ~CableHandlerWidget () {
-            if (currentWidget == this)
-                currentWidget = nullptr;
-        }
-
-        void step () override {
-            if (auto handler = currentHandler.lock ())
-                handler->update ();
-        }
-    };
 }
 
 CableHandler::CableHandler () {
-    CableHandlerWidget::tryCreate ();
+    if (!initialized) {
+        UISystemUpdater::addUpdateFunction ([] () {
+            if (auto handler = currentHandler.lock ())
+                handler->update ();
+        });
+        initialized = true;
+    }
+    UISystemUpdater::tryCreate ();
 }
 
 std::shared_ptr<CableHandler> CableHandler::getHandler () {
