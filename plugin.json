@@ -15,9 +15,9 @@
     "modules": [
         {
             "slug": "MetaModule",
-            "name": "MetaModule",
+            "name": "Meta Module",
             "description": "",
-            "tags": []
+            "tags": [ "Utility" ]
         }
     ]
 }
