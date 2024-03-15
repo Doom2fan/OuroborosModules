@@ -22,98 +22,114 @@
 
 #include <fmt/format.h>
 
-struct SimpleSlider : rack::ui::Slider {
-    SimpleSlider (rack::Quantity* quantity) {
-        this->quantity = quantity;
+namespace OuroborosModules {
+namespace Widgets {
+    struct SimpleSlider : rack::ui::Slider {
+        SimpleSlider (rack::Quantity* quantity) {
+            this->quantity = quantity;
+        }
+
+        ~SimpleSlider () {
+            delete quantity;
+        }
+    };
+
+    struct UpdateFrequencyQuantity : rack::Quantity {
+      private:
+        std::string labelText;
+        int* freqSrc;
+        int minFreq;
+        int maxFreq;
+        std::function<void (bool)> setAction;
+
+      public:
+        UpdateFrequencyQuantity (std::string labelText, int* freqSrc, int minFreq, int maxFreq, std::function<void (float)> setAction = nullptr) {
+            this->labelText = labelText;
+            this->freqSrc = freqSrc;
+            this->minFreq = minFreq;
+            this->maxFreq = maxFreq;
+            this->setAction = setAction;
+        }
+
+        void setValue (float value) override {
+            *freqSrc = rack::math::clamp (std::roundl (value), minFreq, maxFreq);
+
+            if (setAction != nullptr)
+                setAction (value);
+        }
+
+        float getValue () override { return *freqSrc; }
+        float getMinValue () override { return minFreq; }
+        float getMaxValue () override { return maxFreq; }
+        float getDefaultValue () override { return 0.0f; }
+        float getDisplayValue () override { return getValue (); }
+
+        std::string getDisplayValueString () override {
+            float valFreq = getDisplayValue ();
+            return fmt::format (FMT_STRING ("{:.0F}"), valFreq);
+        }
+
+        void setDisplayValue (float displayValue) override { setValue (displayValue); }
+        std::string getLabel () override { return labelText; }
+        std::string getUnit () override { return " Hz"; }
+    };
+
+    struct FloatQuantity : rack::Quantity {
+      private:
+        int precision;
+        std::string labelText;
+        float* valueSrc;
+        float minValue;
+        float maxValue;
+        std::function<void (bool)> setAction;
+
+      public:
+        FloatQuantity (std::string labelText, float* valueSrc, float minValue, float maxValue, int precision, std::function<void (float)> setAction = nullptr) {
+            this->labelText = labelText;
+            this->valueSrc = valueSrc;
+            this->minValue = minValue;
+            this->maxValue = maxValue;
+
+            this->precision = precision;
+            this->setAction = setAction;
+        }
+
+        void setValue (float value) override {
+            *valueSrc = rack::math::clamp (value, getMinValue (), getMaxValue ());
+
+            if (setAction != nullptr)
+                setAction (value);
+        }
+
+        float getValue () override { return *valueSrc; }
+        float getMinValue () override { return minValue; }
+        float getMaxValue () override { return maxValue; }
+        float getDefaultValue () override { return 0.0f; }
+        float getDisplayValue () override { return getValue (); }
+
+        std::string getDisplayValueString () override {
+            float value = getDisplayValue ();
+            return fmt::format (FMT_STRING ("{:.{}f}"), value, precision);
+        }
+
+        void setDisplayValue (float displayValue) override { setValue (displayValue); }
+        std::string getLabel () override { return labelText; }
+        std::string getUnit () override { return ""; }
+    };
+}
+}
+
+namespace OuroborosModules {
+    char* selectSoundFile ();
+
+    template<class TModuleWidget>
+    rack::plugin::Model* createModel (std::string slug) {
+        return rack::createModel<typename TModuleWidget::_ModuleType, TModuleWidget> (slug);
     }
+}
 
-    ~SimpleSlider () {
-        delete quantity;
-    }
-};
-
-struct UpdateFrequencyQuantity : rack::Quantity {
-  private:
-    std::string labelText;
-    int* freqSrc;
-    int minFreq;
-    int maxFreq;
-    std::function<void (bool)> setAction;
-
-  public:
-    UpdateFrequencyQuantity (std::string labelText, int* freqSrc, int minFreq, int maxFreq, std::function<void (float)> setAction = nullptr) {
-        this->labelText = labelText;
-        this->freqSrc = freqSrc;
-        this->minFreq = minFreq;
-        this->maxFreq = maxFreq;
-        this->setAction = setAction;
-    }
-
-    void setValue (float value) override {
-        *freqSrc = rack::math::clamp (std::roundl (value), minFreq, maxFreq);
-
-        if (setAction != nullptr)
-            setAction (value);
-    }
-
-    float getValue () override { return *freqSrc; }
-    float getMinValue () override { return minFreq; }
-    float getMaxValue () override { return maxFreq; }
-    float getDefaultValue () override { return 0.0f; }
-    float getDisplayValue () override { return getValue (); }
-
-    std::string getDisplayValueString () override {
-        float valFreq = getDisplayValue ();
-        return fmt::format (FMT_STRING ("{:.0F}"), valFreq);
-    }
-
-    void setDisplayValue (float displayValue) override { setValue (displayValue); }
-    std::string getLabel () override { return labelText; }
-    std::string getUnit () override { return " Hz"; }
-};
-
-struct FloatQuantity : rack::Quantity {
-  private:
-    int precision;
-    std::string labelText;
-    float* valueSrc;
-    float minValue;
-    float maxValue;
-    std::function<void (bool)> setAction;
-
-  public:
-    FloatQuantity (std::string labelText, float* valueSrc, float minValue, float maxValue, int precision, std::function<void (float)> setAction = nullptr) {
-        this->labelText = labelText;
-        this->valueSrc = valueSrc;
-        this->minValue = minValue;
-        this->maxValue = maxValue;
-
-        this->precision = precision;
-        this->setAction = setAction;
-    }
-
-    void setValue (float value) override {
-        *valueSrc = rack::math::clamp (value, getMinValue (), getMaxValue ());
-
-        if (setAction != nullptr)
-            setAction (value);
-    }
-
-    float getValue () override { return *valueSrc; }
-    float getMinValue () override { return minValue; }
-    float getMaxValue () override { return maxValue; }
-    float getDefaultValue () override { return 0.0f; }
-    float getDisplayValue () override { return getValue (); }
-
-    std::string getDisplayValueString () override {
-        float value = getDisplayValue ();
-        return fmt::format (FMT_STRING ("{:.{}f}"), value, precision);
-    }
-
-    void setDisplayValue (float displayValue) override { setValue (displayValue); }
-    std::string getLabel () override { return labelText; }
-    std::string getUnit () override { return ""; }
-};
-
-char* selectSoundFile ();
-ThemeKind getCurrentTheme ();
+namespace OuroborosModules {
+namespace Theme {
+    ThemeKind getCurrentTheme ();
+}
+}

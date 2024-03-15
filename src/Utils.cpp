@@ -16,20 +16,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PluginDef.hpp"
 #include "Utils.hpp"
+
 #include <osdialog.h>
 
-char* selectSoundFile () {
-    static const char FILE_FILTERS [] = "Wave (.wav):wav,WAV;All files (*.*):*.*";
-    auto filters = osdialog_filters_parse (FILE_FILTERS);
-    DEFER ({ osdialog_filters_free (filters); });
+namespace OuroborosModules {
+    char* selectSoundFile () {
+        static const char FILE_FILTERS [] = "Wave (.wav):wav,WAV;All files (*.*):*.*";
+        auto filters = osdialog_filters_parse (FILE_FILTERS);
+        DEFER ({ osdialog_filters_free (filters); });
 
-    return osdialog_file (OSDIALOG_OPEN, nullptr, nullptr, filters);
-}
+        return osdialog_file (OSDIALOG_OPEN, nullptr, nullptr, filters);
+    }
 
-ThemeKind getCurrentTheme () {
-    return !rack::settings::preferDarkPanels
-        ? pluginSettings.global_ThemeLight
-        : pluginSettings.global_ThemeDark;
+    namespace Theme {
+        ThemeKind getCurrentTheme () {
+            return !rack::settings::preferDarkPanels
+                ? pluginSettings.global_ThemeLight
+                : pluginSettings.global_ThemeDark;
+        }
+    }
 }

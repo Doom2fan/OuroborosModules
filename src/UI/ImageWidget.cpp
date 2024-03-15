@@ -18,41 +18,45 @@
 
 #include "ImageWidget.hpp"
 
-void ImageWidget::setZoom (float zoom) {
-    if (zoom == this->zoom)
-        return;
+namespace OuroborosModules {
+namespace Widgets {
+    void ImageWidget::setZoom (float zoom) {
+        if (zoom == this->zoom)
+            return;
 
-    box.size /= this->zoom;
-    box.size *= zoom;
+        box.size /= this->zoom;
+        box.size *= zoom;
 
-    this->zoom = zoom;
+        this->zoom = zoom;
+    }
+
+    /** Sets the box size to the SVG image size */
+    void ImageWidget::wrap () {
+        box.size = svg.getSize () * zoom;
+    }
+
+    /** Sets and wraps the SVG */
+    void ImageWidget::setSvg (rack_themer::ThemedSvg svg) {
+        this->svg = svg;
+        wrap ();
+    }
+
+    void ImageWidget::draw (const DrawArgs& args) {
+        if (!svg.isValid ())
+            return;
+
+        DrawArgs zoomCtx = args;
+        zoomCtx.clipBox.pos = zoomCtx.clipBox.pos.div (zoom);
+        zoomCtx.clipBox.size = zoomCtx.clipBox.size.div (zoom);
+        // No need to save the state because that is done in the parent
+        nvgScale (args.vg, zoom, zoom);
+
+        svg.draw (zoomCtx.vg);
+    }
+
+    void ImageWidget::onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) {
+        if (autoSwitchTheme)
+            svg = svg.withTheme (theme);
+    }
 }
-
-/** Sets the box size to the SVG image size */
-void ImageWidget::wrap () {
-    box.size = svg.getSize () * zoom;
-}
-
-/** Sets and wraps the SVG */
-void ImageWidget::setSvg (rack_themer::ThemedSvg svg) {
-    this->svg = svg;
-    wrap ();
-}
-
-void ImageWidget::draw (const DrawArgs& args) {
-    if (!svg.isValid ())
-        return;
-
-    DrawArgs zoomCtx = args;
-    zoomCtx.clipBox.pos = zoomCtx.clipBox.pos.div (zoom);
-    zoomCtx.clipBox.size = zoomCtx.clipBox.size.div (zoom);
-    // No need to save the state because that is done in the parent
-    nvgScale (args.vg, zoom, zoom);
-
-    svg.draw (zoomCtx.vg);
-}
-
-void ImageWidget::onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) {
-    if (autoSwitchTheme)
-        svg = svg.withTheme (theme);
 }

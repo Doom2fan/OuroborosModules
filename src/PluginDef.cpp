@@ -17,6 +17,7 @@
  */
 
 #include "PluginDef.hpp"
+
 #include "Utils.hpp"
 
 #include <fmt/format.h>
@@ -25,11 +26,6 @@
 #include <string>
 
 rack::plugin::Plugin* pluginInstance;
-
-/*typedef std::function<void (Severity severity, ErrorCode code, std::string info)> LogCallback;
-
-void setLogger (LogCallback logger);
-const char* severityName (Severity severity);*/
 
 void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::logging::ErrorCode code, std::string info) {
     using namespace rack_themer::logging;
@@ -58,7 +54,8 @@ void init (rack::plugin::Plugin* p) {
     rack_themer::logging::setLogger (&rackThemerLogger);
 
     // Module models.
-    p->addModel (modelMetaModule);
+    p->addModel (OuroborosModules::modelMetaModule);
+    p->addModel (OuroborosModules::modelCableColorModule);
 }
 
 json_t* settingsToJson () {

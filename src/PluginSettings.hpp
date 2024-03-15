@@ -19,20 +19,22 @@
 #pragma once
 
 #include "Constants.hpp"
+
 #include <string>
 
 struct json_t;
 
-struct OuroborosSettings {
-  public:
-    json_t* saveToJson ();
-    void readFromJson (json_t* settingsJ);
+namespace OuroborosModules {
+    struct OuroborosSettings {
+      public:
+        json_t* saveToJson ();
+        void readFromJson (json_t* settingsJ);
 
-  private:
-    void saveInternal (json_t* rootJ);
-    void readInternal (json_t* rootJ);
+      private:
+        void saveInternal (json_t* rootJ);
+        void readInternal (json_t* rootJ);
 
-  public:
+      public:
 #define DEFINE_NONSETTING(varType, varName, defaultValue)      varType     varName = defaultValue;
 #define DEFINE_BOOL(varName, jsonName, defaultValue)           bool        varName = defaultValue;
 #define DEFINE_INT(varType, varName, jsonName, defaultValue)   varType     varName = defaultValue;
@@ -50,6 +52,7 @@ struct OuroborosSettings {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
-};
+    };
 
-extern OuroborosSettings pluginSettings;
+    extern OuroborosSettings pluginSettings;
+}

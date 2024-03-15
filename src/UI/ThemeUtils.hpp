@@ -20,11 +20,17 @@
 
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
-#include <memory>
-#include <string>
+
 #include <rack_themer.hpp>
 
-std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme);
-rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
-rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeKind theme);
-rack_themer::ThemedSvg getEmblem (EmblemKind emblem, ThemeKind theme);
+#include <memory>
+#include <string>
+
+namespace OuroborosModules {
+namespace Theme {
+    std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme);
+    rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
+    rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeKind theme);
+    rack_themer::ThemedSvg getEmblem (EmblemKind emblem, ThemeKind theme);
+}
+}

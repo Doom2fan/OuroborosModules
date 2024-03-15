@@ -17,28 +17,31 @@
  */
 
 #include "PluginSettings.hpp"
-#include "PluginDef.hpp"
+
 #include "JsonUtils.hpp"
+#include "PluginDef.hpp"
+
 #include <type_traits>
 
-OuroborosSettings pluginSettings;
+namespace OuroborosModules {
+    OuroborosSettings pluginSettings;
 
-json_t* OuroborosSettings::saveToJson () {
-    auto settingsJ = json_object ();
+    json_t* OuroborosSettings::saveToJson () {
+        auto settingsJ = json_object ();
 
-    saveInternal (settingsJ);
+        saveInternal (settingsJ);
 
-    return settingsJ;
-}
+        return settingsJ;
+    }
 
-void OuroborosSettings::readFromJson (json_t* settingsJ) {
-    if (settingsJ == nullptr)
-        return;
+    void OuroborosSettings::readFromJson (json_t* settingsJ) {
+        if (settingsJ == nullptr)
+            return;
 
-    readInternal (settingsJ);
-}
+        readInternal (settingsJ);
+    }
 
-void OuroborosSettings::saveInternal (json_t* rootJ) {
+    void OuroborosSettings::saveInternal (json_t* rootJ) {
 #define DEFINE_NONSETTING(varType, varName, defaultValue)
 #define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_set_new_bool (rootJ, jsonName, varName);
 #define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_set_new_int<varType> (rootJ, jsonName, varName);
@@ -56,9 +59,9 @@ void OuroborosSettings::saveInternal (json_t* rootJ) {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
-}
+    }
 
-void OuroborosSettings::readInternal (json_t* rootJ) {
+    void OuroborosSettings::readInternal (json_t* rootJ) {
 #define DEFINE_NONSETTING(varType, varName, defaultValue)
 #define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_try_get_bool (rootJ, jsonName, varName);
 #define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_try_get_int<varType> (rootJ, jsonName, varName);
@@ -76,4 +79,5 @@ void OuroborosSettings::readInternal (json_t* rootJ) {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
+    }
 }

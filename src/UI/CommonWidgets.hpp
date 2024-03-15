@@ -19,33 +19,38 @@
 #pragma once
 
 #include "../PluginDef.hpp"
+
 #include <rack_themer.hpp>
 
-struct ScrewWidget : rack::widget::Widget {
-    rack::widget::FramebufferWidget* framebuffer;
-    rack_themer::widgets::SvgWidget* svgWidget;
+namespace OuroborosModules {
+namespace Widgets {
+    struct ScrewWidget : rack::widget::Widget {
+        rack::widget::FramebufferWidget* framebuffer;
+        rack_themer::widgets::SvgWidget* svgWidget;
 
-    ScrewWidget () {
-        framebuffer = new rack::widget::FramebufferWidget;
-        addChild (framebuffer);
+        ScrewWidget () {
+            framebuffer = new rack::widget::FramebufferWidget;
+            addChild (framebuffer);
 
-        svgWidget = new rack_themer::widgets::SvgWidget;
-        framebuffer->addChild (svgWidget);
+            svgWidget = new rack_themer::widgets::SvgWidget;
+            framebuffer->addChild (svgWidget);
 
-        setSvg (getThemedSvg ("components/Screw", getCurrentTheme ()));
-    }
+            setSvg (Theme::getThemedSvg ("components/Screw", Theme::getCurrentTheme ()));
+        }
 
-    void setSvg (rack_themer::ThemedSvg svg) {
-        if (svgWidget->svg == svg)
-            return;
+        void setSvg (rack_themer::ThemedSvg svg) {
+            if (svgWidget->svg == svg)
+                return;
 
-        svgWidget->setSvg (svg);
-        box.size = framebuffer->box.size = svgWidget->box.size;
+            svgWidget->setSvg (svg);
+            box.size = framebuffer->box.size = svgWidget->box.size;
 
-        framebuffer->setDirty ();
-    }
-};
+            framebuffer->setDirty ();
+        }
+    };
 
-struct CableJackWidget : rack_themer::widgets::SvgPort {
-    CableJackWidget () { setSvg (getThemedSvg ("components/CableJack", getCurrentTheme ())); }
-};
+    struct CableJackWidget : rack_themer::widgets::SvgPort {
+        CableJackWidget () { setSvg (Theme::getThemedSvg ("components/CableJack", Theme::getCurrentTheme ())); }
+    };
+}
+}

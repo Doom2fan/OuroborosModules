@@ -18,38 +18,40 @@
 
 #include "JsonUtils.hpp"
 
-void json_object_try_get_bool (json_t* rootJ, const char* name, bool& value) {
-    auto nodeJ = json_object_get (rootJ, name);
-    if (json_is_true (nodeJ))
-        value = true;
-    else if (json_is_false (nodeJ))
-        value = false;
-}
+namespace OuroborosModules {
+    void json_object_try_get_bool (json_t* rootJ, const char* name, bool& value) {
+        auto nodeJ = json_object_get (rootJ, name);
+        if (json_is_true (nodeJ))
+            value = true;
+        else if (json_is_false (nodeJ))
+            value = false;
+    }
 
-void json_object_set_new_bool (json_t* rootJ, const char* name, bool value) {
-    json_object_set_new (rootJ, name, json_boolean (value));
-}
+    void json_object_set_new_bool (json_t* rootJ, const char* name, bool value) {
+        json_object_set_new (rootJ, name, json_boolean (value));
+    }
 
-void json_object_try_get_string (json_t* rootJ, const char* name, std::string& value) {
-    auto nodeJ = json_object_get (rootJ, name);
-    if (!json_is_string (nodeJ))
-        return;
+    void json_object_try_get_string (json_t* rootJ, const char* name, std::string& value) {
+        auto nodeJ = json_object_get (rootJ, name);
+        if (!json_is_string (nodeJ))
+            return;
 
-    value = json_string_value (nodeJ);
-}
+        value = json_string_value (nodeJ);
+    }
 
-void json_object_set_new_string (json_t* rootJ, const char* name, std::string value) {
-    json_object_set_new (rootJ, name, json_string (value.c_str ()));
-}
+    void json_object_set_new_string (json_t* rootJ, const char* name, std::string value) {
+        json_object_set_new (rootJ, name, json_string (value.c_str ()));
+    }
 
-void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value) {
-    auto nodeJ = json_object_get (rootJ, name);
-    if (!json_is_string (nodeJ))
-        return;
+    void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value) {
+        auto nodeJ = json_object_get (rootJ, name);
+        if (!json_is_string (nodeJ))
+            return;
 
-    value = json_string_value (nodeJ);
-}
+        value = json_string_value (nodeJ);
+    }
 
-void json_object_set_new_string (json_t* rootJ, const char* name, const char* value) {
-    json_object_set_new (rootJ, name, json_string (value));
+    void json_object_set_new_string (json_t* rootJ, const char* name, const char* value) {
+        json_object_set_new (rootJ, name, json_string (value));
+    }
 }

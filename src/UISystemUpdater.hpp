@@ -20,16 +20,18 @@
 
 #include "PluginDef.hpp"
 
-struct UISystemUpdater : rack::widget::TransparentWidget {
-  public:
-    static void tryCreate ();
-    static void addUpdateFunction (std::function<void ()> func);
+namespace OuroborosModules {
+    struct UISystemUpdater : rack::widget::TransparentWidget {
+      public:
+        static void tryCreate ();
+        static void addUpdateFunction (std::function<void ()> func);
 
-  private:
-    static inline std::vector<std::function<void ()>> updateFunctions;
+      private:
+        static inline std::vector<std::function<void ()>> updateFunctions;
 
-    UISystemUpdater ();
-    ~UISystemUpdater ();
+        UISystemUpdater ();
+        ~UISystemUpdater ();
 
-    void step () override;
-};
+        void step () override;
+    };
+}

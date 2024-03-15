@@ -19,36 +19,38 @@
 #include "UISystemUpdater.hpp"
 
 namespace {
-    static UISystemUpdater* currentUpdater = nullptr;
+    static OuroborosModules::UISystemUpdater* currentUpdater = nullptr;
 }
 
-void UISystemUpdater::tryCreate () {
-    if (currentUpdater != nullptr)
-        return;
+namespace OuroborosModules {
+    void UISystemUpdater::tryCreate () {
+        if (currentUpdater != nullptr)
+            return;
 
-    auto widget = new UISystemUpdater;
-    APP->scene->rack->addChild (widget);
-}
+        auto widget = new UISystemUpdater;
+        APP->scene->rack->addChild (widget);
+    }
 
-void UISystemUpdater::addUpdateFunction (std::function<void()> func) {
-    updateFunctions.push_back (func);
-}
+    void UISystemUpdater::addUpdateFunction (std::function<void()> func) {
+        updateFunctions.push_back (func);
+    }
 
-UISystemUpdater::UISystemUpdater () {
-    if (currentUpdater == nullptr)
-        currentUpdater = this;
+    UISystemUpdater::UISystemUpdater () {
+        if (currentUpdater == nullptr)
+            currentUpdater = this;
 
-    box.pos = box.size = rack::math::Vec ();
-}
+        box.pos = box.size = rack::math::Vec ();
+    }
 
-UISystemUpdater::~UISystemUpdater () {
-    if (currentUpdater == this)
-        currentUpdater = nullptr;
-}
+    UISystemUpdater::~UISystemUpdater () {
+        if (currentUpdater == this)
+            currentUpdater = nullptr;
+    }
 
-void UISystemUpdater::step () {
-    TransparentWidget::step ();
+    void UISystemUpdater::step () {
+        TransparentWidget::step ();
 
-    for (auto func : updateFunctions)
-        func ();
+        for (auto func : updateFunctions)
+            func ();
+    }
 }

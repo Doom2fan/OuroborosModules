@@ -19,30 +19,35 @@
 #pragma once
 
 #include "../PluginDef.hpp"
+
 #include <rack_themer.hpp>
 
-struct ImageWidget : rack::widget::TransparentWidget, rack_themer::IThemedWidget {
-  private:
-    float zoom = 1.f;
+namespace OuroborosModules {
+namespace Widgets {
+    struct ImageWidget : rack::widget::TransparentWidget, rack_themer::IThemedWidget {
+      private:
+        float zoom = 1.f;
 
-  public:
-    rack_themer::ThemedSvg svg;
-    bool autoSwitchTheme = true;
+      public:
+        rack_themer::ThemedSvg svg;
+        bool autoSwitchTheme = true;
 
-    ImageWidget () : svg (nullptr, nullptr) { box.size = rack::math::Vec (); }
+        ImageWidget () : svg (nullptr, nullptr) { box.size = rack::math::Vec (); }
 
-    float getZoom () { return zoom; }
+        float getZoom () { return zoom; }
 
-    /** Sets zoom scale. */
-    void setZoom (float zoom);
+        /** Sets zoom scale. */
+        void setZoom (float zoom);
 
-    /** Sets the box size to the SVG image size. */
-    void wrap ();
+        /** Sets the box size to the SVG image size. */
+        void wrap ();
 
-    /** Sets and wraps the SVG. */
-    void setSvg (rack_themer::ThemedSvg svg);
+        /** Sets and wraps the SVG. */
+        void setSvg (rack_themer::ThemedSvg svg);
 
-    void draw (const DrawArgs& args) override;
+        void draw (const DrawArgs& args) override;
 
-    void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
-};
+        void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
+    };
+}
+}

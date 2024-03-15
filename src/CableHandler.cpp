@@ -22,63 +22,65 @@
 
 namespace {
     static bool initialized;
-    static std::weak_ptr<CableHandler> currentHandler;
+    static std::weak_ptr<OuroborosModules::CableHandler> currentHandler;
 }
 
-CableHandler::CableHandler () {
-    if (!initialized) {
-        UISystemUpdater::addUpdateFunction ([] () {
-            if (auto handler = currentHandler.lock ())
-                handler->update ();
-        });
-        initialized = true;
+namespace OuroborosModules {
+    CableHandler::CableHandler () {
+        if (!initialized) {
+            UISystemUpdater::addUpdateFunction ([] () {
+                if (auto handler = currentHandler.lock ())
+                    handler->update ();
+            });
+            initialized = true;
+        }
+        UISystemUpdater::tryCreate ();
     }
-    UISystemUpdater::tryCreate ();
-}
 
-std::shared_ptr<CableHandler> CableHandler::getHandler () {
-    struct CableHandler_Concrete : public CableHandler { };
+    std::shared_ptr<CableHandler> CableHandler::getHandler () {
+        struct CableHandler_Concrete : public CableHandler { };
 
-    if (auto retVal = currentHandler.lock ())
+        if (auto retVal = currentHandler.lock ())
+            return retVal;
+
+        auto retVal = std::make_shared<CableHandler_Concrete> ();
+        currentHandler = retVal;
         return retVal;
-
-    auto retVal = std::make_shared<CableHandler_Concrete> ();
-    currentHandler = retVal;
-    return retVal;
-}
-
-void CableHandler::update () {
-    auto cableContainer = APP->scene->rack->getCableContainer ();
-    auto incompleteCable = APP->scene->rack->getIncompleteCable ();
-
-    if (cableContainer == nullptr)
-        return;
-
-    auto hasIncompleteCable = incompleteCable != nullptr;
-    int cableCount = 0;
-
-    for (auto it = cableContainer->children.begin (), it_end = cableContainer->children.end (); it != it_end; ++it) {
-        auto cable = dynamic_cast<rack::app::CableWidget*> (*it);
-        if (cable == nullptr || !cable->isComplete ())
-            continue;
-
-        cableCount++;
     }
 
-    cableConnected = cableDisconnected = false;
+    void CableHandler::update () {
+        auto cableContainer = APP->scene->rack->getCableContainer ();
+        auto incompleteCable = APP->scene->rack->getIncompleteCable ();
 
-    if (hasIncompleteCable && !hadIncompleteCable) {
-        if (cableCount == prevCableCount)
-            cableConnected = true;
-        else if (cableCount < prevCableCount)
-            cableDisconnected = true;
-    } else if (!hasIncompleteCable && hadIncompleteCable) {
-        if (cableCount > prevCableCount)
-            cableConnected = true;
-        else
-            cableDisconnected = true;
+        if (cableContainer == nullptr)
+            return;
+
+        auto hasIncompleteCable = incompleteCable != nullptr;
+        int cableCount = 0;
+
+        for (auto it = cableContainer->children.begin (), it_end = cableContainer->children.end (); it != it_end; ++it) {
+            auto cable = dynamic_cast<rack::app::CableWidget*> (*it);
+            if (cable == nullptr || !cable->isComplete ())
+                continue;
+
+            cableCount++;
+        }
+
+        cableConnected = cableDisconnected = false;
+
+        if (hasIncompleteCable && !hadIncompleteCable) {
+            if (cableCount == prevCableCount)
+                cableConnected = true;
+            else if (cableCount < prevCableCount)
+                cableDisconnected = true;
+        } else if (!hasIncompleteCable && hadIncompleteCable) {
+            if (cableCount > prevCableCount)
+                cableConnected = true;
+            else
+                cableDisconnected = true;
+        }
+
+        prevCableCount = cableCount;
+        hadIncompleteCable = hasIncompleteCable;
     }
-
-    prevCableCount = cableCount;
-    hadIncompleteCable = hasIncompleteCable;
 }

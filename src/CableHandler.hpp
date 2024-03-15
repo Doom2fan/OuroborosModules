@@ -26,23 +26,25 @@ namespace {
     struct CableHandlerWidget;
 }
 
-struct CableHandler {
-    friend CableHandlerWidget;
+namespace OuroborosModules {
+    struct CableHandler {
+        friend CableHandlerWidget;
 
-private:
-    int prevCableCount = 0;
-    bool hadIncompleteCable = false;
+    private:
+        int prevCableCount = 0;
+        bool hadIncompleteCable = false;
 
-    bool cableConnected = false;
-    bool cableDisconnected = false;
+        bool cableConnected = false;
+        bool cableDisconnected = false;
 
-    CableHandler ();
+        CableHandler ();
 
-    void update ();
+        void update ();
 
-public:
-    static std::shared_ptr<CableHandler> getHandler ();
+    public:
+        static std::shared_ptr<CableHandler> getHandler ();
 
-    bool checkCableConnected () { return cableConnected; }
-    bool checkCableDisconnected () { return cableDisconnected; }
-};
+        bool checkCableConnected () { return cableConnected; }
+        bool checkCableDisconnected () { return cableDisconnected; }
+    };
+}

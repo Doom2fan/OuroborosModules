@@ -20,59 +20,61 @@
 
 #include "PluginDef.hpp"
 
-void json_object_try_get_bool (json_t* rootJ, const char* name, bool& value);
-void json_object_set_new_bool (json_t* rootJ, const char* name, bool value);
+namespace OuroborosModules {
+    void json_object_try_get_bool (json_t* rootJ, const char* name, bool& value);
+    void json_object_set_new_bool (json_t* rootJ, const char* name, bool value);
 
-template<typename T>
-void json_object_try_get_int (json_t* rootJ, const char* name, T& value) {
-    static_assert (std::is_integral<T>::value, "T must be an integral type");
+    template<typename T>
+    void json_object_try_get_int (json_t* rootJ, const char* name, T& value) {
+        static_assert (std::is_integral<T>::value, "T must be an integral type");
 
-    auto nodeJ = json_object_get (rootJ, name);
-    if (!json_is_integer (nodeJ))
-        return;
+        auto nodeJ = json_object_get (rootJ, name);
+        if (!json_is_integer (nodeJ))
+            return;
 
-    value = json_integer_value (nodeJ);
+        value = json_integer_value (nodeJ);
+    }
+    template<typename T>
+    void json_object_set_new_int (json_t* rootJ, const char* name, T value) {
+        static_assert (std::is_integral<T>::value, "T must be an integral type");
+        json_object_set_new (rootJ, name, json_integer (value));
+    }
+
+    template<typename T>
+    void json_object_try_get_enum (json_t* rootJ, const char* name, T& value) {
+        static_assert (std::is_enum<T>::value && std::is_integral<typename std::underlying_type<T>::type>::value, "T must be an integral type");
+
+        auto nodeJ = json_object_get (rootJ, name);
+        if (!json_is_integer (nodeJ))
+            return;
+
+        value = (T) json_integer_value (nodeJ);
+    }
+    template<typename T>
+    void json_object_set_new_enum (json_t* rootJ, const char* name, T value) {
+        static_assert (std::is_enum<T>::value && std::is_integral<typename std::underlying_type<T>::type>::value, "T must be an integral type");
+        json_object_set_new (rootJ, name, json_integer ((typename std::underlying_type<T>::type) value));
+    }
+
+    template<typename T>
+    void json_object_try_get_float (json_t* rootJ, const char* name, T& value) {
+        static_assert (std::is_floating_point<T>::value, "T must be a floating point type");
+
+        auto nodeJ = json_object_get (rootJ, name);
+        if (!json_is_number (nodeJ))
+            return;
+
+        value = json_number_value (nodeJ);
+    }
+    template<typename T>
+    void json_object_set_new_float (json_t* rootJ, const char* name, T value) {
+        static_assert (std::is_floating_point<T>::value, "T must be a floating point type");
+        json_object_set_new (rootJ, name, json_real (value));
+    }
+
+    void json_object_try_get_string (json_t* rootJ, const char* name, std::string& value);
+    void json_object_set_new_string (json_t* rootJ, const char* name, std::string value);
+
+    void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value);
+    void json_object_set_new_string (json_t* rootJ, const char* name, const char* value);
 }
-template<typename T>
-void json_object_set_new_int (json_t* rootJ, const char* name, T value) {
-    static_assert (std::is_integral<T>::value, "T must be an integral type");
-    json_object_set_new (rootJ, name, json_integer (value));
-}
-
-template<typename T>
-void json_object_try_get_enum (json_t* rootJ, const char* name, T& value) {
-    static_assert (std::is_enum<T>::value && std::is_integral<typename std::underlying_type<T>::type>::value, "T must be an integral type");
-
-    auto nodeJ = json_object_get (rootJ, name);
-    if (!json_is_integer (nodeJ))
-        return;
-
-    value = (T) json_integer_value (nodeJ);
-}
-template<typename T>
-void json_object_set_new_enum (json_t* rootJ, const char* name, T value) {
-    static_assert (std::is_enum<T>::value && std::is_integral<typename std::underlying_type<T>::type>::value, "T must be an integral type");
-    json_object_set_new (rootJ, name, json_integer ((typename std::underlying_type<T>::type) value));
-}
-
-template<typename T>
-void json_object_try_get_float (json_t* rootJ, const char* name, T& value) {
-    static_assert (std::is_floating_point<T>::value, "T must be a floating point type");
-
-    auto nodeJ = json_object_get (rootJ, name);
-    if (!json_is_number (nodeJ))
-        return;
-
-    value = json_number_value (nodeJ);
-}
-template<typename T>
-void json_object_set_new_float (json_t* rootJ, const char* name, T value) {
-    static_assert (std::is_floating_point<T>::value, "T must be a floating point type");
-    json_object_set_new (rootJ, name, json_real (value));
-}
-
-void json_object_try_get_string (json_t* rootJ, const char* name, std::string& value);
-void json_object_set_new_string (json_t* rootJ, const char* name, std::string value);
-
-void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value);
-void json_object_set_new_string (json_t* rootJ, const char* name, const char* value);

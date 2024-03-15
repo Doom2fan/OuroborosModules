@@ -18,14 +18,20 @@
 
 #pragma once
 
-#include <rack.hpp>
 #include "Constants.hpp"
 #include "PluginSettings.hpp"
+
+#include <rack.hpp>
 
 using rack::app::RACK_GRID_WIDTH;
 using rack::app::RACK_GRID_HEIGHT;
 
+using OuroborosModules::pluginSettings;
+
 extern rack::plugin::Plugin* pluginInstance;
 
 // Models
-extern rack::plugin::Model* modelMetaModule;
+namespace OuroborosModules {
+    extern rack::plugin::Model* modelMetaModule;
+    extern rack::plugin::Model* modelCableColorModule;
+}

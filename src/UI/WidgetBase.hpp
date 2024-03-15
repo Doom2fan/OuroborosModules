@@ -21,195 +21,202 @@
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
 #include "ThemeUtils.hpp"
+
 #include <rack_themer.hpp>
 
-std::string getLocalThemeLabel (ThemeKind theme);
-std::string getLocalEmblemLabel (EmblemKind emblem);
+namespace OuroborosModules {
+namespace Widgets {
+    std::string getLocalThemeLabel (ThemeKind theme);
+    std::string getLocalEmblemLabel (EmblemKind emblem);
 
-template<typename T>
-rack::ui::MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumPtr, T selectedVal) {
-    return rack::createCheckMenuItem (text, rightText, [=] { return *enumPtr == selectedVal; }, [=] { *enumPtr = selectedVal; });
-}
-
-struct HistoryThemeChange : rack::history::ModuleAction {
-    ThemeKind oldTheme;
-    ThemeKind newTheme;
-
-    HistoryThemeChange () { name = "change theme override"; }
-
-    void undo () override;
-    void redo () override;
-};
-
-struct HistoryEmblemChange : rack::history::ModuleAction {
-    EmblemKind oldEmblem;
-    EmblemKind newEmblem;
-
-    HistoryEmblemChange () { name = "change emblem override"; }
-
-    void undo () override;
-    void redo () override;
-};
-
-template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
-struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
-  protected:
-    typedef ModuleWidgetBase<TSelf, TModule, TBase> _WidgetBase;
-
-    TModule* module;
-
-    std::string panelName;
-    ThemeKind curTheme = ThemeKind::Unknown;
-    EmblemKind curEmblem = EmblemKind::Unknown;
-
-  public:
-    ThemeKind getLocalTheme () {
-        if (module != nullptr && module->theme_Override != ThemeKind::Unknown)
-            return module->theme_Override;
-        return getCurrentTheme ();
-    }
-    EmblemKind getLocalEmblem () {
-        if (module != nullptr && module->theme_Emblem != EmblemKind::Unknown)
-            return module->theme_Emblem;
-        return pluginSettings.global_DefaultEmblem;
+    template<typename T>
+    rack::ui::MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumPtr, T selectedVal) {
+        return rack::createCheckMenuItem (text, rightText, [=] { return *enumPtr == selectedVal; }, [=] { *enumPtr = selectedVal; });
     }
 
-  protected:
-    void constructor (TModule* module, std::string panelName) {
-        this->module = module;
-        this->panelName = panelName;
+    struct HistoryThemeChange : rack::history::ModuleAction {
+        ThemeKind oldTheme;
+        ThemeKind newTheme;
 
-        this->loadPanel (getThemedSvg (panelName, nullptr));
-        this->setModule (module);
+        HistoryThemeChange () { name = "change theme override"; }
 
-        curTheme = ThemeKind::INVALID;
-        curEmblem = EmblemKind::INVALID;
+        void undo () override;
+        void redo () override;
+    };
 
-        initializeWidget ();
+    struct HistoryEmblemChange : rack::history::ModuleAction {
+        EmblemKind oldEmblem;
+        EmblemKind newEmblem;
 
-        updateTheme ();
-        updateEmblem ();
-    }
+        HistoryEmblemChange () { name = "change emblem override"; }
 
-    virtual void initializeWidget () = 0;
+        void undo () override;
+        void redo () override;
+    };
 
-    void updateTheme () {
-        auto theme = getLocalTheme ();
-        if (curTheme == theme)
-            return;
+    template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
+    struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
+      public:
+        typedef ModuleWidgetBase<TSelf, TModule, TBase> _WidgetBase;
+        typedef TModule _ModuleType;
 
-        curTheme = theme;
-        onChangeTheme (theme);
-    }
+      protected:
+        TModule* module;
 
-    void updateEmblem () {
-        auto emblem = getLocalEmblem ();
-        if (curEmblem == emblem)
-            return;
+        std::string panelName;
+        ThemeKind curTheme = ThemeKind::Unknown;
+        EmblemKind curEmblem = EmblemKind::Unknown;
 
-        curEmblem = emblem;
-        onChangeEmblem (emblem);
-    }
+      public:
+        ThemeKind getLocalTheme () {
+            if (module != nullptr && module->theme_Override != ThemeKind::Unknown)
+                return module->theme_Override;
+            return Theme::getCurrentTheme ();
+        }
+        EmblemKind getLocalEmblem () {
+            if (module != nullptr && module->theme_Emblem != EmblemKind::Unknown)
+                return module->theme_Emblem;
+            return pluginSettings.global_DefaultEmblem;
+        }
 
-    void setTheme (ThemeKind theme) {
-        auto oldTheme = module->theme_Override;
-        module->theme_Override = theme;
+      protected:
+        void constructor (TModule* module, std::string panelName) {
+            this->module = module;
+            this->panelName = panelName;
 
-        auto themeChange = new HistoryThemeChange;
+            this->loadPanel (Theme::getThemedSvg (panelName, nullptr));
+            this->setModule (module);
 
-        themeChange->moduleId = module->id;
-        themeChange->oldTheme = oldTheme;
-        themeChange->newTheme = theme;
+            curTheme = ThemeKind::INVALID;
+            curEmblem = EmblemKind::INVALID;
 
-        APP->history->push (themeChange);
+            initializeWidget ();
 
-        updateTheme ();
-    }
+            updateTheme ();
+            updateEmblem ();
+        }
 
-    void setEmblem (EmblemKind emblem) {
-        auto oldEmblem = module->theme_Emblem;
-        module->theme_Emblem = emblem;
+        virtual void initializeWidget () = 0;
 
-        auto emblemChange = new HistoryEmblemChange;
+        void updateTheme () {
+            auto theme = getLocalTheme ();
+            if (curTheme == theme)
+                return;
 
-        emblemChange->moduleId = module->id;
-        emblemChange->oldEmblem = oldEmblem;
-        emblemChange->newEmblem = emblem;
+            curTheme = theme;
+            onChangeTheme (theme);
+        }
 
-        APP->history->push (emblemChange);
+        void updateEmblem () {
+            auto emblem = getLocalEmblem ();
+            if (curEmblem == emblem)
+                return;
 
-        updateEmblem ();
-    }
+            curEmblem = emblem;
+            onChangeEmblem (emblem);
+        }
 
-    virtual void onChangeTheme (ThemeKind theme) { handleThemeChange (this, getTheme (theme), true); }
+        void setTheme (ThemeKind theme) {
+            auto oldTheme = module->theme_Override;
+            module->theme_Override = theme;
 
-    virtual void onChangeEmblem (EmblemKind emblem) { }
+            auto themeChange = new HistoryThemeChange;
 
-    void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override {
-        this->loadPanel (getThemedSvg (panelName, theme));
-    }
+            themeChange->moduleId = module->id;
+            themeChange->oldTheme = oldTheme;
+            themeChange->newTheme = theme;
 
-    virtual void createPluginSettingsMenu (TSelf* widget, rack::ui::Menu* menu) {
-        menu->addChild (rack::createSubmenuItem ("Theme settings", "", [=] (rack::ui::Menu* menu) {
-            menu->addChild (rack::createMenuLabel ("Default light theme"));
-            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
+            APP->history->push (themeChange);
 
-            menu->addChild (rack::createMenuLabel ("Default dark theme"));
-            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
+            updateTheme ();
+        }
 
-            menu->addChild (rack::createMenuLabel ("Default emblem"));
-            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
-                menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
-        }));
-    }
+        void setEmblem (EmblemKind emblem) {
+            auto oldEmblem = module->theme_Emblem;
+            module->theme_Emblem = emblem;
 
-    void step () override {
-        updateTheme ();
-        updateEmblem ();
+            auto emblemChange = new HistoryEmblemChange;
 
-        TBase::step ();
-    }
+            emblemChange->moduleId = module->id;
+            emblemChange->oldEmblem = oldEmblem;
+            emblemChange->newEmblem = emblem;
 
-    void appendContextMenu (rack::ui::Menu* menu) override {
-        using rack::Menu;
-        using rack::createMenuLabel;
-        using rack::createSubmenuItem;
-        using rack::createCheckMenuItem;
+            APP->history->push (emblemChange);
 
-        auto createThemeOverrideItem = [=] (std::string name, ThemeKind theme) {
-            return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { setTheme (theme); });
-        };
-        auto createEmblemOverrideItem = [=] (std::string name, EmblemKind emblem) {
-            return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
-        };
+            updateEmblem ();
+        }
 
-        TBase::appendContextMenu (menu);
-        menu->addChild (createSubmenuItem ("Global settings", "", [=] (Menu* menu) { createPluginSettingsMenu (dynamic_cast<TSelf*> (this), menu); }));
+        virtual void onChangeTheme (ThemeKind theme) { handleThemeChange (this, Theme::getTheme (theme), true); }
 
-        menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) {
-            menu->addChild (createMenuLabel ("Theme"));
-            menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
-            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
+        virtual void onChangeEmblem (EmblemKind emblem) { }
 
-            menu->addChild (createMenuLabel ("Emblem"));
-            menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
-            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
-                menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
-        }));
-    }
-};
+        void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override {
+            this->loadPanel (Theme::getThemedSvg (panelName, theme));
+        }
+
+        virtual void createPluginSettingsMenu (TSelf* widget, rack::ui::Menu* menu) {
+            menu->addChild (rack::createSubmenuItem ("Theme settings", "", [=] (rack::ui::Menu* menu) {
+                menu->addChild (rack::createMenuLabel ("Default light theme"));
+                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                    menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
+
+                menu->addChild (rack::createMenuLabel ("Default dark theme"));
+                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                    menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
+
+                menu->addChild (rack::createMenuLabel ("Default emblem"));
+                for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
+                    menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
+            }));
+        }
+
+        void step () override {
+            updateTheme ();
+            updateEmblem ();
+
+            TBase::step ();
+        }
+
+        void appendContextMenu (rack::ui::Menu* menu) override {
+            using rack::Menu;
+            using rack::createMenuLabel;
+            using rack::createSubmenuItem;
+            using rack::createCheckMenuItem;
+
+            auto createThemeOverrideItem = [=] (std::string name, ThemeKind theme) {
+                return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { setTheme (theme); });
+            };
+            auto createEmblemOverrideItem = [=] (std::string name, EmblemKind emblem) {
+                return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
+            };
+
+            TBase::appendContextMenu (menu);
+            menu->addChild (createSubmenuItem ("Global settings", "", [=] (Menu* menu) { createPluginSettingsMenu (dynamic_cast<TSelf*> (this), menu); }));
+
+            menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) {
+                menu->addChild (createMenuLabel ("Theme"));
+                menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
+                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                    menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
+
+                menu->addChild (createMenuLabel ("Emblem"));
+                menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
+                for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
+                    menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
+            }));
+        }
+    };
 
 #if false
-template<typename TModule, typename TBase>
-struct ChildWidgetBase : TBase {
-  protected:
-    TModule* module;
-    ThemeKind curTheme = ThemeKind::Unknown;
+    template<typename TModule, typename TBase>
+    struct ChildWidgetBase : TBase {
+      protected:
+        TModule* module;
+        ThemeKind curTheme = ThemeKind::Unknown;
 
-  public:
-    virtual void onChangeTheme (ThemeKind newTheme) { }
-};
+      public:
+        virtual void onChangeTheme (ThemeKind newTheme) { }
+    };
 #endif
+}
+}

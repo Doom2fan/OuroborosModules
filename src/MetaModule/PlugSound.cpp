@@ -18,76 +18,81 @@
 
 #include "MetaModule.hpp"
 
-const std::string DefaultPlugSounds [] = {
-    "res/sounds/Jack_Connect.wav",
-    "res/sounds/Jack_Disconnect.wav",
-};
+namespace OuroborosModules {
+namespace MetaModule {
+    const std::string DefaultPlugSounds [] = {
+        "res/sounds/Jack_Connect.wav",
+        "res/sounds/Jack_Disconnect.wav",
+    };
 
-std::string plugSound_GetConfigPath (MetaModule::PlugSound_Buffers buffer) {
-    std::string retPath;
-    switch (buffer) {
-        case MetaModule::PLUGSOUND_CONNECT: retPath = pluginSettings.plugSound_ConnectSound; break;
-        case MetaModule::PLUGSOUND_DISCONNECT: retPath = pluginSettings.plugSound_DisconnectSound; break;
+    std::string plugSound_GetConfigPath (MetaModule::PlugSound_Buffers buffer) {
+        std::string retPath;
+        switch (buffer) {
+            case MetaModule::PLUGSOUND_CONNECT: retPath = pluginSettings.plugSound_ConnectSound; break;
+            case MetaModule::PLUGSOUND_DISCONNECT: retPath = pluginSettings.plugSound_DisconnectSound; break;
 
-        default: return "";
+            default: return "";
+        }
+
+        if (retPath == "<Default>")
+            retPath = rack::asset::plugin (pluginInstance, DefaultPlugSounds [buffer]);
+
+        return retPath;
     }
 
-    if (retPath == "<Default>")
-        retPath = rack::asset::plugin (pluginInstance, DefaultPlugSounds [buffer]);
+    void MetaModule::plugSound_SetSound (MetaModule::PlugSound_Buffers bufferIdx, std::string path, bool forceReload) {
+        if (!forceReload && plugSound_Paths [bufferIdx] == path)
+            return;
 
-    return retPath;
+        plugSound_Paths [bufferIdx] = path;
+        plugSound_LoadStatus [bufferIdx] = plugSound_Buffers [bufferIdx]->load (path);
+
+        // TODO: Report sample loading errors.
+        if (plugSound_LoadStatus [bufferIdx] != Audio::AudioSample::LoadStatus::Success)
+            plugSound_Buffers [bufferIdx]->clear ();
+    }
+
+    void MetaModule::plugSound_Process (const ProcessArgs& args) {
+        auto enabled = pluginSettings.plugSound_Enable;
+        auto prevEnabled = plugSound_PrevEnabled;
+        plugSound_PrevEnabled = enabled;
+
+        auto requestGlobalLoad = enabled && !prevEnabled;
+        if (!enabled && prevEnabled) {
+            for (int i = 0; i < PLUGSOUND_LENGTH; i++)
+                plugSound_Buffers [i]->clear ();
+        }
+
+        if (!enabled)
+            return;
+
+        if (args.frame % plugSound_SampleCheckInterval != 0 &&
+            plugSound_RequestLoad == PLUGSOUND_LENGTH &&
+            !requestGlobalLoad)
+            return;
+
+        for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
+            auto bufferIdx = (PlugSound_Buffers) i;
+            auto requestLoad = requestGlobalLoad || bufferIdx == plugSound_RequestLoad;
+            plugSound_SetSound (bufferIdx, plugSound_GetConfigPath (bufferIdx), requestLoad);
+        }
+
+        plugSound_RequestLoad = PLUGSOUND_LENGTH;
+    }
+
+    void MetaModule::plugSound_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight) {
+        float mixAudioLeft = 0.f, mixAudioRight = 0.f;
+        float chanAudioLeft, chanAudioRight;
+        for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
+            if (!plugSound_Channels [i].process (chanAudioLeft, chanAudioRight))
+                continue;
+
+            mixAudioLeft += chanAudioLeft;
+            mixAudioRight += chanAudioRight;
+        }
+
+        audioLeft += mixAudioLeft * 5.f * pluginSettings.plugSound_Volume;
+        audioRight += mixAudioRight * 5.f * pluginSettings.plugSound_Volume;
+    }
 }
-
-void MetaModule::plugSound_SetSound (MetaModule::PlugSound_Buffers bufferIdx, std::string path, bool forceReload) {
-    if (!forceReload && plugSound_Paths [bufferIdx] == path)
-        return;
-
-    plugSound_Paths [bufferIdx] = path;
-    plugSound_LoadStatus [bufferIdx] = plugSound_Buffers [bufferIdx]->load (path);
-
-    if (plugSound_LoadStatus [bufferIdx] != AudioSample::LoadStatus::Success) // TODO: Report sample loading errors.
-        plugSound_Buffers [bufferIdx]->clear ();
-}
-
-void MetaModule::plugSound_Process (const ProcessArgs& args) {
-    auto enabled = pluginSettings.plugSound_Enable;
-    auto prevEnabled = plugSound_PrevEnabled;
-    plugSound_PrevEnabled = enabled;
-
-    auto requestGlobalLoad = enabled && !prevEnabled;
-    if (!enabled && prevEnabled) {
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Buffers [i]->clear ();
-    }
-
-    if (!enabled)
-        return;
-
-    if (args.frame % plugSound_SampleCheckInterval != 0 &&
-        plugSound_RequestLoad == PLUGSOUND_LENGTH &&
-        !requestGlobalLoad)
-        return;
-
-    for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
-        auto bufferIdx = (PlugSound_Buffers) i;
-        auto requestLoad = requestGlobalLoad || bufferIdx == plugSound_RequestLoad;
-        plugSound_SetSound (bufferIdx, plugSound_GetConfigPath (bufferIdx), requestLoad);
-    }
-
-    plugSound_RequestLoad = PLUGSOUND_LENGTH;
-}
-
-void MetaModule::plugSound_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight) {
-    float mixAudioLeft = 0.f, mixAudioRight = 0.f;
-    float chanAudioLeft, chanAudioRight;
-    for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
-        if (!plugSound_Channels [i].process (chanAudioLeft, chanAudioRight))
-            continue;
-
-        mixAudioLeft += chanAudioLeft;
-        mixAudioRight += chanAudioRight;
-    }
-
-    audioLeft += mixAudioLeft * 5.f * pluginSettings.plugSound_Volume;
-    audioRight += mixAudioRight * 5.f * pluginSettings.plugSound_Volume;
 }

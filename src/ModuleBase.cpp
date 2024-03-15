@@ -19,18 +19,20 @@
 #include "ModuleBase.hpp"
 #include "JsonUtils.hpp"
 
-json_t* ModuleBase::dataToJson () {
-    auto rootJ = json_object ();
+namespace OuroborosModules {
+    json_t* ModuleBase::dataToJson () {
+        auto rootJ = json_object ();
 
-    // Theming
-    json_object_set_new_enum (rootJ, "theme_Override", theme_Override);
-    json_object_set_new_enum (rootJ, "theme_Emblem", theme_Emblem);
+        // Theming
+        json_object_set_new_enum (rootJ, "theme_Override", theme_Override);
+        json_object_set_new_enum (rootJ, "theme_Emblem", theme_Emblem);
 
-    return rootJ;
-}
+        return rootJ;
+    }
 
-void ModuleBase::dataFromJson (json_t* rootJ) {
-    // Theming
-    json_object_try_get_enum (rootJ, "theme_Override", theme_Override);
-    json_object_try_get_enum (rootJ, "theme_Emblem", theme_Emblem);
+    void ModuleBase::dataFromJson (json_t* rootJ) {
+        // Theming
+        json_object_try_get_enum (rootJ, "theme_Override", theme_Override);
+        json_object_try_get_enum (rootJ, "theme_Emblem", theme_Emblem);
+    }
 }

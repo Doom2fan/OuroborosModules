@@ -16,27 +16,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PluginDef.hpp"
 #include "Constants.hpp"
 
-std::string getThemeLabel (ThemeKind theme) {
-    switch (theme) {
-        case ThemeKind::Unknown: return "Unknown";
-        case ThemeKind::Light: return "Light";
-        case ThemeKind::Dark: return "Dark";
-        case ThemeKind::BlackAndGold: return "Black and Gold";
+#include "PluginDef.hpp"
 
-        default: return "[UNDEFINED THEME]";
+namespace OuroborosModules {
+    std::string getThemeLabel (ThemeKind theme) {
+        switch (theme) {
+            case ThemeKind::Unknown: return "Unknown";
+            case ThemeKind::Light: return "Light";
+            case ThemeKind::Dark: return "Dark";
+            case ThemeKind::BlackAndGold: return "Black and Gold";
+
+            default: return "[UNDEFINED THEME]";
+        }
     }
-}
 
-std::string getEmblemLabel (EmblemKind emblem) {
-    switch (emblem) {
-        case EmblemKind::Unknown: return "Unknown";
-        case EmblemKind::None: return "None";
-        case EmblemKind::Dragon: return "Dragon";
-        case EmblemKind::BleedingEye: return "Bleeding eye";
+    std::string getEmblemLabel (EmblemKind emblem) {
+        switch (emblem) {
+            case EmblemKind::Unknown: return "Unknown";
+            case EmblemKind::None: return "None";
+            case EmblemKind::Dragon: return "Dragon";
+            case EmblemKind::BleedingEye: return "Bleeding eye";
 
-        default: return "[UNDEFINED EMBLEM]";
+            default: return "[UNDEFINED EMBLEM]";
+        }
     }
 }

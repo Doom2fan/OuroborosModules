@@ -18,58 +18,62 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
-struct AudioSample {
-  public:
-    enum class LoadStatus {
-        Success,
-        FileDoesntExist,
-        InvalidFile,
-        ChannelCount,
+namespace OuroborosModules {
+namespace Audio {
+    struct AudioSample {
+      public:
+        enum class LoadStatus {
+            Success,
+            FileDoesntExist,
+            InvalidFile,
+            ChannelCount,
+        };
+
+        std::vector<float> samples [2];
+
+        bool isStereo () { return _isStereo; }
+        int getRawSampleRate () { return _rawSampleRate; }
+
+        LoadStatus load (std::string path);
+        void clear ();
+
+        void onSampleRateChange (int newSampleRate);
+
+      private:
+        int _curSampleRate;
+        int _rawSampleRate;
+        std::vector<float> _rawSamples [2];
+        bool _isStereo;
+
+        void generateSamples ();
     };
 
-    std::vector<float> samples [2];
+    struct SampleChannel {
+      private:
+        int _curSampleRate;
 
-    bool isStereo () { return _isStereo; }
-    int getRawSampleRate () { return _rawSampleRate; }
+        bool _isPlaying;
+        int _sampleTime;
 
-    LoadStatus load (std::string path);
-    void clear ();
+        std::shared_ptr<AudioSample> _sampleAudio;
 
-    void onSampleRateChange (int newSampleRate);
+      public:
+        bool process (float& audioLeft, float& audioRight);
 
-  private:
-    int _curSampleRate;
-    int _rawSampleRate;
-    std::vector<float> _rawSamples [2];
-    bool _isStereo;
+        void load (std::shared_ptr<AudioSample> sample);
 
-    void generateSamples ();
-};
+        bool isPlaying () { return _isPlaying; }
+        void play ();
+        void play (std::shared_ptr<AudioSample> sample);
+        void reset ();
 
-struct SampleChannel {
-  private:
-    int _curSampleRate;
+        void onSampleRateChange (int sampleRate);
+    };
 
-    bool _isPlaying;
-    int _sampleTime;
-
-    std::shared_ptr<AudioSample> _sampleAudio;
-
-  public:
-    bool process (float& audioLeft, float& audioRight);
-
-    void load (std::shared_ptr<AudioSample> sample);
-
-    bool isPlaying () { return _isPlaying; }
-    void play ();
-    void play (std::shared_ptr<AudioSample> sample);
-    void reset ();
-
-    void onSampleRateChange (int sampleRate);
-};
-
-std::string getErrorMessage (AudioSample::LoadStatus loadStatus, std::string path);
+    std::string getErrorMessage (AudioSample::LoadStatus loadStatus, std::string path);
+}
+}

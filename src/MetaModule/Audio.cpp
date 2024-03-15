@@ -18,32 +18,36 @@
 
 #include "MetaModule.hpp"
 
-void MetaModule::audio_Reset () {
-    for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-        plugSound_Channels [i].reset ();
+namespace OuroborosModules {
+namespace MetaModule {
+    void MetaModule::audio_Reset () {
+        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
+            plugSound_Channels [i].reset ();
+    }
+
+    void MetaModule::audio_Process (const ProcessArgs& args) {
+        // Check if anything's connected.
+        bool outputLeft = outputs [OUTPUTL_OUTPUT].isConnected ();
+        bool outputRight = outputs [OUTPUTR_OUTPUT].isConnected ();
+
+        if (!outputLeft && !outputRight) {
+            if (outputtingAudio) {
+                audio_Reset ();
+                outputtingAudio = false;
+            }
+
+            return;
+        } else
+            outputtingAudio = true;
+
+        float audioLeft = inputs [INPUTL_INPUT].isConnected () ? inputs [INPUTL_INPUT].getVoltage () : 0.f;
+        float audioRight = inputs [INPUTR_INPUT].isConnected () ? inputs [INPUTR_INPUT].getVoltage () : audioLeft;
+
+        (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
+        plugSound_ProcessAudio (args, audioLeft, audioRight);
+
+        if (outputLeft ) outputs [OUTPUTL_OUTPUT].setVoltage (audioLeft);
+        if (outputRight) outputs [OUTPUTR_OUTPUT].setVoltage (audioRight);
+    }
 }
-
-void MetaModule::audio_Process (const ProcessArgs& args) {
-    // Check if anything's connected.
-    bool outputLeft = outputs [OUTPUTL_OUTPUT].isConnected ();
-    bool outputRight = outputs [OUTPUTR_OUTPUT].isConnected ();
-
-    if (!outputLeft && !outputRight) {
-        if (outputtingAudio) {
-            audio_Reset ();
-            outputtingAudio = false;
-        }
-
-        return;
-    } else
-        outputtingAudio = true;
-
-    float audioLeft = inputs [INPUTL_INPUT].isConnected () ? inputs [INPUTL_INPUT].getVoltage () : 0.f;
-    float audioRight = inputs [INPUTR_INPUT].isConnected () ? inputs [INPUTR_INPUT].getVoltage () : audioLeft;
-
-    (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
-    plugSound_ProcessAudio (args, audioLeft, audioRight);
-
-    if (outputLeft ) outputs [OUTPUTL_OUTPUT].setVoltage (audioLeft);
-    if (outputRight) outputs [OUTPUTR_OUTPUT].setVoltage (audioRight);
 }

@@ -20,27 +20,29 @@
 
 #include <string>
 
-enum class ThemeKind {
-    INVALID = -1,
+namespace OuroborosModules {
+    enum class ThemeKind {
+        INVALID = -1,
 
-    Unknown = 0,
-    FirstTheme = 1,
-    Light = FirstTheme,
-    Dark,
-    BlackAndGold,
-    ThemeCount,
-};
+        Unknown = 0,
+        FirstTheme = 1,
+        Light = FirstTheme,
+        Dark,
+        BlackAndGold,
+        ThemeCount,
+    };
 
-enum class EmblemKind {
-    INVALID = -1,
+    enum class EmblemKind {
+        INVALID = -1,
 
-    Unknown = 0,
-    FirstEmblem = 1,
-    None = FirstEmblem,
-    Dragon,
-    BleedingEye,
-    EmblemCount,
-};
+        Unknown = 0,
+        FirstEmblem = 1,
+        None = FirstEmblem,
+        Dragon,
+        BleedingEye,
+        EmblemCount,
+    };
 
-std::string getThemeLabel (ThemeKind theme);
-std::string getEmblemLabel (EmblemKind emblem);
+    std::string getThemeLabel (ThemeKind theme);
+    std::string getEmblemLabel (EmblemKind emblem);
+}
