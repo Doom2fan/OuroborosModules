@@ -97,6 +97,10 @@ namespace MetaModule {
     void MetaModuleWidget::step () {
         _WidgetBase::step ();
 
+        // Skip if we're in the module browser.
+        if (module == nullptr)
+            return;
+
         updateCableHandler ();
 
         module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
