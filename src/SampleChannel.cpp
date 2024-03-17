@@ -44,7 +44,7 @@ namespace Audio {
 
         srcData.data_out = tmpBuffer;
         srcData.output_frames = bufferSize;
-        srcData.src_ratio = (double) _curSampleRate / getRawSampleRate ();
+        srcData.src_ratio = static_cast<double> (_curSampleRate) / getRawSampleRate ();
 
         for (int i = 0, count = isStereo () ? 2 : 1; i < count; i++) {
             if (i > 0)
@@ -124,7 +124,7 @@ namespace Audio {
         if (!_isPlaying)
             return false;
 
-        if (_sampleTime >= (int) _sampleAudio->samples [0].size ()) {
+        if (_sampleTime >= static_cast<int> (_sampleAudio->samples [0].size ())) {
             _isPlaying = false;
             return false;
         }
@@ -139,7 +139,7 @@ namespace Audio {
 
     void SampleChannel::onSampleRateChange (int sampleRate) {
         if (sampleRate != _curSampleRate) {
-            _sampleTime = std::lround (_sampleTime * ((double) sampleRate / _curSampleRate));
+            _sampleTime = std::lround (_sampleTime * (static_cast<double> (sampleRate) / _curSampleRate));
             _curSampleRate = sampleRate;
         }
 
