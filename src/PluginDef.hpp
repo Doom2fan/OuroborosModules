@@ -26,8 +26,6 @@
 using rack::app::RACK_GRID_WIDTH;
 using rack::app::RACK_GRID_HEIGHT;
 
-using OuroborosModules::pluginSettings;
-
 extern rack::plugin::Plugin* pluginInstance;
 
 // Models

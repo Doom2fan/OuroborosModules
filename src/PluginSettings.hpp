@@ -56,3 +56,5 @@ namespace OuroborosModules {
 
     extern OuroborosSettings pluginSettings;
 }
+
+using OuroborosModules::pluginSettings;
