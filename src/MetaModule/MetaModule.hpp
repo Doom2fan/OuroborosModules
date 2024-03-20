@@ -120,7 +120,7 @@ namespace MetaModule {
         void updateEmblem (ThemeKind theme, EmblemKind emblem);
         void onChangeTheme (ThemeKind kind) override;
         void onChangeEmblem (EmblemKind emblem) override;
-        void createPluginSettingsMenu (MetaModuleWidget* widget, rack::ui::Menu* menu) override;
+        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };
 }

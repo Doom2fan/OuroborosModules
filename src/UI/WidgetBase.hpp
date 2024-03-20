@@ -154,7 +154,7 @@ namespace Widgets {
             this->loadPanel (Theme::getThemedSvg (panelName, theme));
         }
 
-        virtual void createPluginSettingsMenu (TSelf* widget, rack::ui::Menu* menu) {
+        virtual void createPluginSettingsMenu (rack::ui::Menu* menu) {
             menu->addChild (rack::createSubmenuItem ("Theme settings", "", [=] (rack::ui::Menu* menu) {
                 menu->addChild (rack::createMenuLabel ("Default light theme"));
                 for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
@@ -170,15 +170,8 @@ namespace Widgets {
             }));
         }
 
-        void step () override {
-            updateTheme ();
-            updateEmblem ();
-
-            TBase::step ();
-        }
-
-        void appendContextMenu (rack::ui::Menu* menu) override {
-            using rack::Menu;
+        virtual void createLocalStyleMenu (rack::ui::Menu* menu) {
+            using rack::ui::Menu;
             using rack::createMenuLabel;
             using rack::createSubmenuItem;
             using rack::createCheckMenuItem;
@@ -190,20 +183,33 @@ namespace Widgets {
                 return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
             };
 
+            menu->addChild (createMenuLabel ("Theme"));
+            menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
+            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
+                menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
+
+            menu->addChild (createMenuLabel ("Emblem"));
+            menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
+            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
+                menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
+        }
+
+        void step () override {
+            updateTheme ();
+            updateEmblem ();
+
+            TBase::step ();
+        }
+
+        void appendContextMenu (rack::ui::Menu* menu) override {
+            using rack::ui::Menu;
+            using rack::createMenuLabel;
+            using rack::createSubmenuItem;
+            using rack::createCheckMenuItem;
+
             TBase::appendContextMenu (menu);
-            menu->addChild (createSubmenuItem ("Global settings", "", [=] (Menu* menu) { createPluginSettingsMenu (dynamic_cast<TSelf*> (this), menu); }));
-
-            menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) {
-                menu->addChild (createMenuLabel ("Theme"));
-                menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
-                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                    menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
-
-                menu->addChild (createMenuLabel ("Emblem"));
-                menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
-                for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
-                    menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
-            }));
+            menu->addChild (createSubmenuItem ("Global settings", "", [=] (Menu* menu) { createPluginSettingsMenu (menu); }));
+            menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) { createLocalStyleMenu (menu); }));
         }
     };
 

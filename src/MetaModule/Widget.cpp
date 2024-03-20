@@ -148,11 +148,11 @@ namespace MetaModule {
         menu->addChild (premuterTimeSlider);
     }
 
-    void MetaModuleWidget::createPluginSettingsMenu (MetaModuleWidget* widget, rack::ui::Menu* menu) {
+    void MetaModuleWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
         using rack::createMenuItem;
         using rack::createMenuLabel;
 
-        _WidgetBase::createPluginSettingsMenu (widget, menu);
+        _WidgetBase::createPluginSettingsMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
 
