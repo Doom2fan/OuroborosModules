@@ -155,7 +155,7 @@ namespace Widgets {
         }
 
         virtual void createPluginSettingsMenu (rack::ui::Menu* menu) {
-            menu->addChild (rack::createSubmenuItem ("Theme settings", "", [=] (rack::ui::Menu* menu) {
+            menu->addChild (rack::createSubmenuItem ("Theme settings", "", [] (rack::ui::Menu* menu) {
                 menu->addChild (rack::createMenuLabel ("Default light theme"));
                 for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                     menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
@@ -208,8 +208,8 @@ namespace Widgets {
             using rack::createCheckMenuItem;
 
             TBase::appendContextMenu (menu);
-            menu->addChild (createSubmenuItem ("Global settings", "", [=] (Menu* menu) { createPluginSettingsMenu (menu); }));
-            menu->addChild (createSubmenuItem ("Local style", "", [=] (Menu* menu) { createLocalStyleMenu (menu); }));
+            menu->addChild (createSubmenuItem ("Global settings", "", [&] (Menu* menu) { createPluginSettingsMenu (menu); }));
+            menu->addChild (createSubmenuItem ("Local style", "", [&] (Menu* menu) { createLocalStyleMenu (menu); }));
         }
     };
 

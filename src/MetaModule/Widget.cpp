@@ -73,11 +73,11 @@ namespace MetaModule {
 
         addChild (emblemWidget);
 
-        forEachMatched ("input_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
+        forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
             addInput (createInputCentered<CableJackWidget> (pos, module, MetaModule::INPUTL_INPUT + i));
         });
-        forEachMatched ("output_(\\d+)", [&](std::vector<std::string> captures, Vec pos) {
+        forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
             addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
         });
@@ -103,8 +103,10 @@ namespace MetaModule {
 
         updateCableHandler ();
 
-        module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
-        module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
+        if (cables_Handler != nullptr) {
+            module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
+            module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
+        }
     }
 
     void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
@@ -163,10 +165,8 @@ namespace MetaModule {
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (createMenuLabel ("Plug sound settings"));
         menu->addChild (rack::createBoolMenuItem ("Enabled", "",
-            [=] () { return pluginSettings.plugSound_Enable; },
-            [=] (bool enable) {
-                pluginSettings.plugSound_Enable = enable;
-            }
+            [] () { return pluginSettings.plugSound_Enable; },
+            [] (bool enable) { pluginSettings.plugSound_Enable = enable; }
         ));
 
         auto plugVolumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
@@ -179,7 +179,7 @@ namespace MetaModule {
         plugVolumeSlider->box.size.x = 200.f;
         menu->addChild (plugVolumeSlider);
 
-        menu->addChild (createMenuItem ("Load connect sound", "", [=] () {
+        menu->addChild (createMenuItem ("Load connect sound", "", [&] () {
             auto path = selectSoundFile ();
             if (path == nullptr)
                 return;
@@ -187,12 +187,12 @@ namespace MetaModule {
             pluginSettings.plugSound_ConnectSound = path;
             module->plugSound_RequestLoad = MetaModule::PLUGSOUND_CONNECT;
         }));
-        menu->addChild (createMenuItem ("Restore default connect sound", "", [=] () {
+        menu->addChild (createMenuItem ("Restore default connect sound", "", [&] () {
             pluginSettings.plugSound_ConnectSound = "<Default>";
             module->plugSound_RequestLoad = MetaModule::PLUGSOUND_CONNECT;
         }));
 
-        menu->addChild (createMenuItem ("Load disconnect sound", "", [=] () {
+        menu->addChild (createMenuItem ("Load disconnect sound", "", [&] () {
             auto path = selectSoundFile ();
             if (path == nullptr)
                 return;
@@ -200,7 +200,7 @@ namespace MetaModule {
             pluginSettings.plugSound_DisconnectSound = path;
             module->plugSound_RequestLoad = MetaModule::PLUGSOUND_DISCONNECT;
         }));
-        menu->addChild (createMenuItem ("Restore default disconnect sound", "", [=] () {
+        menu->addChild (createMenuItem ("Restore default disconnect sound", "", [&] () {
             pluginSettings.plugSound_DisconnectSound = "<Default>";
             module->plugSound_RequestLoad = MetaModule::PLUGSOUND_DISCONNECT;
         }));
