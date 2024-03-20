@@ -91,8 +91,9 @@ namespace MetaModule {
             mixAudioRight += chanAudioRight;
         }
 
-        audioLeft += mixAudioLeft * 5.f * pluginSettings.plugSound_Volume;
-        audioRight += mixAudioRight * 5.f * pluginSettings.plugSound_Volume;
+        auto gain = 5.f * std::pow (pluginSettings.plugSound_Volume, 2.f);
+        audioLeft += mixAudioLeft * gain;
+        audioRight += mixAudioRight * gain;
     }
 }
 }
