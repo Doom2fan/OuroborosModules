@@ -121,7 +121,7 @@ namespace Audio {
 
 
     bool SampleChannel::process (float& audioLeft, float& audioRight) {
-        if (!_isPlaying)
+        if (_sampleAudio == nullptr || !_isPlaying)
             return false;
 
         if (_sampleTime >= static_cast<int> (_sampleAudio->samples [0].size ())) {
@@ -143,14 +143,11 @@ namespace Audio {
             _curSampleRate = sampleRate;
         }
 
-        _sampleAudio->onSampleRateChange (sampleRate);
+        if (_sampleAudio != nullptr)
+            _sampleAudio->onSampleRateChange (sampleRate);
     }
 
     void SampleChannel::load (std::shared_ptr<AudioSample> sample) {
-        assert (sample);
-        if (sample == nullptr)
-            return;
-
         _curSampleRate = APP->engine->getSampleRate ();
 
         _sampleAudio = sample;
@@ -166,7 +163,6 @@ namespace Audio {
     }
 
     void SampleChannel::play (std::shared_ptr<AudioSample> sample) {
-        assert (sample);
         if (sample == nullptr)
             return;
 

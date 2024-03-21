@@ -18,6 +18,8 @@
 
 #include "MetaModule.hpp"
 
+#include <osdialog.h>
+
 namespace OuroborosModules {
 namespace MetaModule {
     const std::string DefaultPlugSounds [] = {
@@ -25,7 +27,7 @@ namespace MetaModule {
         "res/sounds/Jack_Disconnect.wav",
     };
 
-    std::string plugSound_GetConfigPath (MetaModule::PlugSound_Buffers buffer) {
+    std::string plugSound_GetConfigPath (MetaModule::PlugSound_Channels buffer) {
         std::string retPath;
         switch (buffer) {
             case MetaModule::PLUGSOUND_CONNECT: retPath = pluginSettings.plugSound_ConnectSound; break;
@@ -40,44 +42,80 @@ namespace MetaModule {
         return retPath;
     }
 
-    void MetaModule::plugSound_SetSound (MetaModule::PlugSound_Buffers bufferIdx, std::string path, bool forceReload) {
-        if (!forceReload && plugSound_Paths [bufferIdx] == path)
+    void SampleSlot::checkLoad () {
+        if (!loadRequested)
             return;
 
-        plugSound_Paths [bufferIdx] = path;
-        plugSound_LoadStatus [bufferIdx] = plugSound_Buffers [bufferIdx]->load (path);
+        sample = sampleLoad;
+        samplePath = sampleLoadPath;
 
-        // TODO: Report sample loading errors.
-        if (plugSound_LoadStatus [bufferIdx] != Audio::AudioSample::LoadStatus::Success)
-            plugSound_Buffers [bufferIdx]->clear ();
+        sampleLoad = nullptr;
+        sampleLoadPath = "";
+
+        sampleChannel.load (sample);
+
+        loadRequested = false;
     }
 
-    void MetaModule::plugSound_Process (const ProcessArgs& args) {
+    bool SampleSlot::load (std::string newSamplePath, bool forceReload, bool reportErrors) {
+        // Spin-wait if a load was already requested.
+        if (loadRequested)
+            return false;
+
+        if (!forceReload && samplePath == newSamplePath)
+            return true;
+
+        if (newSamplePath.empty ()) {
+            sampleLoadPath = newSamplePath;
+            sampleLoad = nullptr;
+
+            loadRequested = true;
+            return true;
+        }
+
+        auto newSample = std::make_shared<Audio::AudioSample> ();
+        auto loadResult = newSample->load (newSamplePath);
+
+        if (loadResult != Audio::AudioSample::LoadStatus::Success) {
+            if (reportErrors) {
+                auto errorMessage = getErrorMessage (loadResult, newSamplePath);
+                osdialog_message (OSDIALOG_WARNING, OSDIALOG_OK, errorMessage.c_str ());
+            }
+            return false;
+        }
+
+        sampleLoadPath = newSamplePath;
+        sampleLoad = newSample;
+
+        loadRequested = true;
+        return true;
+    }
+
+    bool SampleSlot::process (float& audioLeft, float& audioRight) {
+        auto ret = sampleChannel.process (audioLeft, audioRight);
+        if (!ret)
+            checkLoad ();
+
+        return ret;
+    }
+
+    void MetaModuleWidget::plugSound_CheckChannels () {
         auto enabled = pluginSettings.plugSound_Enable;
-        auto prevEnabled = plugSound_PrevEnabled;
-        plugSound_PrevEnabled = enabled;
+        auto prevEnabled = module->plugSound_PrevEnabled.exchange (enabled);
 
         auto requestGlobalLoad = enabled && !prevEnabled;
         if (!enabled && prevEnabled) {
-            for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-                plugSound_Buffers [i]->clear ();
+            for (int i = 0; i < MetaModule::PLUGSOUND_LENGTH; i++)
+                module->plugSound_Channels [i].load ("", true, false);
         }
 
         if (!enabled)
             return;
 
-        if (args.frame % plugSound_SampleCheckInterval != 0 &&
-            plugSound_RequestLoad == PLUGSOUND_LENGTH &&
-            !requestGlobalLoad)
-            return;
-
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
-            auto bufferIdx = (PlugSound_Buffers) i;
-            auto requestLoad = requestGlobalLoad || bufferIdx == plugSound_RequestLoad;
-            plugSound_SetSound (bufferIdx, plugSound_GetConfigPath (bufferIdx), requestLoad);
+        for (int i = 0; i < MetaModule::PLUGSOUND_LENGTH; i++) {
+            auto bufferIdx = (MetaModule::PlugSound_Channels) i;
+            module->plugSound_Channels [i].load (plugSound_GetConfigPath (bufferIdx), requestGlobalLoad, false);
         }
-
-        plugSound_RequestLoad = PLUGSOUND_LENGTH;
     }
 
     void MetaModule::plugSound_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight) {

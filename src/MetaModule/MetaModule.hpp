@@ -28,6 +28,29 @@
 
 namespace OuroborosModules {
 namespace MetaModule {
+    struct SampleSlot {
+      private:
+        std::string samplePath = "";
+        std::string sampleLoadPath = "";
+        std::shared_ptr<Audio::AudioSample> sample = nullptr;
+        std::shared_ptr<Audio::AudioSample> sampleLoad = nullptr;
+
+        Audio::SampleChannel sampleChannel = Audio::SampleChannel ();
+
+        std::atomic<bool> loadRequested = false;
+
+        void checkLoad ();
+
+      public:
+        bool load (std::string newSamplePath, bool forceReload, bool reportErrors);
+
+        void reset () { checkLoad (); sampleChannel.reset (); }
+        void play () { checkLoad (); sampleChannel.play (); }
+        bool process (float& audioLeft, float& audioRight);
+
+        void onSampleRateChange (int sampleRate) { sampleChannel.onSampleRateChange (sampleRate); }
+    };
+
     struct MetaModule : ModuleBase {
         enum ParamId {
             PARAMS_LEN
@@ -46,7 +69,7 @@ namespace MetaModule {
             LIGHTS_LEN
         };
 
-        enum PlugSound_Buffers {
+        enum PlugSound_Channels {
             PLUGSOUND_CONNECT,
             PLUGSOUND_DISCONNECT,
             PLUGSOUND_LENGTH,
@@ -60,13 +83,8 @@ namespace MetaModule {
         std::atomic<bool> cables_NewDisconnected = false;
 
         // Plug sound data
-        bool plugSound_PrevEnabled = false;
-        int plugSound_SampleCheckInterval = 0;
-        int plugSound_RequestLoad = -1;
-        Audio::AudioSample::LoadStatus plugSound_LoadStatus [PLUGSOUND_LENGTH];
-        std::string plugSound_Paths [PLUGSOUND_LENGTH];
-        std::shared_ptr<Audio::AudioSample> plugSound_Buffers [PLUGSOUND_LENGTH];
-        Audio::SampleChannel plugSound_Channels [PLUGSOUND_LENGTH];
+        std::atomic<bool> plugSound_PrevEnabled = false;
+        SampleSlot plugSound_Channels [PLUGSOUND_LENGTH];
 
         // Premuter data
         float premuter_SampleTime = 0.f;
@@ -74,12 +92,9 @@ namespace MetaModule {
         void (MetaModule::*premuter_Func) (float sampleTime, float& audioLeft, float& audioRight);
 
         MetaModule ();
-        ~MetaModule ();
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
-
-        void CalcIntervals ();
 
         void cables_UpdateSettings ();
         void cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected);
@@ -87,9 +102,6 @@ namespace MetaModule {
         void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
         void premuter_Passthrough (float sampleTime, float& audioLeft, float& audioRight) { }
 
-        void plugSound_Enable (bool enable);
-        void plugSound_SetSound (PlugSound_Buffers bufferIdx, std::string path, bool forceReload);
-        void plugSound_Process (const ProcessArgs& args);
         void plugSound_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight);
 
         void audio_Reset ();
@@ -115,6 +127,7 @@ namespace MetaModule {
         void initializeWidget () override;
 
         void step () override;
+        void plugSound_CheckChannels ();
 
         void updateCableHandler ();
         void updateEmblem (ThemeKind theme, EmblemKind emblem);

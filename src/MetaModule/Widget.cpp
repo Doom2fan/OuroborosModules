@@ -81,6 +81,9 @@ namespace MetaModule {
             int i = stoi (captures [0]) - 1;
             addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
         });
+
+        if (module != nullptr)
+            plugSound_CheckChannels ();
     }
 
     void MetaModuleWidget::updateCableHandler () {
@@ -92,6 +95,11 @@ namespace MetaModule {
             cables_Handler = CableHandler::getHandler ();
         else if (!isEnabled && cables_Handler != nullptr)
             cables_Handler = nullptr;
+
+        if (cables_Handler != nullptr) {
+            module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
+            module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
+        }
     }
 
     void MetaModuleWidget::step () {
@@ -102,11 +110,7 @@ namespace MetaModule {
             return;
 
         updateCableHandler ();
-
-        if (cables_Handler != nullptr) {
-            module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
-            module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
-        }
+        plugSound_CheckChannels ();
     }
 
     void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
@@ -184,12 +188,11 @@ namespace MetaModule {
             if (path == nullptr)
                 return;
 
-            pluginSettings.plugSound_ConnectSound = path;
-            module->plugSound_RequestLoad = MetaModule::PLUGSOUND_CONNECT;
+            if (module->plugSound_Channels [MetaModule::PLUGSOUND_CONNECT].load (path, true, true))
+                pluginSettings.plugSound_ConnectSound = path;
         }));
         menu->addChild (createMenuItem ("Restore default connect sound", "", [&] () {
             pluginSettings.plugSound_ConnectSound = "<Default>";
-            module->plugSound_RequestLoad = MetaModule::PLUGSOUND_CONNECT;
         }));
 
         menu->addChild (createMenuItem ("Load disconnect sound", "", [&] () {
@@ -197,12 +200,11 @@ namespace MetaModule {
             if (path == nullptr)
                 return;
 
-            pluginSettings.plugSound_DisconnectSound = path;
-            module->plugSound_RequestLoad = MetaModule::PLUGSOUND_DISCONNECT;
+            if (module->plugSound_Channels [MetaModule::PLUGSOUND_DISCONNECT].load (path, true, true))
+                pluginSettings.plugSound_DisconnectSound = path;
         }));
         menu->addChild (createMenuItem ("Restore default disconnect sound", "", [&] () {
             pluginSettings.plugSound_DisconnectSound = "<Default>";
-            module->plugSound_RequestLoad = MetaModule::PLUGSOUND_DISCONNECT;
         }));
     }
 }

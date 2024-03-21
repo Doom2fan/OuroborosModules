@@ -40,17 +40,6 @@ namespace MetaModule {
         configBypass (INPUTR_INPUT, OUTPUTR_OUTPUT);
 
         premuter_Func = &MetaModule::premuter_Process;
-
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Buffers [i] = std::make_shared<Audio::AudioSample> ();
-
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Channels [i].load (plugSound_Buffers [i]);
-
-        CalcIntervals ();
-    }
-
-    MetaModule::~MetaModule () {
     }
 
     json_t* MetaModule::dataToJson () {
@@ -92,8 +81,6 @@ namespace MetaModule {
         bool cableConnected, cableDisconnected;
         cables_Process (args, cableConnected, cableDisconnected);
 
-        plugSound_Process (args);
-
         if (cableConnected)
             plugSound_Channels [PLUGSOUND_CONNECT].play ();
         if (cableDisconnected)
@@ -102,20 +89,11 @@ namespace MetaModule {
         audio_Process (args);
     }
 
-    void MetaModule::CalcIntervals () {
-        auto engineSampleRate = APP->engine->getSampleRate ();
-        plugSound_SampleCheckInterval = engineSampleRate / plugSound_SampleCheckRate;
-    }
-
     void MetaModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         Module::onSampleRateChange (e);
 
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++) {
-            plugSound_Buffers [i]->onSampleRateChange (e.sampleRate);
+        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
             plugSound_Channels [i].onSampleRateChange (e.sampleRate);
-        }
-
-        CalcIntervals ();
     }
 
     void MetaModule::onUnBypass (const UnBypassEvent& e) {
