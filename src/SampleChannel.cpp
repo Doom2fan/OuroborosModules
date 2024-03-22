@@ -131,8 +131,8 @@ namespace Audio {
 
         int sampleIdx = _sampleTime++;
 
-        audioLeft = _sampleAudio->samples [0][sampleIdx];
-        audioRight = _sampleAudio->isStereo () ? _sampleAudio->samples [1][sampleIdx] : audioLeft;
+        audioLeft = _sampleAudio->samples [0] [sampleIdx];
+        audioRight = _sampleAudio->isStereo () ? _sampleAudio->samples [1] [sampleIdx] : audioLeft;
 
         return true;
     }
