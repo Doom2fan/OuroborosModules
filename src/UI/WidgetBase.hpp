@@ -208,6 +208,7 @@ namespace Widgets {
             using rack::createCheckMenuItem;
 
             TBase::appendContextMenu (menu);
+            menu->addChild (new rack::ui::MenuSeparator);
             menu->addChild (createSubmenuItem ("Global settings", "", [&] (Menu* menu) { createPluginSettingsMenu (menu); }));
             menu->addChild (createSubmenuItem ("Local style", "", [&] (Menu* menu) { createLocalStyleMenu (menu); }));
         }
