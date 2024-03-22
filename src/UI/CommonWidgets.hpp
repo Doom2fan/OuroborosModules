@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../PluginDef.hpp"
+#include "ThemeUtils.hpp"
 
 #include <rack_themer.hpp>
 
