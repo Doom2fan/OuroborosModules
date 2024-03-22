@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "Constants.hpp"
+#include "Settings_Def_Stubs.hpp"
+
+#include <jansson.h>
 
 #include <string>
-
-struct json_t;
 
 namespace OuroborosModules {
     struct OuroborosSettings {
@@ -35,13 +35,14 @@ namespace OuroborosModules {
         void readInternal (json_t* rootJ);
 
       public:
-#define DEFINE_NONSETTING(varType, varName, defaultValue)      varType     varName = defaultValue;
-#define DEFINE_BOOL(varName, jsonName, defaultValue)           bool        varName = defaultValue;
-#define DEFINE_INT(varType, varName, jsonName, defaultValue)   varType     varName = defaultValue;
-#define DEFINE_ENUM(varType, varName, jsonName, defaultValue)  varType     varName = defaultValue;
-#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) varType     varName = defaultValue;
-#define DEFINE_STD_STRING(varName, jsonName, defaultValue)     std::string varName = defaultValue;
-#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue)    char*       varName = defaultValue;
+#define DEFINE_NONSETTING(varType, varName, defaultValue)       varType     varName = defaultValue;
+#define DEFINE_BOOL(varName, jsonName, defaultValue)            bool        varName = defaultValue;
+#define DEFINE_INT(varType, varName, jsonName, defaultValue)    varType     varName = defaultValue;
+#define DEFINE_ENUM(varType, varName, jsonName, defaultValue)   varType     varName = defaultValue;
+#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue)  varType     varName = defaultValue;
+#define DEFINE_STD_STRING(varName, jsonName, defaultValue)      std::string varName = defaultValue;
+#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue)     char*       varName = defaultValue;
+#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) varType     varName = defaultValue;
 
 #include "Settings_Def.x"
 
@@ -52,6 +53,7 @@ namespace OuroborosModules {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
+#undef DEFINE_STRUCT
     };
 
     extern OuroborosSettings pluginSettings;

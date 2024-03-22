@@ -49,6 +49,7 @@ namespace OuroborosModules {
 #define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_set_new_float<varType> (rootJ, jsonName, varName);
 #define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_set_new_string (rootJ, jsonName, varName);
 #define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_set_new_string (rootJ, jsonName, varName);
+#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) json_object_set_new (rootJ, jsonName, varName.dataToJson ());
 
 #include "Settings_Def.x"
 
@@ -59,6 +60,7 @@ namespace OuroborosModules {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
+#undef DEFINE_STRUCT
     }
 
     void OuroborosSettings::readInternal (json_t* rootJ) {
@@ -69,6 +71,7 @@ namespace OuroborosModules {
 #define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_try_get_float<varType> (rootJ, jsonName, varName);
 #define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_try_get_string (rootJ, jsonName, varName);
 #define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_try_get_string (rootJ, jsonName, varName);
+#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) varName.dataFromJson (json_object_get (rootJ, jsonName));
 
 #include "Settings_Def.x"
 
@@ -79,5 +82,6 @@ namespace OuroborosModules {
 #undef DEFINE_FLOAT
 #undef DEFINE_STD_STRING
 #undef DEFINE_CHAR_STRING
+#undef DEFINE_STRUCT
     }
 }
