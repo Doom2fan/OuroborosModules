@@ -183,6 +183,7 @@ namespace MetaModule {
         plugVolumeSlider->box.size.x = 200.f;
         menu->addChild (plugVolumeSlider);
 
+        menu->addChild (new rack::ui::MenuEntry);
         menu->addChild (createMenuItem ("Load connect sound", "", [&] () {
             auto path = selectSoundFile ();
             if (path == nullptr)
@@ -195,6 +196,7 @@ namespace MetaModule {
             pluginSettings.plugSound_ConnectSound = "<Default>";
         }));
 
+        menu->addChild (new rack::ui::MenuEntry);
         menu->addChild (createMenuItem ("Load disconnect sound", "", [&] () {
             auto path = selectSoundFile ();
             if (path == nullptr)

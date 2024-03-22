@@ -160,10 +160,12 @@ namespace Widgets {
                 for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                     menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
 
+                menu->addChild (new rack::ui::MenuSeparator);
                 menu->addChild (rack::createMenuLabel ("Default dark theme"));
                 for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                     menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
 
+                menu->addChild (new rack::ui::MenuSeparator);
                 menu->addChild (rack::createMenuLabel ("Default emblem"));
                 for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
                     menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
@@ -188,6 +190,7 @@ namespace Widgets {
             for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
                 menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
 
+            menu->addChild (new rack::ui::MenuSeparator);
             menu->addChild (createMenuLabel ("Emblem"));
             menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
             for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
