@@ -96,7 +96,6 @@ namespace MetaModule {
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
 
-        void cables_UpdateSettings ();
         void cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected);
 
         void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
@@ -119,9 +118,6 @@ namespace MetaModule {
 
       public:
         MetaModuleWidget (MetaModule* module);
-
-        void setEmblem (EmblemKind emblem);
-        void setEmblem ();
 
       protected:
         void initializeWidget () override;
