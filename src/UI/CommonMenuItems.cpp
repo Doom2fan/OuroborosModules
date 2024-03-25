@@ -20,6 +20,20 @@
 
 namespace OuroborosModules {
 namespace UI {
+    void ColorMenuItem::draw (const DrawArgs& args) {
+        MenuItem::draw (args);
+
+        // Color circle
+        nvgBeginPath (args.vg);
+        auto circleRadius = 6.f;
+        nvgCircle (args.vg, 8. + circleRadius, box.size.y / 2, circleRadius);
+        nvgFillColor (args.vg, color);
+        nvgFill (args.vg);
+        nvgStrokeWidth (args.vg, 1.);
+        nvgStrokeColor (args.vg, rack::color::mult (color, .5));
+        nvgStroke (args.vg);
+    }
+
     void SafeMenuItem::onAction (const rack::event::Action& e) {
         auto menu = rack::createMenu ();
         menu->addChild (rack::createMenuLabel (confirmText));

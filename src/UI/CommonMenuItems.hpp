@@ -22,6 +22,12 @@
 
 namespace OuroborosModules {
 namespace UI {
+    struct ColorMenuItem : rack::ui::MenuItem {
+        NVGcolor color;
+
+        void draw (const DrawArgs& args) override;
+    };
+
     struct SafeMenuItem : rack::ui::MenuItem {
       private:
         static constexpr const char* defaultConfirmText = "Are you sure?";
