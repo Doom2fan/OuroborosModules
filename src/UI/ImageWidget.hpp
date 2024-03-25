@@ -24,7 +24,7 @@
 
 namespace OuroborosModules {
 namespace Widgets {
-    struct ImageWidget : rack::widget::TransparentWidget, rack_themer::IThemedWidget {
+    struct ImageWidget : rack_themer::ThemedWidgetBase<rack::widget::TransparentWidget> {
       private:
         float zoom = 1.f;
 

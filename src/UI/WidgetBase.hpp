@@ -55,7 +55,7 @@ namespace Widgets {
     };
 
     template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
-    struct ModuleWidgetBase : TBase, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
+    struct ModuleWidgetBase : rack_themer::ThemeHolderWidgetBase<TBase>, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
       public:
         typedef ModuleWidgetBase<TSelf, TModule, TBase> _WidgetBase;
         typedef TModule _ModuleType;
@@ -78,6 +78,8 @@ namespace Widgets {
                 return module->theme_Emblem;
             return pluginSettings.global_DefaultEmblem;
         }
+
+        std::shared_ptr<rack_themer::RackTheme> getTheme () override { return Theme::getTheme (getLocalTheme ()); }
 
       protected:
         void constructor (TModule* module, std::string panelName) {
@@ -201,7 +203,7 @@ namespace Widgets {
             updateTheme ();
             updateEmblem ();
 
-            TBase::step ();
+            this->_ThemeHolderWidgetBase::step ();
         }
 
         void appendContextMenu (rack::ui::Menu* menu) override {
@@ -216,17 +218,5 @@ namespace Widgets {
             menu->addChild (createSubmenuItem ("Local style", "", [&] (Menu* menu) { createLocalStyleMenu (menu); }));
         }
     };
-
-#if false
-    template<typename TModule, typename TBase>
-    struct ChildWidgetBase : TBase {
-      protected:
-        TModule* module;
-        ThemeKind curTheme = ThemeKind::Unknown;
-
-      public:
-        virtual void onChangeTheme (ThemeKind newTheme) { }
-    };
-#endif
 }
 }
