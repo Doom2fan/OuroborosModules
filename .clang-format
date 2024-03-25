@@ -102,7 +102,7 @@ RequiresClausePosition: WithPreceding
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Leave
 SortIncludes: CaseInsensitive
-SortUsingDeclarations: Lexicographic
+SortUsingDeclarations: LexicographicNumeric
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: false
