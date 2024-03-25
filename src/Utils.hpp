@@ -127,9 +127,3 @@ namespace OuroborosModules {
         return rack::createModel<typename TModuleWidget::_ModuleType, TModuleWidget> (slug);
     }
 }
-
-namespace OuroborosModules {
-namespace Theme {
-    ThemeKind getCurrentTheme ();
-}
-}

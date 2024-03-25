@@ -28,12 +28,4 @@ namespace OuroborosModules {
 
         return osdialog_file (OSDIALOG_OPEN, nullptr, nullptr, filters);
     }
-
-    namespace Theme {
-        ThemeKind getCurrentTheme () {
-            return !rack::settings::preferDarkPanels
-                ? pluginSettings.global_ThemeLight
-                : pluginSettings.global_ThemeDark;
-        }
-    }
 }

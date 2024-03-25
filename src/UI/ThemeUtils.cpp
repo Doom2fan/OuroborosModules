@@ -22,6 +22,12 @@
 
 namespace OuroborosModules {
 namespace Theme {
+    ThemeKind getCurrentTheme () {
+        return !rack::settings::preferDarkPanels
+            ? pluginSettings.global_ThemeLight
+            : pluginSettings.global_ThemeDark;
+    }
+
     std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme) {
         std::string themeName;
         switch (theme) {
