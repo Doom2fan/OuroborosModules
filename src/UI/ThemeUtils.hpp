@@ -34,5 +34,34 @@ namespace Theme {
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeKind theme);
     rack_themer::ThemedSvg getEmblem (EmblemKind emblem, ThemeKind theme);
+
+    template<const char* T>
+    NVGpaint getTextPaint (std::shared_ptr<rack_themer::RackTheme> theme) {
+        static rack_themer::KeyedString textStyleName = rack_themer::KeyedString ();
+
+        if (theme == nullptr)
+            return NVGpaint ();
+
+        if (!textStyleName.isValid ())
+            textStyleName = rack_themer::getKeyedString (T);
+
+        auto textStyle = theme->getClassStyle (textStyleName);
+        if (textStyle == nullptr) {
+            if (pluginSettings.debug_Logging)
+                WARN (fmt::format (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T).c_str ());
+
+            return NVGpaint ();
+        }
+        auto textFill = textStyle->getFill ();
+        if (!textFill.isColor ()) {
+            if (pluginSettings.debug_Logging)
+                WARN (fmt::format (FMT_STRING ("Text style \"{}\" is not a plain color fill."), T).c_str ());
+            return NVGpaint ();
+        }
+
+        auto basePaint = NVGpaint ();
+        nvgTransformIdentity (basePaint.xform);
+        return textFill.getNVGPaint (basePaint);
+    }
 }
 }
