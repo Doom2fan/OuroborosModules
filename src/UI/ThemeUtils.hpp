@@ -20,6 +20,7 @@
 
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
+#include "ThemeStyles.hpp"
 
 #include <rack_themer.hpp>
 
