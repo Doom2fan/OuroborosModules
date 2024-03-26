@@ -55,6 +55,13 @@ namespace Theme {
 
             return NVGpaint ();
         }
+        if (!textStyle->hasFill ()) {
+            if (pluginSettings.debug_Logging)
+                WARN (fmt::format (FMT_STRING ("Text style \"{}\" has no fill."), T).c_str ());
+
+            return NVGpaint ();
+        }
+
         auto textFill = textStyle->getFill ();
         if (!textFill.isColor ()) {
             if (pluginSettings.debug_Logging)
