@@ -73,5 +73,26 @@ namespace Theme {
         nvgTransformIdentity (basePaint.xform);
         return textFill.getNVGPaint (basePaint);
     }
+
+    template<const char* T>
+    std::shared_ptr<rack_themer::Style> getStyle (std::shared_ptr<rack_themer::RackTheme> theme) {
+        static rack_themer::KeyedString styleName = rack_themer::KeyedString ();
+
+        if (theme == nullptr)
+            return nullptr;
+
+        if (!styleName.isValid ())
+            styleName = rack_themer::getKeyedString (T);
+
+        auto style = theme->getClassStyle (styleName);
+        if (style == nullptr) {
+            if (pluginSettings.debug_Logging)
+                WARN (fmt::format (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T).c_str ());
+
+            return nullptr;
+        }
+
+        return style;
+    }
 }
 }
