@@ -21,6 +21,15 @@
 #include <fmt/format.h>
 
 namespace OuroborosModules {
+    NVGpaint getColorPaint (NVGcolor color) {
+        auto paint = NVGpaint ();
+
+        nvgTransformIdentity (paint.xform);
+        paint.innerColor = paint.outerColor = color;
+
+        return paint;
+    }
+
 namespace Theme {
     ThemeKind getCurrentTheme () {
         return !rack::settings::preferDarkPanels

@@ -28,6 +28,8 @@
 #include <string>
 
 namespace OuroborosModules {
+    NVGpaint getColorPaint (NVGcolor color);
+
 namespace Theme {
     ThemeKind getCurrentTheme ();
     std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme);
