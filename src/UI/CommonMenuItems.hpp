@@ -58,5 +58,45 @@ namespace UI {
 
         void onAction (const rack::event::Action& e) override;
     };
+
+    template<typename TTextField = rack::ui::TextField>
+    TTextField* createEventTextField (std::string text, std::string placeholder, std::function<bool(std::string)> action, bool alwaysConsume = false) {
+        struct EventTextField : TTextField {
+            std::function<bool(std::string)> eventAction = nullptr;
+            bool alwaysConsume;
+
+            void step () override {
+                // Keep selected.
+                APP->event->setSelectedWidget (this);
+                TTextField::step ();
+            }
+
+            void onSelectKey (const rack::event::SelectKey &e) override {
+                if (e.action == GLFW_PRESS && (e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER)) {
+                    auto consumed = false;
+                    if (eventAction) {
+                        if (eventAction (this->text)) {
+                            e.consume (this);
+                            consumed = true;
+                        }
+                    }
+
+                    if (alwaysConsume && !consumed)
+                        e.consume (this);
+                }
+
+                if (!e.getTarget ())
+                    TTextField::onSelectKey (e);
+            }
+        };
+
+        auto textField = new EventTextField;
+        textField->setText (text);
+        textField->placeholder = placeholder;
+        textField->eventAction = action;
+        textField->alwaysConsume = alwaysConsume;
+
+        return textField;
+    }
 }
 }
