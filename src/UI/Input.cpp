@@ -25,6 +25,8 @@ namespace Input {
     std::string keyName (int key) {
         if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F25)
             return fmt::format (FMT_STRING ("F{}"), key - GLFW_KEY_F1);
+        if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_9)
+            return fmt::format (FMT_STRING ("Keypad {}"), key - GLFW_KEY_KP_0);
 
         switch (key) {
             case GLFW_KEY_UNKNOWN: return "";
