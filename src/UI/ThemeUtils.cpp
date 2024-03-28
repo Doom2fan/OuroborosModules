@@ -26,6 +26,8 @@ namespace OuroborosModules {
 
         nvgTransformIdentity (paint.xform);
         paint.innerColor = paint.outerColor = color;
+        paint.radius = 0;
+        paint.feather = 1;
 
         return paint;
     }
