@@ -31,7 +31,7 @@ namespace OuroborosModules {
         APP->scene->rack->addChild (widget);
     }
 
-    void UISystemUpdater::addUpdateFunction (std::function<void()> func) {
+    void UISystemUpdater::addUpdateFunction (std::function<void ()> func) {
         updateFunctions.push_back (func);
     }
 
