@@ -60,7 +60,7 @@ namespace UI {
     };
 
     template<typename TTextField = rack::ui::TextField>
-    TTextField* createEventTextField (std::string text, std::string placeholder, std::function<bool(std::string)> action, bool alwaysConsume = false) {
+    TTextField* createEventTextField (std::string text, std::string placeholder, std::function<bool(std::string)> action, bool alwaysConsume = false, bool closeOnConsume = true) {
         struct EventTextField : TTextField {
             std::function<bool(std::string)> eventAction = nullptr;
             bool alwaysConsume;
@@ -73,16 +73,18 @@ namespace UI {
 
             void onSelectKey (const rack::event::SelectKey &e) override {
                 if (e.action == GLFW_PRESS && (e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER)) {
-                    auto consumed = false;
-                    if (eventAction) {
-                        if (eventAction (this->text)) {
-                            e.consume (this);
-                            consumed = true;
-                        }
-                    }
+                    auto consume = alwaysConsume;
+                    if (eventAction)
+                        consume |= eventAction (this->text);
 
-                    if (alwaysConsume && !consumed)
+                    if (consume) {
+                        if (closeOnConsume) {
+                            if (auto overlay = this->template getAncestorOfType<rack::ui::MenuOverlay> ())
+                                overlay->requestDelete ();
+                        }
+
                         e.consume (this);
+                    }
                 }
 
                 if (!e.getTarget ())
@@ -95,6 +97,7 @@ namespace UI {
         textField->placeholder = placeholder;
         textField->eventAction = action;
         textField->alwaysConsume = alwaysConsume;
+        textField->closeOnConsume = closeOnConsume;
 
         return textField;
     }
