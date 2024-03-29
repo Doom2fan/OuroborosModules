@@ -64,12 +64,7 @@ namespace UI {
         struct EventTextField : TTextField {
             std::function<bool(std::string)> eventAction = nullptr;
             bool alwaysConsume;
-
-            void step () override {
-                // Keep selected.
-                APP->event->setSelectedWidget (this);
-                TTextField::step ();
-            }
+            bool closeOnConsume;
 
             void onSelectKey (const rack::event::SelectKey &e) override {
                 if (e.action == GLFW_PRESS && (e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER)) {
