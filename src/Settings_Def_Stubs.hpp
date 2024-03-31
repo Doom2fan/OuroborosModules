@@ -17,3 +17,4 @@
  */
 
 #include "Constants.hpp"
+#include "CableColorModule/CableColorManager.hpp"

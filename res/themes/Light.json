@@ -24,6 +24,14 @@
             "fill": "#f0f0f0"
         },
 
+        "cable-color-display-background": {
+            "fill": "#171717"
+        },
+
+        "cable-color-display-text": {
+            "fill": "#ebebeb"
+        },
+
         ".emblem-image": {
             "fill": "#1f1f1f"
         },

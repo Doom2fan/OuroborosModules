@@ -16,16 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "CCM_Common.hpp"
 
 namespace OuroborosModules {
-namespace Theme {
-namespace Styles {
-    static constexpr const char text [] = "text";
-    static constexpr const char text_output [] = "text-output";
-
-    static constexpr const char cable_color_display_BG [] = "cable-color-display-background";
-    static constexpr const char cable_color_display_text [] = "cable-color-display-text";
-}
+namespace CableColorModule {
+    CableColorModule* masterModule = nullptr;
+    KeyContainer* masterKeyContainer = nullptr;
 }
 }

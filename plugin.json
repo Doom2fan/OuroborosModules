@@ -18,6 +18,12 @@
             "name": "Meta Module",
             "description": "",
             "tags": [ "Utility" ]
+        },
+        {
+            "slug": "CableColorModule",
+            "name": "Cable Color Manager",
+            "description": "",
+            "tags": [ "Utility" ]
         }
     ]
 }
