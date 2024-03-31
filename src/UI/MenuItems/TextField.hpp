@@ -20,6 +20,7 @@
 #pragma once
 
 #include "../../PluginDef.hpp"
+
 #include <limits>
 
 namespace OuroborosModules {
