@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../PluginDef.hpp"
+#include "MenuItems/TextField.hpp"
 
 namespace OuroborosModules {
 namespace UI {
@@ -59,7 +60,7 @@ namespace UI {
         void onAction (const rack::event::Action& e) override;
     };
 
-    template<typename TTextField = rack::ui::TextField>
+    template<typename TTextField = TextField>
     TTextField* createEventTextField (std::string text, std::string placeholder, std::function<bool(std::string)> action, bool alwaysConsume = false, bool closeOnConsume = true) {
         struct EventTextField : TTextField {
             std::function<bool(std::string)> eventAction = nullptr;
@@ -104,7 +105,7 @@ namespace UI {
 
       private:
         NVGcolor currentColor;
-        rack::ui::TextField* hexColorField;
+        TextField* hexColorField;
 
         struct ColorDisplay : rack::ui::MenuItem {
           private:
