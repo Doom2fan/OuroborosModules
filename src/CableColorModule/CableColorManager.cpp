@@ -301,7 +301,7 @@ namespace CableColorModule {
     }
 
     void CableColorManager::setCurrentColor (uint32_t index, bool forced) {
-        if (index >= static_cast<uint32_t> (colorCollection.count ()))
+        if (index >= colorCollection.count ())
             return;
 
         forced |= pluginSettings.cableColor_GlobalKeys;
@@ -518,7 +518,7 @@ namespace CableColorModule {
                 return false;
 
             case LearnMode::LearnColor: {
-                if (learnIndex >= static_cast<uint32_t> (colorCollection.count ())) {
+                if (learnIndex >= colorCollection.count ()) {
                     // This should never happen...
                     unsetLearnMode ();
                     return false;
