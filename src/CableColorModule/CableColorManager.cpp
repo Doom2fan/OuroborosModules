@@ -179,6 +179,18 @@ namespace CableColorModule {
         return true;
     }
 
+    void CableColorCollection::removeColor (uint32_t index) {
+        if (index >= count ())
+            return;
+        colors.erase (colors.begin () + index);
+    }
+
+    void CableColorCollection::addColor (uint32_t index, CableColor color) {
+        if (index > count ())
+            return;
+        colors.insert (colors.begin () + index, color);
+    }
+
     /*
      * CollectionsStorage
      */
@@ -408,6 +420,16 @@ namespace CableColorModule {
         APP->history->push (history);
 
         colorCollection.addColor (color);
+    }
+
+    void CableColorManager::removeColor (uint32_t index) {
+        if (index >= colorCollection.count ())
+            return;
+
+        auto history = new DeleteColorHistory (index, colorCollection [index]);
+        APP->history->push (history);
+
+        colorCollection.removeColor (index);
     }
 
     void CableColorManager::setColor (uint32_t index, NVGcolor color) {

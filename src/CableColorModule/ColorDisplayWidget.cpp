@@ -275,6 +275,11 @@ namespace CableColorModule {
             [=] { getColorManager ()->unsetColorKey (index); },
             !color.key.isMapped ()
         ));
+        menu->addChild (rack::createMenuItem (
+            "Delete color",
+            "",
+            [=] { getColorManager ()->removeColor (index); }
+        ));
     }
 }
 }

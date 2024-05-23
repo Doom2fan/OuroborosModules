@@ -75,9 +75,12 @@ namespace CableColorModule {
         void setName (std::string newName) { name = newName; }
 
         void clear () { colors.clear (); }
-        void removeColor (uint32_t index) { colors.erase (colors.begin () + index); }
+        void removeColor (uint32_t index);
         void addColor (CableColor color) { colors.push_back (color); }
         void addColor (NVGcolor color, CableColorKey key, std::string label) { addColor (CableColor (color, key, label)); }
+        void addColor (uint32_t index, CableColor color);
+        void addColor (uint32_t index, NVGcolor color, CableColorKey key, std::string label)
+            { addColor (index, CableColor (color, key, label)); }
         void setColor (uint32_t index, CableColor color) { colors [index] = color; }
 
         void resetToDefaults ();
@@ -151,6 +154,7 @@ namespace CableColorModule {
 
         void addNewColor (CableColor color);
         void addNewColor (NVGcolor color, CableColorKey key, std::string label) { addNewColor (CableColor (color, key, label)); }
+        void removeColor (uint32_t index);
         void setColor (uint32_t index, NVGcolor color);
         void setColorLabel (uint32_t index, std::string label);
         void unsetColorKey (uint32_t index) { return setColorKey (index, CableColorKey ()); }
