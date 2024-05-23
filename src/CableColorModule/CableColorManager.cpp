@@ -411,7 +411,7 @@ namespace CableColorModule {
     }
 
     void CableColorManager::setColor (uint32_t index, NVGcolor color) {
-        if (index > colorCollection.count ())
+        if (index >= colorCollection.count ())
             return;
 
         auto oldColor = colorCollection [index];
@@ -423,7 +423,7 @@ namespace CableColorModule {
     }
 
     void CableColorManager::setColorLabel (uint32_t index, std::string label) {
-        if (index > colorCollection.count ())
+        if (index >= colorCollection.count ())
             return;
 
         auto oldColor = colorCollection [index];
@@ -435,7 +435,7 @@ namespace CableColorModule {
     }
 
     void CableColorManager::setColorKey (uint32_t index, CableColorKey key) {
-        if (index > colorCollection.count ())
+        if (index >= colorCollection.count ())
             return;
 
         auto oldColor = colorCollection [index];
