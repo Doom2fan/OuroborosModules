@@ -230,6 +230,10 @@ namespace CableColorModule {
             defaultCollectionName = "";
     }
 
+    bool CollectionsStorage::hasCollection (const std::string& key) const {
+        return collections.find (key) != collections.end ();
+    }
+
     bool CollectionsStorage::tryGetCollection (const std::string& key, CableColorCollection& collection) const {
         if (auto search = collections.find (key); search != collections.end ()) {
             collection = search->second;

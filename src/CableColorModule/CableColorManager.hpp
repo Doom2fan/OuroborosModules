@@ -98,6 +98,7 @@ namespace CableColorModule {
         static CollectionsStorage defaults ();
 
         uint32_t count () const { return collections.size (); }
+        bool hasCollection (const std::string& key) const;
         bool tryGetCollection (const std::string& key, CableColorCollection& collection) const;
 
         void addCollection (const CableColorCollection& collection) { collections [collection.getName ()] = collection; }

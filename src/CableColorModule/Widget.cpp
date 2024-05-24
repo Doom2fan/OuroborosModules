@@ -20,6 +20,7 @@
 
 #include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/CommonItems.hpp"
+#include "../UI/MenuItems/TextField.hpp"
 #include "CableColorManager.hpp"
 #include "CCM_Common.hpp"
 #include "ColorDisplayWidget.hpp"
@@ -246,6 +247,41 @@ namespace CableColorModule {
         return fmt::format (FMT_STRING ("     {}"), color.label);
     }
 
+    struct SaveCollectionMenuItem : rack::ui::MenuItem {
+      private:
+        CableColorModule* module;
+        UI::TextField* nameField;
+
+      public:
+        SaveCollectionMenuItem (CableColorModule* newModule, UI::TextField* newNameField) {
+            module = newModule;
+            nameField = newNameField;
+
+            text = "Save collection";
+            rightText = "";
+        }
+
+        void saveCollection (const std::string& name) {
+            auto collection = module->colorManager->getCollection ();
+            collection.setName (name);
+            pluginSettings.cableColor_Collections.addCollection (collection);
+        }
+
+        void onAction (const rack::event::Action& e) override {
+            auto name = nameField->text;
+            if (!pluginSettings.cableColor_Collections.hasCollection (name)) {
+                saveCollection (name);
+                e.consume (this);
+
+                return;
+            }
+
+            auto menu = rack::createMenu ();
+            menu->addChild (rack::createMenuLabel ("A collection with the specified name already exists. Are you sure?"));
+            menu->addChild (rack::createMenuItem ("Save collection", "", [=] { saveCollection (name); }, false, true));
+        }
+    };
+
     void CableColorModuleWidget::createCollectionsMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createMenuItem;
@@ -259,6 +295,14 @@ namespace CableColorModule {
         ));
 
         menu->addChild (new rack::ui::MenuSeparator);
+        auto newCollectionNameTextField = new UI::TextField ();
+        newCollectionNameTextField->box.size.x = 200.f;
+        newCollectionNameTextField->text = "";
+        newCollectionNameTextField->placeholder = "Collection name...";
+        menu->addChild (newCollectionNameTextField);
+        menu->addChild (new SaveCollectionMenuItem (module, newCollectionNameTextField));
+
+        menu->addChild (new rack::ui::MenuSeparator);
         auto defaultCollectionName = pluginSettings.cableColor_Collections.getDefaultCollectionName ();
         for (const auto& collectionKVP : pluginSettings.cableColor_Collections) {
             auto collectionName = collectionKVP.first;
@@ -266,7 +310,7 @@ namespace CableColorModule {
 
             menu->addChild (rack::createSubmenuItem (collectionName, rightText, [=] (Menu* menu) {
                 menu->addChild (createMenuItem (
-                    "Replace current collection",
+                    "Load to module",
                     "",
                     [=] { module->colorManager->changeCollection (collectionKVP.second, true); }
                 ));
