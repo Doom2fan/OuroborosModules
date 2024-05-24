@@ -20,7 +20,7 @@
 
 #include "PluginDef.hpp"
 
-#include <audioFile.h>
+#include <AudioFile.h>
 #include <fmt/format.h>
 #include <samplerate.h>
 
