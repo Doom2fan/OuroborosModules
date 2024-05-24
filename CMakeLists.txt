@@ -11,7 +11,7 @@ message(STATUS "Installing into '${CMAKE_INSTALL_PREFIX}'")
 set(BASE_PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(PLUGIN_NAME ${PROJECT_NAME})
-set(ADDITIONAL_PLUGIN_DISTRIBUTABLES res license LICENSE.md)
+set(ADDITIONAL_PLUGIN_DISTRIBUTABLES LICENSE.md license)
 
 include(RackSDK.cmake)
 include(cmake/utils.cmake)
