@@ -6,17 +6,17 @@
     "brand": "Ouroboros Industries",
     "author": "Chronos \"phantombeta\" Ouroboros",
     "authorEmail": "",
-    "authorUrl": "",
-    "pluginUrl": "",
-    "manualUrl": "",
-    "sourceUrl": "",
+    "authorUrl": "https://github.com/Doom2fan",
+    "pluginUrl": "https://github.com/Doom2fan/OuroborosModules",
+    "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki",
+    "sourceUrl": "https://github.com/Doom2fan/OuroborosModules",
     "donateUrl": "",
-    "changelogUrl": "",
+    "changelogUrl": "https://github.com/Doom2fan/OuroborosModules/blob/master/CHANGELOG.md",
     "modules": [
         {
             "slug": "MetaModule",
             "name": "Meta Module",
-            "description": "",
+            "description": "Adds features to VCV Rack",
             "tags": [ "Utility" ]
         },
         {
