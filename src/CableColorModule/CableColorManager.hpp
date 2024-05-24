@@ -147,6 +147,7 @@ namespace CableColorModule {
 
         const CableColorCollection& getCollection () const { return colorCollection; }
         void changeCollection (const CableColorCollection& collection, bool createHistory);
+        void clearColors (bool createHistory);
 
         bool isLearnMode () const { return learnMode != LearnMode::Off; }
         void setLearnMode (std::string keyName, uint32_t colorIndex);

@@ -314,6 +314,10 @@ namespace CableColorModule {
             },
             false, true
         ));
+        menu->addChild (createMenuItem (
+            "Delete all colors", "",
+            [=] { module->colorManager->clearColors (true); }
+        ));
     }
 }
 }

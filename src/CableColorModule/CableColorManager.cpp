@@ -381,6 +381,15 @@ namespace CableColorModule {
         setCurrentColor (0);
     }
 
+    void CableColorManager::clearColors (bool createHistory) {
+        if (createHistory)
+            APP->history->push (new DeleteAllColorsHistory (colorCollection));
+
+        unsetLearnMode (); // Shouldn't be possible, but let's make sure anyway.
+        colorCollection.clear ();
+        setCurrentColor (0);
+    }
+
     static void showLearnMessage (std::string keyName) {
         if (masterKeyContainer != nullptr) {
             masterKeyContainer->displayMessage (fmt::format (

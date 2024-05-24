@@ -82,6 +82,21 @@ namespace CableColorModule {
         void redo () override { getCollection ().removeColor (index); }
     };
 
+    struct DeleteAllColorsHistory : ColorManagerHistory {
+      private:
+        CableColorCollection oldCollection;
+
+      public:
+        DeleteAllColorsHistory (const CableColorCollection& oldCollection) {
+            name = "delete all cable colors";
+
+            this->oldCollection = oldCollection;
+        }
+
+        void undo () override { getColorManager ()->changeCollection (oldCollection, false); }
+        void redo () override { getColorManager ()->clearColors (false); }
+    };
+
     struct ChangeColorHistory : ColorManagerHistory {
       private:
         int32_t index;
