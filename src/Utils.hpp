@@ -22,6 +22,9 @@
 
 #include <fmt/format.h>
 
+#include <limits>
+#include <cstdint>
+
 namespace OuroborosModules {
 namespace Widgets {
     struct SimpleSlider : rack::ui::Slider {
@@ -116,6 +119,42 @@ namespace Widgets {
         std::string getLabel () override { return labelText; }
         std::string getUnit () override { return ""; }
     };
+}
+}
+
+namespace OuroborosModules {
+namespace Hashing {
+    template<typename T>
+    T xorshift (const T& n, int i) {
+        return n ^ (n >> i);
+    }
+
+    uint32_t distribute (const uint32_t& n);
+    uint64_t distribute (const uint64_t& n);
+
+    template<typename T, typename S>
+        typename std::enable_if<std::is_unsigned<T>::value, T>::type
+    constexpr rotl (const T n, const S i) {
+        const T m = (std::numeric_limits<T>::digits - 1);
+        const T c = i & m;
+        // This is usually recognized by the compiler to mean rotation.
+        return (n << c) | (n >> ((T (0) - c) & m));
+    }
+
+    // Call this function with the old seed and the new key to be hashed and combined into the new seed value,
+    // respectively the final hash.
+    template<class T>
+    inline size_t hashCombine (std::size_t& seed, const T& v) {
+        return rotl (seed, std::numeric_limits<size_t>::digits / 3) ^ distribute (std::hash<T> {} (v));
+    }
+
+    inline void hashCombine (std::size_t& seed) { }
+
+    template<typename T, typename... Rest>
+    inline void hashCombine (std::size_t& seed, const T& v, Rest... rest) {
+        seed = hashCombine (seed, v);
+        hashCombine (seed, rest...);
+    }
 }
 }
 
