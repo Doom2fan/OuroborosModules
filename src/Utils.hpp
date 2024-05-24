@@ -129,8 +129,7 @@ namespace Hashing {
         return n ^ (n >> i);
     }
 
-    uint32_t distribute (const uint32_t& n);
-    uint64_t distribute (const uint64_t& n);
+    std::size_t distribute (const std::size_t& n);
 
     template<typename T, typename S>
         typename std::enable_if<std::is_unsigned<T>::value, T>::type
@@ -144,7 +143,7 @@ namespace Hashing {
     // Call this function with the old seed and the new key to be hashed and combined into the new seed value,
     // respectively the final hash.
     template<class T>
-    inline size_t hashCombine (std::size_t& seed, const T& v) {
+    inline std::size_t hashCombine (std::size_t& seed, const T& v) {
         return rotl (seed, std::numeric_limits<size_t>::digits / 3) ^ distribute (std::hash<T> {} (v));
     }
 
@@ -170,8 +169,8 @@ namespace OuroborosModules {
 namespace std {
     template<>
     struct hash<NVGcolor> {
-        inline size_t operator () (const NVGcolor& color) const {
-            size_t seed = 0;
+        inline std::size_t operator () (const NVGcolor& color) const {
+            std::size_t seed = static_cast<size_t> (0);
             OuroborosModules::Hashing::hashCombine (seed, color.r, color.g, color.b, color.a);
             return seed;
         }
