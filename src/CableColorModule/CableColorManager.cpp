@@ -357,6 +357,11 @@ namespace CableColorModule {
 
         auto anyActionAdded = false;
         for (auto cable : cables) {
+            if (!cable->isComplete ()) {
+                cable->color = selectedColor.color;
+                continue;
+            }
+
             if (cable->getCable () == nullptr || selectedColor.color == cable->color)
                 continue;
 
