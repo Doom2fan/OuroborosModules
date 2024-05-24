@@ -17,13 +17,15 @@
             "slug": "MetaModule",
             "name": "Meta Module",
             "description": "Adds features to VCV Rack",
-            "tags": [ "Utility" ]
+            "tags": [ "Utility" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Meta-Module"
         },
         {
             "slug": "CableColorModule",
             "name": "Cable Color Manager",
             "description": "",
-            "tags": [ "Utility" ]
+            "tags": [ "Utility" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Cable-Color-Manager"
         }
     ]
 }
