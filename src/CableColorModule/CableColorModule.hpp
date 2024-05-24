@@ -77,6 +77,7 @@ namespace CableColorModule {
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void createCollectionsMenu (rack::ui::Menu* menu);
+        void createReplacePatchCablesMenu (rack::ui::Menu* menu);
         void appendContextMenu (rack::ui::Menu* menu) override;
     };
 

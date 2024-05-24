@@ -144,6 +144,8 @@ namespace CableColorModule {
         uint32_t getCurrentColor () { return curColorIndex; }
         void setCurrentColor (uint32_t index, bool forced = false);
         void updateCurrentColor ();
+        void replacePatchCableColor (std::vector<rack::app::CableWidget*>& cables, uint32_t index);
+        void replacePatchCableColorAll (std::vector<rack::app::CableWidget*>& cables, bool random);
 
         const CableColorCollection& getCollection () const { return colorCollection; }
         void changeCollection (const CableColorCollection& collection, bool createHistory);

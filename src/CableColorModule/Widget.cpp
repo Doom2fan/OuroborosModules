@@ -24,6 +24,8 @@
 #include "CCM_Common.hpp"
 #include "ColorDisplayWidget.hpp"
 
+#include <unordered_set>
+
 namespace OuroborosModules {
 namespace CableColorModule {
     CableColorModuleWidget::CableColorModuleWidget (CableColorModule* module) { constructor (module, "panels/CableColorModule"); }
@@ -240,6 +242,10 @@ namespace CableColorModule {
         keyMappingFunction ("cycle backwards", &pluginSettings.cableColor_CycleBackKey);
     }
 
+    static std::string getCableColorMenuItemText (const CableColor& color) {
+        return fmt::format (FMT_STRING ("     {}"), color.label);
+    }
+
     void CableColorModuleWidget::createCollectionsMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createMenuItem;
@@ -282,7 +288,7 @@ namespace CableColorModule {
 
                     auto colorItem = new UI::ColorMenuItem;
                     colorItem->color = cableColor.color;
-                    colorItem->text = fmt::format (FMT_STRING ("     {}"), cableColor.label);
+                    colorItem->text = getCableColorMenuItemText (cableColor);
                     colorItem->rightText = cableColor.key.keyText ();
                     colorItem->disabled = true;
 
@@ -290,6 +296,180 @@ namespace CableColorModule {
                 }
             }));
         }
+    }
+
+    template<typename T = rack::ui::MenuItem>
+    struct ReplacePatchCablesItem : public T {
+      protected:
+        CableColorModule* module;
+        bool isCollectionColor;
+        uint32_t collectionIndex;
+
+        virtual std::vector<rack::app::CableWidget*> getCables () = 0;
+        rack::ui::Menu* createChildMenu () override {
+            using rack::ui::Menu;
+            using rack::createMenuItem;
+
+            Menu* menu = new Menu;
+
+            const auto& colorCollection = module->colorManager->getCollection ();
+            for (uint32_t i = 0; i < colorCollection.count (); i++) {
+                auto cableColor = colorCollection [i];
+                auto colorItem = createMenuItem<UI::ColorMenuItem> (
+                    getCableColorMenuItemText (cableColor), "",
+                    [=] {
+                        auto cables = getCables ();
+                        module->colorManager->replacePatchCableColor (cables, i);
+                    },
+                    isCollectionColor && i == collectionIndex
+                );
+                colorItem->color = cableColor.color;
+                menu->addChild (colorItem);
+            }
+
+            menu->addChild (new rack::ui::MenuSeparator);
+            menu->addChild (createMenuItem ("Sequence", "", [=] {
+                auto cables = getCables ();
+                module->colorManager->replacePatchCableColorAll (cables, false);
+            }));
+            menu->addChild (createMenuItem ("Random", "", [=] {
+                auto cables = getCables ();
+                module->colorManager->replacePatchCableColorAll (cables, true);
+            }));
+
+            return menu;
+        }
+    };
+
+    struct ReplacePatchCablesColorItem : ReplacePatchCablesItem<UI::ColorMenuItem> {
+        ReplacePatchCablesColorItem (CableColorModule* newModule, NVGcolor newColor) {
+            module = newModule;
+            color = newColor;
+            text = "";
+            rightText = RIGHT_ARROW;
+
+            isCollectionColor = false;
+            collectionIndex = 0;
+        }
+
+        ReplacePatchCablesColorItem (CableColorModule* newModule, uint32_t newIndex) {
+            module = newModule;
+
+            auto cableColor = module->colorManager->getCollection () [newIndex];
+            color = cableColor.color;
+            text = getCableColorMenuItemText (cableColor);
+            rightText = RIGHT_ARROW;
+
+            isCollectionColor = true;
+            collectionIndex = newIndex;
+        }
+
+        std::vector<rack::app::CableWidget*> getCables () override {
+            std::vector<rack::app::CableWidget*> cables;
+
+            if (auto cableContainer = APP->scene->rack->getCableContainer ()) {
+                for (auto it : cableContainer->children) {
+                    auto cable = dynamic_cast<rack::app::CableWidget*> (it);
+                    if (cable == nullptr || !cable->isComplete ())
+                        continue;
+
+                    if (!rack::color::isEqual (cable->color, color))
+                        continue;
+
+                    cables.push_back (cable);
+                }
+            }
+
+            return cables;
+        }
+    };
+
+    struct ReplacePatchCablesAllItem : ReplacePatchCablesItem<rack::ui::MenuItem> {
+        ReplacePatchCablesAllItem (CableColorModule* newModule) {
+            module = newModule;
+            text = "All";
+            rightText = RIGHT_ARROW;
+
+            isCollectionColor = false;
+            collectionIndex = 0;
+        }
+
+        std::vector<rack::app::CableWidget*> getCables () override {
+            std::vector<rack::app::CableWidget*> cables;
+
+            if (auto cableContainer = APP->scene->rack->getCableContainer ()) {
+                for (auto it : cableContainer->children) {
+                    auto cable = dynamic_cast<rack::app::CableWidget*> (it);
+                    if (cable == nullptr || !cable->isComplete ())
+                        continue;
+
+                    cables.push_back (cable);
+                }
+            }
+
+            return cables;
+        }
+    };
+
+    void CableColorModuleWidget::createReplacePatchCablesMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createMenuItem;
+        using rack::createMenuLabel;
+        using rack::createSubmenuItem;
+
+        auto colorManager = module->colorManager;
+        const auto& colorCollection = colorManager->getCollection ();
+
+        std::vector<NVGcolor> patchColors;
+        std::unordered_set<NVGcolor> patchColorsSet;
+
+        // Find what cable colors are used in the patch.
+        if (auto cableContainer = APP->scene->rack->getCableContainer ()) {
+            for (auto it : cableContainer->children) {
+                auto cable = dynamic_cast<rack::app::CableWidget*> (it);
+                if (cable == nullptr || !cable->isComplete ())
+                    continue;
+
+                auto cableColor = cable->color;
+                if (patchColorsSet.find (cableColor) != patchColorsSet.end ())
+                    continue;
+
+                patchColors.push_back (cableColor);
+                patchColorsSet.insert (cableColor);
+            }
+        }
+
+        // Insert items for the collection colors first.
+        auto hasCollectionColors = false;
+        for (uint32_t i = 0; i < colorCollection.count (); i++) {
+            auto color = colorCollection [i].color;
+            if (auto search = patchColorsSet.find (color); search == patchColorsSet.end ())
+                continue;
+
+            menu->addChild (new ReplacePatchCablesColorItem (module, i));
+
+            patchColorsSet.erase (color);
+            hasCollectionColors = true;
+        }
+
+        // Insert items for the non-collection colors.
+        auto hasNonCollectionColors = false;
+        for (auto color : patchColors) {
+            if (auto search = patchColorsSet.find (color); search == patchColorsSet.end ())
+                continue;
+
+            if (!hasNonCollectionColors && hasCollectionColors)
+                menu->addChild (new rack::ui::MenuSeparator);
+
+            menu->addChild (new ReplacePatchCablesColorItem (module, color));
+
+            patchColorsSet.erase (color);
+            hasNonCollectionColors = true;
+        }
+
+        // Add the item for replacing all colors.
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (new ReplacePatchCablesAllItem (module));
     }
 
     void CableColorModuleWidget::appendContextMenu (rack::ui::Menu* menu) {
@@ -300,6 +480,12 @@ namespace CableColorModule {
         using rack::ui::Menu;
 
         _WidgetBase::appendContextMenu (menu);
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (createSubmenuItem (
+            "Replace patch cable colors", "",
+            [=] (Menu* menu) { createReplacePatchCablesMenu (menu); }
+        ));
 
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (createSubmenuItem ("Collections", "", [=] (Menu* menu) { createCollectionsMenu (menu); }));

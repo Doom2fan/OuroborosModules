@@ -318,35 +318,9 @@ namespace CableColorModule {
         }
 
         // Update the cables.
-        if (cablesToModify.size () > 0) {
-            auto selectedColor = colorCollection [index];
-
-            auto batchAction = new rack::history::ComplexAction ();
-            batchAction->name = "change cable color";
-
-            auto anyActionAdded = false;
-            for (auto cable : cablesToModify) {
-                if (cable->getCable () == nullptr)
-                    continue;
-
-                auto cableAction = new rack::history::CableColorChange ();
-
-                cableAction->oldColor = cable->color;
-                cableAction->newColor = selectedColor.color;
-                cableAction->setCable (cable);
-
-                batchAction->push (cableAction);
-                anyActionAdded = true;
-            }
-
-            if (anyActionAdded)
-                APP->history->push (batchAction);
-            else
-                delete batchAction;
-
-            for (auto cable : cablesToModify)
-                cable->color = selectedColor.color;
-        } else if (!forced) // Don't set anything if we're not in global mode and there were no cables.
+        if (cablesToModify.size () > 0)
+            replacePatchCableColor (cablesToModify, index);
+        else if (!forced) // Don't set anything if we're not in global mode and there were no cables.
             return;
 
 
@@ -370,6 +344,75 @@ namespace CableColorModule {
         setNextCableColorId ();
         if (!pluginSettings.cableColor_Latch && APP->scene->rack->getIncompleteCable () == nullptr)
             curColorIndex = APP->scene->rack->getNextCableColorId ();
+    }
+
+    void CableColorManager::replacePatchCableColor (std::vector<rack::app::CableWidget*>& cables, uint32_t index) {
+        if (index >= colorCollection.count () || cables.size () < 1)
+            return;
+
+        auto selectedColor = colorCollection [index];
+
+        auto batchAction = new rack::history::ComplexAction ();
+        batchAction->name = "change cable color";
+
+        auto anyActionAdded = false;
+        for (auto cable : cables) {
+            if (cable->getCable () == nullptr || selectedColor.color == cable->color)
+                continue;
+
+            auto cableAction = new rack::history::CableColorChange ();
+
+            cableAction->oldColor = cable->color;
+            cableAction->newColor = selectedColor.color;
+            cableAction->setCable (cable);
+
+            cable->color = selectedColor.color;
+
+            batchAction->push (cableAction);
+            anyActionAdded = true;
+        }
+
+        if (anyActionAdded)
+            APP->history->push (batchAction);
+        else
+            delete batchAction;
+    }
+
+    void CableColorManager::replacePatchCableColorAll (std::vector<rack::app::CableWidget*>& cables, bool random) {
+        if (cables.size () < 1 || colorCollection.count () < 1)
+            return;
+
+        auto batchAction = new rack::history::ComplexAction ();
+        batchAction->name = "change cable color";
+
+        auto prevIndex = 0;
+        auto anyActionAdded = false;
+        for (auto cable : cables) {
+            if (cable->getCable () == nullptr)
+                continue;
+
+            auto selectedColor = random
+                ? colorCollection [rack::random::u32 () % colorCollection.count ()].color
+                : colorCollection [prevIndex++ % colorCollection.count ()].color;
+
+            if (selectedColor == cable->color)
+                continue;
+
+            auto cableAction = new rack::history::CableColorChange ();
+            cableAction->oldColor = cable->color;
+            cableAction->newColor = selectedColor;
+            cableAction->setCable (cable);
+
+            cable->color = selectedColor;
+
+            batchAction->push (cableAction);
+            anyActionAdded = true;
+        }
+
+        if (anyActionAdded)
+            APP->history->push (batchAction);
+        else
+            delete batchAction;
     }
 
     void CableColorManager::changeCollection (const CableColorCollection& collection, bool createHistory) {
