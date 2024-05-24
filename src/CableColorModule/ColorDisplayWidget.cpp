@@ -83,7 +83,7 @@ namespace CableColorModule {
             colorWidget->isSelected = i == currentColor;
         }
 
-        if (currentSelectedIndex != currentColor) {
+        if (currentSelectedIndex != currentColor && currentSelectedIndex < colorCollection.count ()) {
             scrollContainer->scrollTo (colorWidgets [currentColor]->box);
             currentSelectedIndex = currentColor;
         }
