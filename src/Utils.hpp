@@ -166,3 +166,18 @@ namespace OuroborosModules {
         return rack::createModel<typename TModuleWidget::_ModuleType, TModuleWidget> (slug);
     }
 }
+
+namespace std {
+    template<>
+    struct hash<NVGcolor> {
+        inline size_t operator () (const NVGcolor& color) const {
+            size_t seed = 0;
+            OuroborosModules::Hashing::hashCombine (seed, color.r, color.g, color.b, color.a);
+            return seed;
+        }
+    };
+}
+
+inline bool operator== (const NVGcolor& lhs, const NVGcolor& rhs) {
+    return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b && lhs.a == rhs.a;
+}
