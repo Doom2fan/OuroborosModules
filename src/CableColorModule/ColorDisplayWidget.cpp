@@ -120,7 +120,7 @@ namespace CableColorModule {
             return;
 
         if (e.button == GLFW_MOUSE_BUTTON_LEFT && e.action == GLFW_PRESS) {
-            getColorManager ()->setCurrentColor (index, true);
+            getColorManager ()->setCurrentColor (index, true, false);
             e.consume (this);
         } else if (e.button == GLFW_MOUSE_BUTTON_RIGHT && e.action == GLFW_PRESS) {
             auto menu = rack::createMenu ();

@@ -300,7 +300,7 @@ namespace CableColorModule {
             APP->scene->rack->setNextCableColorId (curColorIndex);
     }
 
-    void CableColorManager::setCurrentColor (uint32_t index, bool forced) {
+    void CableColorManager::setCurrentColor (uint32_t index, bool forced, bool allowPortHover) {
         if (index >= colorCollection.count ())
             return;
 
@@ -311,7 +311,7 @@ namespace CableColorModule {
         auto heldCable = APP->scene->rack->getIncompleteCable ();
         if (heldCable != nullptr)
             cablesToModify.push_back (heldCable);
-        else if (pluginSettings.cableColor_PortHover) {
+        else if (allowPortHover && pluginSettings.cableColor_PortHover) {
             auto hoveredWidget = APP->event->getHoveredWidget ();
             if (auto hoveredPort = dynamic_cast<rack::PortWidget*> (hoveredWidget))
                 cablesToModify = APP->scene->rack->getCablesOnPort (hoveredPort);
@@ -426,7 +426,7 @@ namespace CableColorModule {
 
         unsetLearnMode (); // Shouldn't be possible, but let's make sure anyway.
         colorCollection = collection;
-        setCurrentColor (0);
+        setCurrentColor (0, true);
     }
 
     void CableColorManager::clearColors (bool createHistory) {
@@ -435,7 +435,7 @@ namespace CableColorModule {
 
         unsetLearnMode (); // Shouldn't be possible, but let's make sure anyway.
         colorCollection.clear ();
-        setCurrentColor (0);
+        setCurrentColor (0, true);
     }
 
     static void showLearnMessage (std::string keyName) {
@@ -537,7 +537,7 @@ namespace CableColorModule {
             else if (newIndex < 0)
                 newIndex = colorCount - 1;
 
-            setCurrentColor (static_cast<uint32_t> (newIndex));
+            setCurrentColor (static_cast<uint32_t> (newIndex), false, false);
         };
 
         if (pluginSettings.cableColor_LatchKey.matches (key)) {
@@ -557,7 +557,7 @@ namespace CableColorModule {
             if (!cableColor.key.matches (key))
                 continue;
 
-            setCurrentColor (i);
+            setCurrentColor (i, false, true);
             return true;
         }
 

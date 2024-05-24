@@ -142,7 +142,7 @@ namespace CableColorModule {
         CableColorManager ();
 
         uint32_t getCurrentColor () { return curColorIndex; }
-        void setCurrentColor (uint32_t index, bool forced = false);
+        void setCurrentColor (uint32_t index, bool forced = false, bool allowPortHover = false);
         void updateCurrentColor ();
         void replacePatchCableColor (std::vector<rack::app::CableWidget*>& cables, uint32_t index);
         void replacePatchCableColorAll (std::vector<rack::app::CableWidget*>& cables, bool random);
