@@ -1,5 +1,15 @@
+# By Silvio Kunaschk (qno), with edits by baconpaul
+# Further updates and edits for this repo by Chronos "phantombeta" Ouroboros
+
 name: Build VCV Rack Plugin
-on: [push, pull_request]
+permissions:
+  contents: write
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v**'
 
 env:
   rack-sdk-version: latest
@@ -103,7 +113,7 @@ jobs:
     name: Publish plugin
     # only create a release if a tag was created that is called e.g. v1.2.3
     # see also https://vcvrack.com/manual/Manifest#version
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') && github.repository_owner == 'Doom2fan'
     runs-on: ubuntu-latest
     needs:  [build, build-mac]
     steps:
@@ -135,3 +145,37 @@ jobs:
           file: _artifacts/**/*.vcvplugin
           tag: ${{ github.ref }}
           file_glob: true
+
+  publish-nightly:
+    name: Publish Nightly
+    # only create a release if a tag was created that is called e.g. v1.2.3
+    # see also https://vcvrack.com/manual/Manifest#version
+    if: ${{ github.ref == 'refs/heads/master' && github.repository_owner == 'Doom2fan' }}
+    runs-on: ubuntu-latest
+    needs: [build, build-mac]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: _artifacts
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ github.token }}
+          tag: Nightly # This may also be of the form 'refs/tags/staging'
+          assets: '*'
+          fail-if-no-assets: false
+          fail-if-no-release: false
+      - name: Upload release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: _artifacts/**/*.vcvplugin
+          tag: Nightly
+          file_glob: true
+          prerelease: true
+      - name: Tag Repo
+        uses: richardsimko/update-tag@v1.0.7
+        with:
+          tag_name: Nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
