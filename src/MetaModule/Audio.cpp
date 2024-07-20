@@ -27,8 +27,8 @@ namespace MetaModule {
 
     void MetaModule::audio_Process (const ProcessArgs& args) {
         // Check if anything's connected.
-        bool outputLeft = outputs [OUTPUTL_OUTPUT].isConnected ();
-        bool outputRight = outputs [OUTPUTR_OUTPUT].isConnected ();
+        bool outputLeft = outputs [OUTPUT_LEFT].isConnected ();
+        bool outputRight = outputs [OUTPUT_RIGHT].isConnected ();
 
         if (!outputLeft && !outputRight) {
             if (outputtingAudio) {
@@ -40,14 +40,14 @@ namespace MetaModule {
         } else
             outputtingAudio = true;
 
-        float audioLeft = inputs [INPUTL_INPUT].isConnected () ? inputs [INPUTL_INPUT].getVoltage () : 0.f;
-        float audioRight = inputs [INPUTR_INPUT].isConnected () ? inputs [INPUTR_INPUT].getVoltage () : audioLeft;
+        float audioLeft = inputs [INPUT_LEFT].isConnected () ? inputs [INPUT_LEFT].getVoltage () : 0.f;
+        float audioRight = inputs [INPUT_RIGHT].isConnected () ? inputs [INPUT_RIGHT].getVoltage () : audioLeft;
 
         (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
         plugSound_ProcessAudio (args, audioLeft, audioRight);
 
-        if (outputLeft ) outputs [OUTPUTL_OUTPUT].setVoltage (audioLeft);
-        if (outputRight) outputs [OUTPUTR_OUTPUT].setVoltage (audioRight);
+        if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
+        if (outputRight) outputs [OUTPUT_RIGHT].setVoltage (audioRight);
     }
 }
 }

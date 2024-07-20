@@ -75,11 +75,11 @@ namespace MetaModule {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackWidget> (pos, module, MetaModule::INPUTL_INPUT + i));
+            addInput (createInputCentered<CableJackWidget> (pos, module, MetaModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUTL_OUTPUT + i));
+            addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUT_LEFT + i));
         });
 
         if (module != nullptr)

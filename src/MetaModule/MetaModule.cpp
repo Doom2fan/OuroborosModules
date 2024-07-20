@@ -32,12 +32,12 @@ namespace MetaModule {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure audio inputs and outputs.
-        configInput (INPUTL_INPUT, "Left input");
-        configInput (INPUTR_INPUT, "Right input");
-        configOutput (OUTPUTL_OUTPUT, "Left output");
-        configOutput (OUTPUTR_OUTPUT, "Right output");
-        configBypass (INPUTL_INPUT, OUTPUTL_OUTPUT);
-        configBypass (INPUTR_INPUT, OUTPUTR_OUTPUT);
+        configInput (INPUT_LEFT, "Left input");
+        configInput (INPUT_RIGHT, "Right input");
+        configOutput (OUTPUT_LEFT, "Left output");
+        configOutput (OUTPUT_RIGHT, "Right output");
+        configBypass (INPUT_LEFT, OUTPUT_LEFT);
+        configBypass (INPUT_RIGHT, OUTPUT_RIGHT);
 
         premuter_Func = &MetaModule::premuter_Process;
     }

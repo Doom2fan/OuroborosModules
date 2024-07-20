@@ -56,13 +56,13 @@ namespace MetaModule {
             PARAMS_LEN
         };
         enum InputId {
-            INPUTL_INPUT,
-            INPUTR_INPUT,
+            INPUT_LEFT,
+            INPUT_RIGHT,
             INPUTS_LEN
         };
         enum OutputId {
-            OUTPUTL_OUTPUT,
-            OUTPUTR_OUTPUT,
+            OUTPUT_LEFT,
+            OUTPUT_RIGHT,
             OUTPUTS_LEN
         };
         enum LightId {
