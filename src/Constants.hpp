@@ -45,4 +45,8 @@ namespace OuroborosModules {
 
     std::string getThemeLabel (ThemeKind theme);
     std::string getEmblemLabel (EmblemKind emblem);
+
+    namespace Constants {
+        static constexpr float StdEmblemSize = 8.719f;
+    }
 }

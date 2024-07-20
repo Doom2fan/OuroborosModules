@@ -121,7 +121,7 @@ namespace CableColorModule {
             centerEmblem = module->centerEmblem == CenterEmblem::True;
 
         auto emblemPos = centerEmblem ? box.size.div (2) : findNamed ("widgetLogo");
-        auto emblemSize = rack::window::mm2px (centerEmblem ? 45.296f : 8.719f);
+        auto emblemSize = rack::window::mm2px (centerEmblem ? 45.296f : Constants::StdEmblemSize);
 
         emblemWidget->setZoom (emblemSize);
         emblemWidget->setSize (rack::math::Vec (emblemSize));
