@@ -125,11 +125,10 @@ namespace MetaModule {
 
         emblemWidget->setSvg (Theme::getEmblem (emblem, theme));
 
-        auto emblemPos = findNamed ("widgetLogo");
-
+        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
         emblemWidget->setZoom (75);
         emblemWidget->setSize (rack::math::Vec (75));
-        emblemWidget->box.pos = emblemPos.value_or (rack::math::Vec ()).minus (emblemWidget->box.size.div (2));
+        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
     void MetaModuleWidget::onChangeTheme (ThemeKind kind) {

@@ -120,12 +120,12 @@ namespace CableColorModule {
         if (module != nullptr && module->centerEmblem != CenterEmblem::Default)
             centerEmblem = module->centerEmblem == CenterEmblem::True;
 
-        auto emblemPos = centerEmblem ? box.size.div (2) : findNamed ("widgetLogo");
+        auto emblemPos = centerEmblem ? box.size.div (2) : findNamed ("widgetLogo").value_or (rack::math::Vec ());
         auto emblemSize = rack::window::mm2px (centerEmblem ? 45.296f : Constants::StdEmblemSize);
 
         emblemWidget->setZoom (emblemSize);
         emblemWidget->setSize (rack::math::Vec (emblemSize));
-        emblemWidget->box.pos = emblemPos.value_or (rack::math::Vec ()).minus (emblemWidget->box.size.div (2));
+        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
     void CableColorModuleWidget::onChangeTheme (ThemeKind kind) {
