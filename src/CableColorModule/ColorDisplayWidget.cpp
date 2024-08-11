@@ -28,17 +28,17 @@ namespace CableColorModule {
     /*
      * ColorDisplayWidget
      */
-    ColorDisplayWidget::ColorDisplayWidget (CableColorModule* module, rack::math::Vec size) {
+    ColorDisplayWidget::ColorDisplayWidget (CableColorModule* module, rack::math::Rect newBox) {
         this->module = module;
-        box.size = size;
+        box = newBox;
 
         scrollContainer = new rack::ui::ScrollWidget;
-        scrollContainer->box = rack::math::Rect (rack::math::Vec (), size);
+        scrollContainer->box = rack::math::Rect (rack::math::Vec (), box.size);
         scrollContainer->hideScrollbars = true;
         addChild (scrollContainer);
 
         colorContainer = new rack::ui::SequentialLayout;
-        colorContainer->box = rack::math::Rect (rack::math::Vec (), size);
+        colorContainer->box = rack::math::Rect (rack::math::Vec (), box.size);
         colorContainer->orientation = rack::ui::SequentialLayout::VERTICAL_ORIENTATION;
         colorContainer->margin = rack::math::Vec ();
         colorContainer->spacing = rack::math::Vec (0, 1);

@@ -37,6 +37,7 @@ namespace CableColorModule {
         using rack::createWidget;
         using rack::createWidgetCentered;
         using rack::math::Vec;
+        using rack::math::Rect;
         using rack::window::mm2px;
         using Widgets::ImageWidget;
         using Widgets::ScrewWidget;
@@ -48,10 +49,7 @@ namespace CableColorModule {
         addChild (emblemWidget);
         updateEmblem (curTheme, curEmblem);
 
-        colorDisplayWidget = new ColorDisplayWidget (module, Vec (mm2px (47.88), mm2px (112.448)));
-        colorDisplayWidget->box.pos = findNamed ("widgetColorDisplay")
-            .value_or (Vec ())
-            .minus (colorDisplayWidget->box.size.div (2));
+        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay").value_or (Rect ()));
         addChild (colorDisplayWidget);
 
         // Skip if we're in the module browser.

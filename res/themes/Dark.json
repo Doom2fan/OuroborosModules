@@ -16,6 +16,10 @@
             "fill": "#ededed"
         },
 
+        "moduleName": {
+            "fill": "#ebebeb"
+        },
+
         "text": {
             "fill": "#ebebeb"
         },

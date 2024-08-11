@@ -66,7 +66,7 @@ namespace CableColorModule {
         uint32_t currentSelectedIndex;
 
       public:
-        ColorDisplayWidget (CableColorModule* module, rack::math::Vec size);
+        ColorDisplayWidget (CableColorModule* module, rack::math::Rect newBox);
 
         void step () override;
     };
