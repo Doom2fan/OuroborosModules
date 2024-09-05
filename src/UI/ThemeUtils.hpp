@@ -31,12 +31,10 @@ namespace OuroborosModules {
     NVGpaint getColorPaint (NVGcolor color);
 
 namespace Theme {
-    ThemeKind getCurrentTheme ();
-    std::shared_ptr<rack_themer::RackTheme> getTheme (ThemeKind theme);
+    ThemeId getCurrentTheme ();
 
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
-    rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeKind theme);
-    rack_themer::ThemedSvg getEmblem (EmblemKind emblem, ThemeKind theme);
+    rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeId themeId);
 
     template<const char* T>
     NVGpaint getTextPaint (std::shared_ptr<rack_themer::RackTheme> theme) {

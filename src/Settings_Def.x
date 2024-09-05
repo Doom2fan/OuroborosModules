@@ -18,9 +18,9 @@
 
 DEFINE_BOOL (debug_Logging, "debug::Logging", false)
 
-DEFINE_ENUM (ThemeKind, global_ThemeLight, "global::ThemeLight", ThemeKind::Light)
-DEFINE_ENUM (ThemeKind, global_ThemeDark, "global::ThemeDark", ThemeKind::Dark)
-DEFINE_ENUM (EmblemKind, global_DefaultEmblem, "global::DefaultEmblem", EmblemKind::Dragon)
+DEFINE_STRUCT (ThemeId, global_ThemeLight, "global::ThemeLight", ThemeId::getFromKey ("Light"))
+DEFINE_STRUCT (ThemeId, global_ThemeDark, "global::ThemeDark", ThemeId::getFromKey ("Dark"))
+DEFINE_STRUCT (EmblemId, global_DefaultEmblem, "global::DefaultEmblem", EmblemId::getFromKey ("Dragon"))
 
 DEFINE_BOOL (plugSound_Enable, "plugSound::Enable", true)
 DEFINE_FLOAT (float, plugSound_Volume, "plugSound::Volume", 1.f)

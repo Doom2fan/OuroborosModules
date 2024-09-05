@@ -22,16 +22,16 @@
 
 namespace OuroborosModules {
 namespace Widgets {
-    std::string getLocalThemeLabel (ThemeKind theme) {
-        if (theme == ThemeKind::Unknown)
+    std::string getLocalThemeLabel (ThemeId themeId) {
+        if (themeId.isUnknown ())
             return "Use default theme";
-        return getThemeLabel (theme);
+        return themeId.getDisplayName ();
     }
 
-    std::string getLocalEmblemLabel (EmblemKind emblem) {
-        if (emblem == EmblemKind::Unknown)
+    std::string getLocalEmblemLabel (EmblemId emblemId) {
+        if (emblemId.isUnknown ())
             return "Use default emblem";
-        return getEmblemLabel (emblem);
+        return emblemId.getDisplayName ();
     }
 
     void HistoryThemeChange::undo () {

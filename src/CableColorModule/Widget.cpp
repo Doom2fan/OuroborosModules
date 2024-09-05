@@ -102,17 +102,17 @@ namespace CableColorModule {
         }
     }
 
-    void CableColorModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
+    void CableColorModuleWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
         if (emblemWidget == nullptr)
             return;
 
-        if (emblem == EmblemKind::None) {
+        if (emblemId.isNone ()) {
             emblemWidget->hide ();
             return;
         } else
             emblemWidget->show ();
 
-        emblemWidget->setSvg (Theme::getEmblem (emblem, theme));
+        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
 
         auto centerEmblem = pluginSettings.cableColor_CenterEmblem;
         if (module != nullptr && module->centerEmblem != CenterEmblem::Default)
@@ -126,14 +126,14 @@ namespace CableColorModule {
         emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
-    void CableColorModuleWidget::onChangeTheme (ThemeKind kind) {
-        _WidgetBase::onChangeTheme (kind);
-        updateEmblem (kind, curEmblem);
+    void CableColorModuleWidget::onChangeTheme (ThemeId themeId) {
+        _WidgetBase::onChangeTheme (themeId);
+        updateEmblem (themeId, curEmblem);
     }
 
-    void CableColorModuleWidget::onChangeEmblem (EmblemKind kind) {
-        _WidgetBase::onChangeEmblem (kind);
-        updateEmblem (curTheme, kind);
+    void CableColorModuleWidget::onChangeEmblem (EmblemId emblemId) {
+        _WidgetBase::onChangeEmblem (emblemId);
+        updateEmblem (curTheme, emblemId);
     }
 
     void CableColorModuleWidget::createLocalStyleMenu (rack::ui::Menu* menu) {

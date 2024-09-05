@@ -70,9 +70,9 @@ namespace CableColorModule {
         void step () override;
         void update ();
 
-        void updateEmblem (ThemeKind theme, EmblemKind emblem);
-        void onChangeTheme (ThemeKind kind) override;
-        void onChangeEmblem (EmblemKind emblem) override;
+        void updateEmblem (ThemeId themeId, EmblemId emblemId);
+        void onChangeTheme (ThemeId themeId) override;
+        void onChangeEmblem (EmblemId emblemId) override;
 
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;

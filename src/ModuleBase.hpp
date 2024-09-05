@@ -23,8 +23,8 @@
 namespace OuroborosModules {
     struct ModuleBase : rack::engine::Module {
       public:
-        ThemeKind theme_Override = ThemeKind::Unknown;
-        EmblemKind theme_Emblem = EmblemKind::Unknown;
+        ThemeId theme_Override = ThemeId::getUnknown ();
+        EmblemId theme_Emblem = EmblemId::getUnknown ();
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;

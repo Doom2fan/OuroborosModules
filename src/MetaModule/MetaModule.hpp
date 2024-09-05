@@ -126,9 +126,9 @@ namespace MetaModule {
         void plugSound_CheckChannels ();
 
         void updateCableHandler ();
-        void updateEmblem (ThemeKind theme, EmblemKind emblem);
-        void onChangeTheme (ThemeKind kind) override;
-        void onChangeEmblem (EmblemKind emblem) override;
+        void updateEmblem (ThemeId themeId, EmblemId emblemId);
+        void onChangeTheme (ThemeId themeId) override;
+        void onChangeEmblem (EmblemId emblemId) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };

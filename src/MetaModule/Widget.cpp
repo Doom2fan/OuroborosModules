@@ -113,17 +113,17 @@ namespace MetaModule {
         plugSound_CheckChannels ();
     }
 
-    void MetaModuleWidget::updateEmblem (ThemeKind theme, EmblemKind emblem) {
+    void MetaModuleWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
         if (emblemWidget == nullptr)
             return;
 
-        if (emblem == EmblemKind::None) {
+        if (emblemId.isNone ()) {
             emblemWidget->hide ();
             return;
         } else
             emblemWidget->show ();
 
-        emblemWidget->setSvg (Theme::getEmblem (emblem, theme));
+        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
 
         auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
         emblemWidget->setZoom (75);
@@ -131,14 +131,14 @@ namespace MetaModule {
         emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
-    void MetaModuleWidget::onChangeTheme (ThemeKind kind) {
-        _WidgetBase::onChangeTheme (kind);
-        updateEmblem (kind, curEmblem);
+    void MetaModuleWidget::onChangeTheme (ThemeId themeId) {
+        _WidgetBase::onChangeTheme (themeId);
+        updateEmblem (themeId, curEmblem);
     }
 
-    void MetaModuleWidget::onChangeEmblem (EmblemKind kind) {
-        _WidgetBase::onChangeEmblem (kind);
-        updateEmblem (curTheme, kind);
+    void MetaModuleWidget::onChangeEmblem (EmblemId emblemId) {
+        _WidgetBase::onChangeEmblem (emblemId);
+        updateEmblem (curTheme, emblemId);
     }
 
     void MetaModuleWidget::appendContextMenu (rack::ui::Menu* menu) {

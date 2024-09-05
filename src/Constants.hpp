@@ -18,33 +18,128 @@
 
 #pragma once
 
+#include <rack_themer.hpp>
+
+#include <memory>
+#include <optional>
 #include <string>
 
 namespace OuroborosModules {
-    enum class ThemeKind {
-        INVALID = -1,
+    struct StyleInfo {
+        std::string key;
+        std::string fileName;
+        std::string displayName;
 
-        Unknown = 0,
-        FirstTheme = 1,
-        Light = FirstTheme,
-        Dark,
-        BlackAndGold,
-        ThemeCount,
+        StyleInfo () : key (""), fileName (""), displayName ("[UNINITIALIZED STYLE]") {}
+
+        StyleInfo (std::string newKey, std::string newFileName, std::string newDisplayName)
+            : key (newKey), fileName (newFileName), displayName (newDisplayName) { }
     };
 
-    enum class EmblemKind {
-        INVALID = -1,
+    class StyleCollection {
+      public:
+        typedef int IdType;
 
-        Unknown = 0,
-        FirstEmblem = 1,
-        None = FirstEmblem,
-        Dragon,
-        BleedingEye,
-        EmblemCount,
+      private:
+        std::vector<StyleInfo> values;
+        std::map<std::string, IdType> idMap;
+
+      public:
+        StyleCollection (std::vector<StyleInfo> newValues) : values (newValues) {
+            for (IdType i = 0; i < (IdType) values.size (); i++)
+                idMap [values [i].key] = i + 1;
+        }
+
+        IdType getMax () const { return values.size (); }
+
+        std::optional<IdType> getId (std::string key) const {
+            if (auto search = idMap.find (key); search != idMap.end ())
+                return search->second;
+
+            return -1;
+        }
+
+        std::optional<StyleInfo> getStyle (IdType id) const;
     };
 
-    std::string getThemeLabel (ThemeKind theme);
-    std::string getEmblemLabel (EmblemKind emblem);
+    template<typename T>
+    struct StyleId {
+        typedef int IdType;
+        static std::string UnknownKey () { return "??UNKNOWN??"; }
+
+      protected:
+        enum {
+            ID_INVALID = -1,
+            ID_UNKNOWN = 0,
+        };
+
+        IdType id;
+
+        T withId (IdType id) {
+            auto val = T ();
+            val.id = id;
+            return val;
+        }
+
+      public:
+        static T getInvalid () { return T ().withId (ID_INVALID); }
+        static T getUnknown () { return T ().withId (ID_UNKNOWN); }
+        static T getFromKey (const std::string& key) {
+            if (auto id = T::getStyleCollection ().getId (key))
+                return T ().withId (*id);
+            return getUnknown ();
+        }
+
+        static void forEachValue (std::function<void (T)> func) {
+            for (int i = 1, max = T::getStyleCollection ().getMax () + 1; i < max; i++)
+                func (T ().withId (i));
+        }
+
+        bool isInvalid () const { return id <= ID_UNKNOWN || id >= T::getStyleCollection ().getMax (); }
+        bool isUnknown () const { return id == ID_UNKNOWN; }
+
+      protected:
+        std::optional<StyleInfo> getStyleInfo () const { return T::getStyleCollection ().getStyle (id); }
+
+      public:
+        std::string getKey () const { return getStyleInfo ().value_or (T::getUndefinedStyle ()).key; }
+        std::string getDisplayName () const { return getStyleInfo ().value_or (T::getUndefinedStyle ()).displayName; }
+
+        json_t* dataToJson () const { return json_string ((!isUnknown () ? getKey () : UnknownKey ()).c_str ()); }
+
+        void dataFromJson (json_t* storageJ) {
+            if (!json_is_string (storageJ))
+                return;
+
+            std::string key = json_string_value (storageJ);
+            id = key != UnknownKey () ? getFromKey (key).id : ID_UNKNOWN;
+        }
+
+        bool operator== (const T& rhs) const { return id == rhs.id; }
+    };
+
+    struct ThemeId : StyleId<ThemeId> {
+      public:
+        static std::string getStyleKind () { return "ThemeId"; }
+        static const StyleCollection& getStyleCollection ();
+        static StyleInfo getUndefinedStyle () { return StyleInfo ("#INVALID THEME KEY#", "", "[UNDEFINED THEME]"); }
+
+        std::shared_ptr<rack_themer::RackTheme> getThemeInstance ();
+    };
+
+    struct EmblemId : StyleId<EmblemId> {
+      private:
+        static EmblemId IdNone;
+
+      public:
+        static std::string getStyleKind () { return "EmblemId"; }
+        static const StyleCollection& getStyleCollection ();
+        static StyleInfo getUndefinedStyle () { return StyleInfo ("#INVALID EMBLEM KEY#", "", "[UNDEFINED EMBLEM]"); }
+
+        bool isNone () const;
+
+        rack_themer::ThemedSvg getSvgInstance (ThemeId themeId);
+    };
 
     namespace Constants {
         static constexpr float StdEmblemSize = 8.719f;

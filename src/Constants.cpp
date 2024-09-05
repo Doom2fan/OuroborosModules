@@ -19,27 +19,68 @@
 #include "Constants.hpp"
 
 #include "PluginDef.hpp"
+#include "UI/ThemeUtils.hpp"
+
+#include <fmt/format.h>
 
 namespace OuroborosModules {
-    std::string getThemeLabel (ThemeKind theme) {
-        switch (theme) {
-            case ThemeKind::Unknown: return "Unknown";
-            case ThemeKind::Light: return "Light";
-            case ThemeKind::Dark: return "Dark";
-            case ThemeKind::BlackAndGold: return "Black and Gold";
+#define THEMES_BEGIN() StyleCollection themesCollection = StyleCollection ({
+#define DEFINE_THEME(key, fileName, displayName) StyleInfo (key, fileName, displayName),
+#define THEMES_END() });
 
-            default: return "[UNDEFINED THEME]";
-        }
+#define EMBLEMS_BEGIN() StyleCollection emblemsCollection = StyleCollection ({
+#define DEFINE_EMBLEM(key, fileName, displayName) StyleInfo (key, fileName, displayName),
+#define EMBLEMS_END() });
+
+#include "Styles_Def.x"
+
+#undef THEMES_BEGIN
+#undef DEFINE_THEME
+#undef THEMES_END
+
+#undef EMBLEMS_BEGIN
+#undef DEFINE_EMBLEM
+#undef EMBLEMS_END
+
+    std::optional<StyleInfo> StyleCollection::getStyle (IdType id) const {
+        id--;
+        if (id < 0 || id >= getMax ())
+            return std::nullopt;
+
+        return values [id];
     }
 
-    std::string getEmblemLabel (EmblemKind emblem) {
-        switch (emblem) {
-            case EmblemKind::Unknown: return "Unknown";
-            case EmblemKind::None: return "None";
-            case EmblemKind::Dragon: return "Dragon";
-            case EmblemKind::BleedingEye: return "Bleeding eye";
+    const StyleCollection& ThemeId::getStyleCollection () { return themesCollection; }
 
-            default: return "[UNDEFINED EMBLEM]";
+    std::shared_ptr<rack_themer::RackTheme> ThemeId::getThemeInstance () {
+        if (auto themeInfo = getStyleInfo ()) {
+            auto themePath = fmt::format (FMT_STRING ("res/themes/{:s}.json"), themeInfo->fileName);
+            return rack_themer::loadRackTheme (rack::asset::plugin (pluginInstance, themePath));
         }
+
+        return nullptr;
+    }
+
+    EmblemId EmblemId::IdNone = EmblemId::getInvalid ();
+
+    const StyleCollection& EmblemId::getStyleCollection () { return emblemsCollection; }
+
+    bool EmblemId::isNone () const {
+        if (IdNone.isInvalid ())
+            IdNone = getFromKey ("None");
+
+        return *this == IdNone;
+    }
+
+    rack_themer::ThemedSvg EmblemId::getSvgInstance (ThemeId themeId) {
+        if (auto emblemInfo = getStyleInfo ()) {
+            if (emblemInfo->fileName == "??NONE??")
+                return rack_themer::ThemedSvg (nullptr, nullptr);
+
+            auto emblemPath = fmt::format (FMT_STRING ("icons/{:s}"), emblemInfo->fileName);
+            return Theme::getThemedSvg (emblemPath, themeId);
+        }
+
+        return rack_themer::ThemedSvg (nullptr, nullptr);
     }
 }

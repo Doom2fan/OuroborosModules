@@ -26,8 +26,8 @@
 
 namespace OuroborosModules {
 namespace Widgets {
-    std::string getLocalThemeLabel (ThemeKind theme);
-    std::string getLocalEmblemLabel (EmblemKind emblem);
+    std::string getLocalThemeLabel (ThemeId themeId);
+    std::string getLocalEmblemLabel (EmblemId emblemId);
 
     template<typename T>
     rack::ui::MenuItem* createThemeMenuItem (std::string text, std::string rightText, T* enumPtr, T selectedVal) {
@@ -35,20 +35,22 @@ namespace Widgets {
     }
 
     struct HistoryThemeChange : rack::history::ModuleAction {
-        ThemeKind oldTheme;
-        ThemeKind newTheme;
+        ThemeId oldTheme;
+        ThemeId newTheme;
 
-        HistoryThemeChange () { name = "change theme override"; }
+        HistoryThemeChange (ThemeId oldTheme, ThemeId newTheme)
+            : oldTheme (oldTheme), newTheme (newTheme) { name = "change theme override"; }
 
         void undo () override;
         void redo () override;
     };
 
     struct HistoryEmblemChange : rack::history::ModuleAction {
-        EmblemKind oldEmblem;
-        EmblemKind newEmblem;
+        EmblemId oldEmblem;
+        EmblemId newEmblem;
 
-        HistoryEmblemChange () { name = "change emblem override"; }
+        HistoryEmblemChange (EmblemId oldEmblem, EmblemId newEmblem)
+            : oldEmblem (oldEmblem), newEmblem (newEmblem) { name = "change emblem override"; }
 
         void undo () override;
         void redo () override;
@@ -64,22 +66,22 @@ namespace Widgets {
         TModule* module;
 
         std::string panelName;
-        ThemeKind curTheme = ThemeKind::Unknown;
-        EmblemKind curEmblem = EmblemKind::Unknown;
+        ThemeId curTheme = ThemeId::getUnknown ();
+        EmblemId curEmblem = EmblemId::getUnknown ();
 
       public:
-        ThemeKind getLocalTheme () {
-            if (module != nullptr && module->theme_Override != ThemeKind::Unknown)
+        ThemeId getLocalTheme () {
+            if (module != nullptr && !module->theme_Override.isUnknown ())
                 return module->theme_Override;
             return Theme::getCurrentTheme ();
         }
-        EmblemKind getLocalEmblem () {
-            if (module != nullptr && module->theme_Emblem != EmblemKind::Unknown)
+        EmblemId getLocalEmblem () {
+            if (module != nullptr && !module->theme_Emblem.isUnknown ())
                 return module->theme_Emblem;
             return pluginSettings.global_DefaultEmblem;
         }
 
-        std::shared_ptr<rack_themer::RackTheme> getTheme () override { return Theme::getTheme (getLocalTheme ()); }
+        std::shared_ptr<rack_themer::RackTheme> getTheme () override { return getLocalTheme ().getThemeInstance (); }
 
       protected:
         void constructor (TModule* module, std::string panelName) {
@@ -89,8 +91,8 @@ namespace Widgets {
             this->loadPanel (Theme::getThemedSvg (panelName, nullptr));
             this->setModule (module);
 
-            curTheme = ThemeKind::INVALID;
-            curEmblem = EmblemKind::INVALID;
+            curTheme = ThemeId::getInvalid ();
+            curEmblem = EmblemId::getInvalid ();
 
             initializeWidget ();
 
@@ -118,39 +120,33 @@ namespace Widgets {
             onChangeEmblem (emblem);
         }
 
-        void setTheme (ThemeKind theme) {
+        void setTheme (ThemeId themeId) {
             auto oldTheme = module->theme_Override;
-            module->theme_Override = theme;
+            module->theme_Override = themeId;
 
-            auto themeChange = new HistoryThemeChange;
-
+            auto themeChange = new HistoryThemeChange (oldTheme, themeId);
             themeChange->moduleId = module->id;
-            themeChange->oldTheme = oldTheme;
-            themeChange->newTheme = theme;
 
             APP->history->push (themeChange);
 
             updateTheme ();
         }
 
-        void setEmblem (EmblemKind emblem) {
+        void setEmblem (EmblemId emblemId) {
             auto oldEmblem = module->theme_Emblem;
-            module->theme_Emblem = emblem;
+            module->theme_Emblem = emblemId;
 
-            auto emblemChange = new HistoryEmblemChange;
-
+            auto emblemChange = new HistoryEmblemChange (oldEmblem, emblemId);
             emblemChange->moduleId = module->id;
-            emblemChange->oldEmblem = oldEmblem;
-            emblemChange->newEmblem = emblem;
 
             APP->history->push (emblemChange);
 
             updateEmblem ();
         }
 
-        virtual void onChangeTheme (ThemeKind theme) { handleThemeChange (this, Theme::getTheme (theme), true); }
+        virtual void onChangeTheme (ThemeId themeId) { handleThemeChange (this, themeId.getThemeInstance (), true); }
 
-        virtual void onChangeEmblem (EmblemKind emblem) { }
+        virtual void onChangeEmblem (EmblemId emblemId) { }
 
         void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override {
             this->loadPanel (Theme::getThemedSvg (panelName, theme));
@@ -159,18 +155,15 @@ namespace Widgets {
         virtual void createPluginSettingsMenu (rack::ui::Menu* menu) {
             menu->addChild (rack::createSubmenuItem ("Theme settings", "", [] (rack::ui::Menu* menu) {
                 menu->addChild (rack::createMenuLabel ("Default light theme"));
-                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                    menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeLight, i));
+                ThemeId::forEachValue ([=] (ThemeId id) { menu->addChild (createThemeMenuItem (id.getDisplayName (), "", &pluginSettings.global_ThemeLight, id)); });
 
                 menu->addChild (new rack::ui::MenuSeparator);
                 menu->addChild (rack::createMenuLabel ("Default dark theme"));
-                for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                    menu->addChild (createThemeMenuItem (getThemeLabel (i), "", &pluginSettings.global_ThemeDark, i));
+                ThemeId::forEachValue ([=] (ThemeId id) { menu->addChild (createThemeMenuItem (id.getDisplayName (), "", &pluginSettings.global_ThemeDark, id)); });
 
                 menu->addChild (new rack::ui::MenuSeparator);
                 menu->addChild (rack::createMenuLabel ("Default emblem"));
-                for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
-                    menu->addChild (createThemeMenuItem (getEmblemLabel (i), "", &pluginSettings.global_DefaultEmblem, i));
+                EmblemId::forEachValue ([=] (EmblemId id) { menu->addChild (createThemeMenuItem (id.getDisplayName (), "", &pluginSettings.global_DefaultEmblem, id)); });
             }));
         }
 
@@ -180,23 +173,21 @@ namespace Widgets {
             using rack::createSubmenuItem;
             using rack::createCheckMenuItem;
 
-            auto createThemeOverrideItem = [=] (std::string name, ThemeKind theme) {
-                return createCheckMenuItem (name, "", [=] { return module->theme_Override == theme; }, [=] { setTheme (theme); });
+            auto createThemeOverrideItem = [=] (std::string name, ThemeId themeId) {
+                return createCheckMenuItem (name, "", [=] { return module->theme_Override == themeId; }, [=] { setTheme (themeId); });
             };
-            auto createEmblemOverrideItem = [=] (std::string name, EmblemKind emblem) {
+            auto createEmblemOverrideItem = [=] (std::string name, EmblemId emblem) {
                 return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
             };
 
             menu->addChild (createMenuLabel ("Theme"));
-            menu->addChild (createThemeOverrideItem ("Default", ThemeKind::Unknown));
-            for (auto i = ThemeKind::FirstTheme; i < ThemeKind::ThemeCount; i = static_cast<ThemeKind> (static_cast<int> (i) + 1))
-                menu->addChild (createThemeOverrideItem (getThemeLabel (i), i));
+            menu->addChild (createThemeOverrideItem ("Default", ThemeId::getUnknown ()));
+            ThemeId::forEachValue ([=] (ThemeId id) { menu->addChild (createThemeOverrideItem (id.getDisplayName (), id)); });
 
             menu->addChild (new rack::ui::MenuSeparator);
             menu->addChild (createMenuLabel ("Emblem"));
-            menu->addChild (createEmblemOverrideItem ("Default", EmblemKind::Unknown));
-            for (auto i = EmblemKind::FirstEmblem; i < EmblemKind::EmblemCount; i = static_cast<EmblemKind> (static_cast<int> (i) + 1))
-                menu->addChild (createEmblemOverrideItem (getEmblemLabel (i), i));
+            menu->addChild (createEmblemOverrideItem ("Default", EmblemId::getUnknown ()));
+            EmblemId::forEachValue ([=] (EmblemId id) { menu->addChild (createEmblemOverrideItem (id.getDisplayName (), id)); });
         }
 
         void step () override {

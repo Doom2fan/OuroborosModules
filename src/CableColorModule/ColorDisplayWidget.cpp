@@ -101,7 +101,7 @@ namespace CableColorModule {
      */
     CableColorWidget::CableColorWidget (ColorDisplayWidget* colorDisplay) {
         colorDisplayWidget = colorDisplay;
-        theme = Theme::getTheme (Theme::getCurrentTheme ());
+        theme = Theme::getCurrentTheme ().getThemeInstance ();
     }
 
     std::shared_ptr<CableColorManager>& CableColorWidget::getColorManager () {

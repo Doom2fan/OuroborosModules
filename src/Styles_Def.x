@@ -16,23 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ModuleBase.hpp"
-#include "JsonUtils.hpp"
+THEMES_BEGIN ()
+DEFINE_THEME ("Light", "Light", "Light")
+DEFINE_THEME ("Dark", "Dark", "Dark")
+DEFINE_THEME ("BlackAndGold", "BlackAndGold", "Black and Gold")
+THEMES_END ()
 
-namespace OuroborosModules {
-    json_t* ModuleBase::dataToJson () {
-        auto rootJ = json_object ();
-
-        // Theming
-        json_object_set_new_struct (rootJ, "theme_Override", theme_Override);
-        json_object_set_new_struct (rootJ, "theme_Emblem", theme_Emblem);
-
-        return rootJ;
-    }
-
-    void ModuleBase::dataFromJson (json_t* rootJ) {
-        // Theming
-        json_object_try_get_struct (rootJ, "theme_Override", theme_Override);
-        json_object_try_get_struct (rootJ, "theme_Emblem", theme_Emblem);
-    }
-}
+EMBLEMS_BEGIN ()
+DEFINE_EMBLEM ("None", "??NONE??", "None")
+DEFINE_EMBLEM ("Dragon", "Dragon", "Dragon")
+DEFINE_EMBLEM ("BleedingEye", "BleedingEye", "Bleeding Eye")
+EMBLEMS_END ()
