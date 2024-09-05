@@ -41,7 +41,7 @@ namespace CableColorModule {
 
         bool matches (CableColorKey otherKey);
 
-        json_t* dataToJson ();
+        json_t* dataToJson () const;
         bool dataFromJson (json_t* keyJ);
     };
 
@@ -55,7 +55,7 @@ namespace CableColorModule {
         CableColor (NVGcolor newColor, CableColorKey newKey, std::string newLabel)
             : color (newColor), key (newKey), label (newLabel) { }
 
-        json_t* dataToJson ();
+        json_t* dataToJson () const;
         bool dataFromJson (json_t* colorJ);
     };
 
@@ -85,7 +85,7 @@ namespace CableColorModule {
 
         void resetToDefaults ();
 
-        json_t* dataToJson ();
+        json_t* dataToJson () const;
         bool dataFromJson (json_t* collectionJ);
     };
 
@@ -111,7 +111,7 @@ namespace CableColorModule {
         bool tryGetDefaultCollection (CableColorCollection& collection) const;
         bool setDefaultCollection (const std::string& collectionName);
 
-        json_t* dataToJson ();
+        json_t* dataToJson () const;
         void dataFromJson (json_t* storageJ);
     };
 
@@ -166,7 +166,7 @@ namespace CableColorModule {
         bool handleKey (CableColorKey key);
         bool learnKey (CableColorKey key);
 
-        json_t* dataToJson ();
+        json_t* dataToJson () const;
         bool dataFromJson (json_t* managerJ);
     };
 

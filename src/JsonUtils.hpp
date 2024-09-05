@@ -77,4 +77,15 @@ namespace OuroborosModules {
 
     void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value);
     void json_object_set_new_string (json_t* rootJ, const char* name, const char* value);
+
+    template<typename T>
+    void json_object_try_get_struct (json_t* rootJ, const char* name, T& value) {
+        auto nodeJ = json_object_get (rootJ, name);
+        value.dataFromJson (nodeJ);
+    }
+
+    template<typename T>
+    void json_object_set_new_struct (json_t* rootJ, const char* name, const T& value) {
+        json_object_set_new (rootJ, name, value.dataToJson ());
+    }
 }

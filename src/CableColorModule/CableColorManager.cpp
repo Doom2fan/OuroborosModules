@@ -71,7 +71,7 @@ namespace CableColorModule {
         return false;
     }
 
-    json_t* CableColorKey::dataToJson () {
+    json_t* CableColorKey::dataToJson () const {
         auto keyJ = json_object ();
 
         json_object_set_new_int (keyJ, "button", button);
@@ -95,7 +95,7 @@ namespace CableColorModule {
     /*
      * CableColor
      */
-    json_t* CableColor::dataToJson () {
+    json_t* CableColor::dataToJson () const {
         auto colorJ = json_object ();
 
         json_object_set_new_float (colorJ, "color::R", color.r);
@@ -142,7 +142,7 @@ namespace CableColorModule {
         addColor (rack::color::fromHexString ("#8B4ADE"), CableColorKey (-1, GLFW_KEY_5, 0), "");
     }
 
-    json_t* CableColorCollection::dataToJson () {
+    json_t* CableColorCollection::dataToJson () const {
         auto collectionJ = json_object ();
 
         json_object_set_new_string (collectionJ, "name", name);
@@ -255,7 +255,7 @@ namespace CableColorModule {
         return true;
     }
 
-    json_t* CollectionsStorage::dataToJson () {
+    json_t* CollectionsStorage::dataToJson () const {
         auto storageJ = json_object ();
 
         json_object_set_new_string (storageJ, "defaultCollectionName", defaultCollectionName);
@@ -601,7 +601,7 @@ namespace CableColorModule {
         return true;
     }
 
-    json_t* CableColorManager::dataToJson () {
+    json_t* CableColorManager::dataToJson () const {
         auto managerJ = json_object ();
 
         json_object_set_new_int (managerJ, "curColorIndex", curColorIndex);
