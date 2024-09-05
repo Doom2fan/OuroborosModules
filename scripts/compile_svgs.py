@@ -20,13 +20,15 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import os
 import glob
+import os
 import shutil
 import subprocess
+import sys
 
-SVG_PATH_SRC = "res_src"
-SVG_PATH_DST = "res"
+from pathlib import Path
+from scripts.common import *
+
 INKSCAPE_ARGS = [
     "--without-gui", "--batch-process",
     "--actions='select-by-id:Widgets;selection-hide;select-all;"
@@ -34,50 +36,42 @@ INKSCAPE_ARGS = [
     "object-to-path;export-text-to-path;export-overwrite;export-do;'",
 ]
 
-
-def checkSrcFileNewer(pathSrc, pathDst):
-    if not os.path.isfile(pathSrc):
-        return None
-    if not os.path.isfile(pathDst):
-        return True
-
-    return os.path.getmtime(pathSrc) >= os.path.getmtime(pathDst)
-
-
-def main():
-    inkscapePath = os.environ.get('INKSCAPE_PATH')
-    if inkscapePath is None:
-        print("$INKSCAPE_PATH must be set to the inkscape EXE.")
-        return
-
-    srcDir = os.path.abspath(SVG_PATH_SRC)
-    dstDir = os.path.abspath(SVG_PATH_DST)
+def compile_svgs(globalData):
+    srcDir = Path(globalData.repoDir, SVG_PATH_SRC).resolve()
+    dstDir = Path(globalData.repoDir, SVG_PATH_DST).resolve()
 
     newerFiles = []
     for fileName in glob.iglob("**/*.svg", root_dir=srcDir, recursive=True):
-        filePathSrc = os.path.join(srcDir, fileName)
-        filePathDst = os.path.join(dstDir, fileName)
+        filePathSrc = (srcDir / fileName).resolve()
+        filePathDst = (dstDir / fileName).resolve()
 
         if not os.path.isfile(filePathSrc):
             continue
         if not checkSrcFileNewer(filePathSrc, filePathDst):
             continue
 
-        fileDstDir = os.path.dirname(filePathDst)
-        if not os.path.isdir(fileDstDir):
-            os.makedirs (fileDstDir)
+        fileDstDir = filePathDst.parent
+        if not fileDstDir.is_dir():
+            fileDstDir.mkDir(parents=True, exist_ok=True)
 
         shutil.copyfile(filePathSrc, filePathDst)
-        newerFiles.append(filePathDst)
+        newerFiles.append(str(filePathDst))
 
     if len(newerFiles) < 1:
         return
 
     argsList = INKSCAPE_ARGS.copy()
-    argsList.insert(0, inkscapePath)
+    argsList.insert(0, globalData.inkscapePath)
     argsList.extend(newerFiles)
     subprocess.run(argsList)
 
+def scriptMain():
+    globalData = GlobalData()
+    if globalData.inkscapePath is None:
+        print("INKSCAPE_PATH must be set to the inkscape EXE.")
+        return
+
+    main(globalData)
 
 if __name__ == '__main__':
-    main()
+    scriptMain()
