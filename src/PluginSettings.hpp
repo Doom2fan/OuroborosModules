@@ -56,6 +56,8 @@ namespace OuroborosModules {
 #undef DEFINE_STRUCT
     };
 
+    void initSettings ();
+
     extern OuroborosSettings pluginSettings;
 }
 

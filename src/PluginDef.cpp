@@ -50,6 +50,7 @@ void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::log
 
 void init (rack::plugin::Plugin* p) {
     pluginInstance = p;
+    OuroborosModules::initSettings ();
 
     rack_themer::logging::setLogger (&rackThemerLogger);
 

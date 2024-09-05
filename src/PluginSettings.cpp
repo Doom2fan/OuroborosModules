@@ -26,6 +26,10 @@
 namespace OuroborosModules {
     OuroborosSettings pluginSettings;
 
+    void initSettings () {
+        pluginSettings = OuroborosSettings ();
+    }
+
     json_t* OuroborosSettings::saveToJson () {
         auto settingsJ = json_object ();
 
