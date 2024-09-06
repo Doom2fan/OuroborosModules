@@ -61,7 +61,7 @@ def compile_svgs(globalData):
         print(f"copying {fileName}")
         fileDstDir = filePathDst.parent
         if not fileDstDir.is_dir():
-            fileDstDir.mkDir(parents=True, exist_ok=True)
+            fileDstDir.mkdir(parents=True, exist_ok=True)
 
         shutil.copyfile(filePathSrc, filePathDst)
         newerFiles.append(str(filePathDst))
