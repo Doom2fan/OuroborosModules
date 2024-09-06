@@ -27,7 +27,10 @@ import subprocess
 import sys
 
 from pathlib import Path
-from scripts.common import *
+if __name__ == '__main__':
+    from common import *
+else:
+    from .common import *
 
 INKSCAPE_ARGS = [
     "--without-gui", "--batch-process",
@@ -37,6 +40,10 @@ INKSCAPE_ARGS = [
 ]
 
 def compile_svgs(globalData):
+    if globalData.inkscapePath is None:
+        print("error: INKSCAPE_PATH must be set to the inkscape EXE.")
+        return
+
     srcDir = Path(globalData.repoDir, SVG_PATH_SRC).resolve()
     dstDir = Path(globalData.repoDir, SVG_PATH_DST).resolve()
 
@@ -65,13 +72,5 @@ def compile_svgs(globalData):
     argsList.extend(newerFiles)
     subprocess.run(argsList)
 
-def scriptMain():
-    globalData = GlobalData()
-    if globalData.inkscapePath is None:
-        print("INKSCAPE_PATH must be set to the inkscape EXE.")
-        return
-
-    compile_svgs(globalData)
-
 if __name__ == '__main__':
-    scriptMain()
+    compile_svgs(GlobalData())

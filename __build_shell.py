@@ -46,7 +46,7 @@ class CmdShell(cmd.Cmd):
     def do_run(self, args):
         'Runs VCV in development mode'
         if self.globalData.rackPath is None:
-            print("run: error: VCV not found in RACK_DIR.")
+            print(VCV_NOT_FOUND_ERROR_MSG)
             return
 
         subprocess.run([self.globalData.rackPath, "-d"], cwd=self.globalData.rackSdkDir)
@@ -62,14 +62,14 @@ class CmdShell(cmd.Cmd):
                 buildType = "Debug"
 
             case _:
-                print(f"build: error: Expected 'release' or 'debug', got '{argStr}'.")
+                print(f"error: Expected 'release' or 'debug', got '{argStr}'.")
                 return
 
         globalData = self.globalData
         cmakeBuild = f"{globalData.cmakeBuild}_{buildType}"
 
         if globalData.cmakePath is None:
-            print("build: error: CMake could not be found.")
+            print("error: CMake could not be found.")
             return
 
         pluginDll = "plugin.so"
@@ -101,18 +101,14 @@ class CmdShell(cmd.Cmd):
                 Path(globalData.repoDir, pluginDLL).resolve()
             )
         except (shutil.SameFileError, OSError) as err:
-            print(f"build: error: {str(err)}")
+            print(f"error: {str(err)}")
 
     def do_svg(self, args):
         'Processes the SVG files'
-        if self.globalData.inkscapePath is None:
-            print("svg: error: INKSCAPE_PATH must be set to the inkscape EXE.")
-            return
-
         try:
             compile_svgs.compile_svgs(self.globalData)
         except Exception as err:
-            print(f"svg: error: {str(err)}")
+            print(f"error: {str(err)}")
 
     def do_exit(self, args):
         'Exits the shell'
@@ -126,8 +122,6 @@ def main():
         CmdShell().onecmd(' '.join(sys.argv[1:]))
     else:
         CmdShell().cmdloop()
-
-    #subprocess.run(["make", "dist"], cwd = repoDir)
 
 if __name__ == '__main__':
     main()

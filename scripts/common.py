@@ -31,6 +31,9 @@ from enum import Enum
 SVG_PATH_SRC = "res_src"
 SVG_PATH_DST = "res"
 
+# Error messages
+VCV_NOT_FOUND_ERROR_MSG = "error: VCV not found in RACK_DIR."
+
 class SystemOS(Enum):
     Windows = 1
     Linux = 2,
