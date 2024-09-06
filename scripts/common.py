@@ -18,15 +18,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import glob
 import os
 import platform
 import shutil
-import subprocess
-import sys
 
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 SVG_PATH_SRC = "res_src"
 SVG_PATH_DST = "res"

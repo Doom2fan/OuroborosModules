@@ -20,13 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import argparse
 import cmd
-import glob
-import os
-import platform
 import scripts.compile_svgs as compile_svgs
-import shlex
 import shutil
 import subprocess
 import sys
