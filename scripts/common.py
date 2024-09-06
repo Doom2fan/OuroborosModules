@@ -71,7 +71,7 @@ def getRepoPath():
     curPath = Path(__file__).resolve().parent
     while not (curPath / "__build_shell.py").is_file():
         if curPath == curPath.parent:
-            raise Exception("Could not file repo dir.")
+            raise Exception("Could not find repo base directory")
         curPath = curPath.parent
 
     return curPath

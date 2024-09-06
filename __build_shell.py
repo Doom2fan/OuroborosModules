@@ -22,6 +22,7 @@
 
 import cmd
 import scripts.compile_svgs as compile_svgs
+import scripts.make_docs_images as make_docs_images
 import shutil
 import subprocess
 import sys
@@ -44,6 +45,7 @@ class CmdShell(cmd.Cmd):
             print(VCV_NOT_FOUND_ERROR_MSG)
             return
 
+        print("starting VCV in development mode")
         subprocess.run([self.globalData.rackPath, "-d"], cwd=self.globalData.rackSdkDir)
 
     def do_build(self, argStr):
@@ -57,14 +59,14 @@ class CmdShell(cmd.Cmd):
                 buildType = "Debug"
 
             case _:
-                print(f"error: Expected 'release' or 'debug', got '{argStr}'.")
+                print(f"error: expected 'release' or 'debug', got '{argStr}'")
                 return
 
         globalData = self.globalData
         cmakeBuild = f"{globalData.cmakeBuild}_{buildType}"
 
         if globalData.cmakePath is None:
-            print("error: CMake could not be found.")
+            print("error: CMake could not be found")
             return
 
         pluginDll = "plugin.so"
@@ -76,6 +78,7 @@ class CmdShell(cmd.Cmd):
             case SystemOS.Linux | _:
                 pluginDLL = "plugin.so"
 
+        print("generating CMake build files")
         subprocess.run(
             [
                 globalData.cmakePath, "-B", cmakeBuild, f"-DRACK_SDK_DIR={globalData.rackSdkDir}",
@@ -83,14 +86,18 @@ class CmdShell(cmd.Cmd):
             ],
             cwd = globalData.repoDir
         )
+        print("building plugin")
         subprocess.run([globalData.cmakePath, "--build", cmakeBuild, "--", "-j", str(globalData.threadCount)], cwd=globalData.repoDir)
+        print("installing plugin files")
         subprocess.run([globalData.cmakePath, "--install", cmakeBuild], cwd=globalData.repoDir)
 
         try:
+            print("copying 'compile_commands.json' to repo root")
             shutil.copyfile(
                 Path(globalData.repoDir, cmakeBuild, "compile_commands.json").resolve(),
                 Path(globalData.repoDir, "compile_commands.json").resolve()
             )
+            print("copying plugin file to repo root")
             shutil.copyfile(
                 Path(globalData.repoDir, cmakeBuild, pluginDLL).resolve(),
                 Path(globalData.repoDir, pluginDLL).resolve()

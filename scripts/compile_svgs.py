@@ -40,12 +40,13 @@ INKSCAPE_ARGS = [
 
 def compile_svgs(globalData):
     if globalData.inkscapePath is None:
-        print("error: INKSCAPE_PATH must be set to the inkscape EXE.")
+        print("error: INKSCAPE_PATH must be set to the inkscape EXE")
         return
 
     srcDir = Path(globalData.repoDir, SVG_PATH_SRC).resolve()
     dstDir = Path(globalData.repoDir, SVG_PATH_DST).resolve()
 
+    print("copying SVGs to temp folder")
     newerFiles = []
     for fileName in glob.iglob("**/*.svg", root_dir=srcDir, recursive=True):
         filePathSrc = (srcDir / fileName).resolve()
@@ -54,8 +55,10 @@ def compile_svgs(globalData):
         if not os.path.isfile(filePathSrc):
             continue
         if not checkSrcFileNewer(filePathSrc, filePathDst):
+            print(f"up to date: {fileName}")
             continue
 
+        print(f"copying {fileName}")
         fileDstDir = filePathDst.parent
         if not fileDstDir.is_dir():
             fileDstDir.mkDir(parents=True, exist_ok=True)
@@ -64,8 +67,10 @@ def compile_svgs(globalData):
         newerFiles.append(str(filePathDst))
 
     if len(newerFiles) < 1:
+        print("all SVG files up to date")
         return
 
+    print("launching Inkscape")
     argsList = INKSCAPE_ARGS.copy()
     argsList.insert(0, globalData.inkscapePath)
     argsList.extend(newerFiles)
