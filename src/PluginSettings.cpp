@@ -26,8 +26,31 @@
 namespace OuroborosModules {
     OuroborosSettings pluginSettings;
 
+    void tryLoadDefaults () {
+        auto defaultsFilePath = rack::asset::user ("OuroborosModules_Default.json");
+        if (defaultsFilePath.empty ())
+            return;
+
+        FILE* jsonFile = std::fopen (defaultsFilePath.c_str (), "r");
+        if (jsonFile == nullptr)
+            return;
+        DEFER ({ std::fclose (jsonFile); });
+
+        json_error_t jsonError;
+        auto defaultsJson = json_loadf (jsonFile, 0, &jsonError);
+        if (defaultsJson == nullptr) {
+            WARN ("OuroborosModules default settings file error at %d:%d - %s", jsonError.line, jsonError.column, jsonError.text);
+            return;
+        }
+
+        DEFER ({ json_decref (defaultsJson); });
+
+        pluginSettings.readFromJson (defaultsJson);
+    }
+
     void initSettings () {
         pluginSettings = OuroborosSettings ();
+        tryLoadDefaults ();
     }
 
     json_t* OuroborosSettings::saveToJson () {
@@ -39,7 +62,7 @@ namespace OuroborosModules {
     }
 
     void OuroborosSettings::readFromJson (json_t* settingsJ) {
-        if (settingsJ == nullptr)
+        if (!json_is_object (settingsJ))
             return;
 
         readInternal (settingsJ);
