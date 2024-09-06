@@ -71,7 +71,7 @@ def scriptMain():
         print("INKSCAPE_PATH must be set to the inkscape EXE.")
         return
 
-    main(globalData)
+    compile_svgs(globalData)
 
 if __name__ == '__main__':
     scriptMain()
