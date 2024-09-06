@@ -112,6 +112,13 @@ class CmdShell(cmd.Cmd):
         except Exception as err:
             print(f"error: {str(err)}")
 
+    def do_make_images(self, args):
+        'Generates the documentation\'s images'
+        try:
+            make_docs_images.make_docs_images(self.globalData)
+        except Exception as err:
+            print(f"error: {str(err)}")
+
     def do_exit(self, args):
         'Exits the shell'
         return True

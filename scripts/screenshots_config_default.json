@@ -1,0 +1,72 @@
+{
+    "global::ThemeLight": "BlackAndGold",
+    "global::ThemeDark": "BlackAndGold",
+    "global::DefaultEmblem": "Dragon",
+    "cableColorManager::DisplayKeyMappings": true,
+    "cableColorManager::CenterEmblem": true,
+    "cableColorManager::Collections":
+    {
+        "defaultCollectionName": "Omri Cohen/Modular Fungi",
+        "collections":
+        [
+            {
+                "name": "Omri Cohen/Modular Fungi",
+                "colors":
+                [
+                    {
+                        "color::R": 0.7882353663444519,
+                        "color::G": 0.094117656350135803,
+                        "color::B": 0.27843138575553894,
+                        "color::A": 1.0,
+                        "key":
+                        {
+                            "button": -1,
+                            "key": 49,
+                            "mods": 0
+                        },
+                        "label": "Audio"
+                    },
+                    {
+                        "color::R": 0.035294119268655777,
+                        "color::G": 0.52549022436141968,
+                        "color::B": 0.67843139171600342,
+                        "color::A": 1.0,
+                        "key":
+                        {
+                            "button": -1,
+                            "key": 50,
+                            "mods": 0
+                        },
+                        "label": "Clk/Trg/Gate"
+                    },
+                    {
+                        "color::R": 0.7882353663444519,
+                        "color::G": 0.71764707565307617,
+                        "color::B": 0.054901964962482452,
+                        "color::A": 1.0,
+                        "key":
+                        {
+                            "button": -1,
+                            "key": 51,
+                            "mods": 0
+                        },
+                        "label": "V/Oct"
+                    },
+                    {
+                        "color::R": 0.047058828175067902,
+                        "color::G": 0.55686277151107788,
+                        "color::B": 0.08235294371843338,
+                        "color::A": 1.0,
+                        "key":
+                        {
+                            "button": -1,
+                            "key": 52,
+                            "mods": 0
+                        },
+                        "label": "Modulation"
+                    }
+                ]
+            }
+        ]
+    }
+}

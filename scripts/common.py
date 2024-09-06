@@ -25,8 +25,17 @@ import shutil
 from enum import Enum
 from pathlib import Path
 
+# Module paths & data
+MODULE_SLUG = "OuroborosModules"
+MODULE_DEFAULTS_OVERRIDE_FILE = "OuroborosModules_Default.json"
 SVG_PATH_SRC = "res_src"
 SVG_PATH_DST = "res"
+SCRIPTS_DIR = "scripts"
+DOCS_SCREENSHOTS_DIR = "docs/images/modules"
+
+# VCV paths
+VCV_SETTINGS_FILE = "settings.json"
+VCV_SCREENSHOTS_DIR = "screenshots"
 
 # Error messages
 VCV_NOT_FOUND_ERROR_MSG = "error: VCV not found in RACK_DIR."
