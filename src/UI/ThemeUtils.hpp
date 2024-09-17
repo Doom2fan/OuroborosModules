@@ -33,6 +33,7 @@ namespace OuroborosModules {
 namespace Theme {
     ThemeId getCurrentTheme ();
 
+    std::shared_ptr<rack_themer::ThemeableSvg> getSvg (std::string filePath);
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme);
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeId themeId);
 

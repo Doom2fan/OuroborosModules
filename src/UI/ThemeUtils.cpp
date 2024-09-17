@@ -39,15 +39,17 @@ namespace Theme {
             : pluginSettings.global_ThemeDark;
     }
 
-    rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme) {
+    std::shared_ptr<rack_themer::ThemeableSvg> getSvg (std::string filePath) {
         auto svgPath = fmt::format (FMT_STRING ("res/{:s}.svg"), filePath);
-        auto svg = rack_themer::loadSvg (rack::asset::plugin (pluginInstance, svgPath));
+        return rack_themer::loadSvg (rack::asset::plugin (pluginInstance, svgPath));
+    }
 
-        return rack_themer::ThemedSvg (svg, theme);
+    rack_themer::ThemedSvg getThemedSvg (std::string filePath, std::shared_ptr<rack_themer::RackTheme> theme) {
+        return rack_themer::ThemedSvg (getSvg (filePath), theme);
     }
 
     rack_themer::ThemedSvg getThemedSvg (std::string filePath, ThemeId themeId) {
-        return getThemedSvg (filePath, themeId.getThemeInstance ());
+        return rack_themer::ThemedSvg (getSvg (filePath), themeId.getThemeInstance ());
     }
 }
 }

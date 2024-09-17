@@ -51,7 +51,7 @@ namespace Widgets {
     };
 
     struct CableJackWidget : rack_themer::widgets::SvgPort {
-        CableJackWidget () { setSvg (Theme::getThemedSvg ("components/CableJack", Theme::getCurrentTheme ())); }
+        CableJackWidget () { setSvg (Theme::getThemedSvg ("components/CableJack", nullptr)); }
     };
 }
 }
