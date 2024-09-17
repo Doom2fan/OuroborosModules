@@ -25,28 +25,9 @@
 
 namespace OuroborosModules {
 namespace Widgets {
-    struct ScrewWidget : rack::widget::Widget {
-        rack::widget::FramebufferWidget* framebuffer;
-        rack_themer::widgets::SvgWidget* svgWidget;
-
+    struct ScrewWidget : rack_themer::widgets::SvgScrew {
         ScrewWidget () {
-            framebuffer = new rack::widget::FramebufferWidget;
-            addChild (framebuffer);
-
-            svgWidget = new rack_themer::widgets::SvgWidget;
-            framebuffer->addChild (svgWidget);
-
-            setSvg (Theme::getThemedSvg ("components/Screw", Theme::getCurrentTheme ()));
-        }
-
-        void setSvg (rack_themer::ThemedSvg svg) {
-            if (svgWidget->svg == svg)
-                return;
-
-            svgWidget->setSvg (svg);
-            box.size = framebuffer->box.size = svgWidget->box.size;
-
-            framebuffer->setDirty ();
+            setSvg (Theme::getThemedSvg ("components/Screw", nullptr));
         }
     };
 
