@@ -36,12 +36,12 @@ namespace STVCA {
         configSwitch (PARAM_EXP, 0.f, 1.f, 1.f, "Response mode", { "Exponential", "Linear", });
 
         // Configure inputs and outputs.
-        configInput (INPUT_LEFT, "Left input");
-        configInput (INPUT_RIGHT, "Right input");
-        configInput (INPUT_CV, "CV input");
+        configInput (INPUT_LEFT, "Left");
+        configInput (INPUT_RIGHT, "Right");
+        configInput (INPUT_CV, "CV");
 
-        configOutput (OUTPUT_LEFT, "Left output");
-        configOutput (OUTPUT_RIGHT, "Right output");
+        configOutput (OUTPUT_LEFT, "Left");
+        configOutput (OUTPUT_RIGHT, "Right");
 
         // Configure bypasses.
         configBypass (INPUT_LEFT, OUTPUT_LEFT);

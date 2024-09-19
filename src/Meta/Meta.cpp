@@ -33,10 +33,10 @@ namespace Meta {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure audio inputs and outputs.
-        configInput (INPUT_LEFT, "Left input");
-        configInput (INPUT_RIGHT, "Right input");
-        configOutput (OUTPUT_LEFT, "Left output");
-        configOutput (OUTPUT_RIGHT, "Right output");
+        configInput (INPUT_LEFT, "Left");
+        configInput (INPUT_RIGHT, "Right");
+        configOutput (OUTPUT_LEFT, "Left");
+        configOutput (OUTPUT_RIGHT, "Right");
         configBypass (INPUT_LEFT, OUTPUT_LEFT);
         configBypass (INPUT_RIGHT, OUTPUT_RIGHT);
 
