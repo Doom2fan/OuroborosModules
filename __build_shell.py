@@ -79,17 +79,28 @@ class CmdShell(cmd.Cmd):
                 pluginDLL = "plugin.so"
 
         print("generating CMake build files")
-        subprocess.run(
+        cmakeResult = subprocess.run(
             [
                 globalData.cmakePath, "-B", cmakeBuild, f"-DRACK_SDK_DIR={globalData.rackSdkDir}",
                 f"-DCMAKE_BUILD_TYPE={buildType}", f"-DCMAKE_INSTALL_PREFIX={cmakeBuild}/dist", cmakeBuild
             ],
             cwd = globalData.repoDir
         )
+        if cmakeResult.returncode != 0:
+            print(f"failed to generate build files: CMake failed with exit code {cmakeResult.returncode}")
+            return
+
         print("building plugin")
-        subprocess.run([globalData.cmakePath, "--build", cmakeBuild, "--", "-j", str(globalData.threadCount)], cwd=globalData.repoDir)
+        cmakeResult = subprocess.run([globalData.cmakePath, "--build", cmakeBuild, "--", "-j", str(globalData.threadCount)], cwd=globalData.repoDir)
+        if cmakeResult.returncode != 0:
+            print(f"failed to generate build files: CMake failed with exit code {cmakeResult.returncode}")
+            return
+
         print("installing plugin files")
-        subprocess.run([globalData.cmakePath, "--install", cmakeBuild], cwd=globalData.repoDir)
+        cmakeResult = subprocess.run([globalData.cmakePath, "--install", cmakeBuild], cwd=globalData.repoDir)
+        if cmakeResult.returncode != 0:
+            print(f"failed to generate build files: CMake failed with exit code {cmakeResult.returncode}")
+            return
 
         try:
             print("copying 'compile_commands.json' to repo root")

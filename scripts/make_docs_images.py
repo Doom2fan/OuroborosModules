@@ -94,5 +94,7 @@ def make_docs_images(globalData):
         print("restoring defaults override file")
         defaultsOverrideBackupPath.replace(defaultsOverridePath)
 
+    print("done")
+
 if __name__ == '__main__':
     make_docs_images(GlobalData())

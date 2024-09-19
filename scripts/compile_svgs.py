@@ -76,5 +76,7 @@ def compile_svgs(globalData):
     argsList.extend(newerFiles)
     subprocess.run(argsList)
 
+    print("done")
+
 if __name__ == '__main__':
     compile_svgs(GlobalData())
