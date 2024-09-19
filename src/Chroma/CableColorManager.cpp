@@ -21,18 +21,19 @@
 #include "../JsonUtils.hpp"
 #include "../PluginSettings.hpp"
 #include "../UI/Input.hpp"
-#include "CableColorModule.hpp"
 #include "CCM_Common.hpp"
+#include "Chroma.hpp"
 #include "HistoryActions.hpp"
 
 #include <fmt/format.h>
 
 namespace {
-    std::weak_ptr<OuroborosModules::CableColorModule::CableColorManager> currentColorManagerPtr;
+    std::weak_ptr<OuroborosModules::Modules::Chroma::CableColorManager> currentColorManagerPtr;
 }
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     std::shared_ptr<CableColorManager> getColorManager () {
         if (auto manager = currentColorManagerPtr.lock ())
             return manager;
@@ -295,12 +296,12 @@ namespace CableColorModule {
      * CableColorManager
      */
     CableColorManager::CableColorManager () {
-        if (!pluginSettings.cableColor_Collections.tryGetDefaultCollection (colorCollection))
+        if (!pluginSettings.chroma_Collections.tryGetDefaultCollection (colorCollection))
             colorCollection.resetToDefaults ();
     }
 
     void CableColorManager::setNextCableColorId () {
-        if (pluginSettings.cableColor_Latch)
+        if (pluginSettings.chroma_Latch)
             APP->scene->rack->setNextCableColorId (curColorIndex);
     }
 
@@ -308,14 +309,14 @@ namespace CableColorModule {
         if (index >= colorCollection.count ())
             return;
 
-        forced |= pluginSettings.cableColor_GlobalKeys;
+        forced |= pluginSettings.chroma_GlobalKeys;
 
         // Gather the cables.
         auto cablesToModify = std::vector<rack::app::CableWidget*> ();
         auto heldCable = APP->scene->rack->getIncompleteCable ();
         if (heldCable != nullptr)
             cablesToModify.push_back (heldCable);
-        else if (allowPortHover && pluginSettings.cableColor_PortHover) {
+        else if (allowPortHover && pluginSettings.chroma_PortHover) {
             auto hoveredWidget = APP->event->getHoveredWidget ();
             if (auto hoveredPort = dynamic_cast<rack::PortWidget*> (hoveredWidget))
                 cablesToModify = APP->scene->rack->getCablesOnPort (hoveredPort);
@@ -346,7 +347,7 @@ namespace CableColorModule {
         }
 
         setNextCableColorId ();
-        if (!pluginSettings.cableColor_Latch && APP->scene->rack->getIncompleteCable () == nullptr)
+        if (!pluginSettings.chroma_Latch && APP->scene->rack->getIncompleteCable () == nullptr)
             curColorIndex = APP->scene->rack->getNextCableColorId ();
     }
 
@@ -544,13 +545,13 @@ namespace CableColorModule {
             setCurrentColor (static_cast<uint32_t> (newIndex), false, false);
         };
 
-        if (pluginSettings.cableColor_LatchKey.matches (key)) {
-            pluginSettings.cableColor_Latch ^= true;
+        if (pluginSettings.chroma_LatchKey.matches (key)) {
+            pluginSettings.chroma_Latch ^= true;
             return true;
-        } else if (pluginSettings.cableColor_CycleFwdKey.matches (key)) {
+        } else if (pluginSettings.chroma_CycleFwdKey.matches (key)) {
             cycleFunction (1);
             return true;
-        } else if (pluginSettings.cableColor_CycleBackKey.matches (key)) {
+        } else if (pluginSettings.chroma_CycleBackKey.matches (key)) {
             cycleFunction (-1);
             return true;
         }
@@ -625,5 +626,6 @@ namespace CableColorModule {
 
         return true;
     }
+}
 }
 }

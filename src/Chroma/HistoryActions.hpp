@@ -25,7 +25,8 @@
 #include <string>
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     struct ColorManagerHistory : rack::history::Action {
       protected:
         CableColorCollection& getCollection () { return getColorManager ()->colorCollection; }
@@ -120,5 +121,6 @@ namespace CableColorModule {
         void undo () override { getCollection ().setColor (index, oldColor); }
         void redo () override { getCollection ().setColor (index, newColor); }
     };
+}
 }
 }

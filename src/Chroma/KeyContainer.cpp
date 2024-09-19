@@ -16,12 +16,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CableColorModule.hpp"
+#include "Chroma.hpp"
 
 #include "CCM_Common.hpp"
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     struct OverlayWindow : rack::widget::TransparentWidget {
       private:
         std::string message;
@@ -100,7 +101,7 @@ namespace CableColorModule {
         }
     };
 
-    KeyContainer::KeyContainer (CableColorModuleWidget* moduleWidget) {
+    KeyContainer::KeyContainer (ChromaWidget* moduleWidget) {
         this->moduleWidget = moduleWidget;
 
         overlayWindow = new OverlayWindow ();
@@ -197,5 +198,6 @@ namespace CableColorModule {
         if (checkLearningMode (e))
             return;
     }
+}
 }
 }

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StereoVCAModule.hpp"
+#include "STVCA.hpp"
 
 #include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/ColorPicker.hpp"
@@ -26,15 +26,16 @@
 #include <fmt/format.h>
 
 namespace OuroborosModules {
-namespace StereoVCAModule {
-    StereoVCAModuleWidget::StereoVCAModuleWidget (StereoVCAModule* module) { constructor (module, "panels/StereoVCAModule"); }
+namespace Modules {
+namespace STVCA {
+    STVCAWidget::STVCAWidget (STVCAModule* module) { constructor (module, "panels/ST-VCA"); }
 
-    struct StereoVCAModuleSlider : rack::app::SliderKnob {
+    struct STVCASlider : rack::app::SliderKnob {
         void drawLayer (const DrawArgs& args, int layer) override {
             if (layer != 1)
                 return;
 
-            auto module = dynamic_cast<StereoVCAModule*> (this->module);
+            auto module = dynamic_cast<STVCAModule*> (this->module);
 
             auto r = box.zeroPos ();
 
@@ -74,7 +75,7 @@ namespace StereoVCAModule {
 
             auto displayColor = (module != nullptr && !module->displayColorUseDefault)
                               ? module->displayColor
-                              : pluginSettings.stereoVCA_DefaultDisplayColor;
+                              : pluginSettings.stVCA_DefaultDisplayColor;
             nvgFillColor (args.vg, (NVGcolor) displayColor);
             // If nvgFill is called with 0 path elements, it can fill other undefined paths.
             if (segmentFill)
@@ -96,7 +97,7 @@ namespace StereoVCAModule {
         }
     };
 
-    void StereoVCAModuleWidget::initializeWidget () {
+    void STVCAWidget::initializeWidget () {
         using rack::math::Vec;
         using rack::window::mm2px;
         using rack::createWidget;
@@ -116,11 +117,11 @@ namespace StereoVCAModule {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackWidget> (pos, module, StereoVCAModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackWidget> (pos, module, STVCAModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackWidget> (pos, module, StereoVCAModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackWidget> (pos, module, STVCAModule::OUTPUT_LEFT + i));
         });
 
         auto displayBox = findNamedBox ("display").value_or (rack::math::Rect ());
@@ -130,15 +131,15 @@ namespace StereoVCAModule {
 
         const auto knobMarginX = 2.253;
         const auto knobMarginY = 2.892;
-        auto slider = rack::createParam<StereoVCAModuleSlider> (mm2px (Vec (knobMarginX, knobMarginY)), module, StereoVCAModule::PARAM_LEVEL);
+        auto slider = rack::createParam<STVCASlider> (mm2px (Vec (knobMarginX, knobMarginY)), module, STVCAModule::PARAM_LEVEL);
         slider->box.size = displayBox.size - mm2px (Vec (knobMarginX, knobMarginY)).mult (2);
         display->addChild (slider);
 
         auto expSwitchPos = findNamed ("param_Exp").value_or (Vec ());
-        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (expSwitchPos, module, StereoVCAModule::PARAM_EXP));
+        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (expSwitchPos, module, STVCAModule::PARAM_EXP));
     }
 
-    void StereoVCAModuleWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
+    void STVCAWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
         if (emblemWidget == nullptr)
             return;
 
@@ -158,17 +159,17 @@ namespace StereoVCAModule {
         emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
-    void StereoVCAModuleWidget::onChangeTheme (ThemeId themeId) {
+    void STVCAWidget::onChangeTheme (ThemeId themeId) {
         _WidgetBase::onChangeTheme (themeId);
         updateEmblem (themeId, curEmblem);
     }
 
-    void StereoVCAModuleWidget::onChangeEmblem (EmblemId emblemId) {
+    void STVCAWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
         updateEmblem (curTheme, emblemId);
     }
 
-    void StereoVCAModuleWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+    void STVCAWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createSubmenuItem;
         using rack::createCheckMenuItem;
@@ -180,9 +181,9 @@ namespace StereoVCAModule {
 
         menu->addChild (new rack::ui::MenuSeparator);
         struct DisplayColorPickerMenu : UI::ColorPickerMenuItem<UI::ColorMenuItem> {
-            StereoVCAModule* module;
+            STVCAModule* module;
 
-            DisplayColorPickerMenu (StereoVCAModule* module, NVGcolor color)
+            DisplayColorPickerMenu (STVCAModule* module, NVGcolor color)
                 : _WidgetBase (color), module (module) {
                 text = "Custom";
             }
@@ -204,10 +205,10 @@ namespace StereoVCAModule {
                     [=] { return module->displayColorUseDefault; },
                     [=] { module->displayColorUseDefault = true; module->displayColor = RGBColor (); }
                 );
-                defaultColorItem->color = pluginSettings.stereoVCA_DefaultDisplayColor;
+                defaultColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
                 menu->addChild (defaultColorItem);
                 menu->addChild (new DisplayColorPickerMenu (module,
-                    !module->displayColorUseDefault ? module->displayColor : pluginSettings.stereoVCA_DefaultDisplayColor
+                    !module->displayColorUseDefault ? module->displayColor : pluginSettings.stVCA_DefaultDisplayColor
                 ));
 
                 auto firstColor = true;
@@ -232,11 +233,11 @@ namespace StereoVCAModule {
         );
         displayColorItem->color = !module->displayColorUseDefault
                                 ? module->displayColor
-                                : pluginSettings.stereoVCA_DefaultDisplayColor;
+                                : pluginSettings.stVCA_DefaultDisplayColor;
         menu->addChild (displayColorItem);
     }
 
-    void StereoVCAModuleWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+    void STVCAWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createSubmenuItem;
         using rack::createCheckMenuItem;
@@ -249,14 +250,14 @@ namespace StereoVCAModule {
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createMenuLabel ("Visual"));
         struct DisplayColorPickerMenu : UI::ColorPickerMenuItem<UI::ColorMenuItem> {
-            StereoVCAModule* module;
+            STVCAModule* module;
 
-            DisplayColorPickerMenu (StereoVCAModule* module, NVGcolor color)
+            DisplayColorPickerMenu (STVCAModule* module, NVGcolor color)
                 : _WidgetBase (color), module (module) {
                 text = "Custom";
             }
 
-            void onApply (NVGcolor newColor) override { pluginSettings.stereoVCA_DefaultDisplayColor = newColor; }
+            void onApply (NVGcolor newColor) override { pluginSettings.stVCA_DefaultDisplayColor = newColor; }
 
             void onCancel (NVGcolor newColor) override { }
         };
@@ -270,8 +271,8 @@ namespace StereoVCAModule {
                     auto color = colorKVP.second;
                     auto menuItem = createCheckMenuItem<UI::ColorMenuItem> (
                         fmt::format (FMT_STRING ("     {}"), name), "",
-                        [=] { return color == pluginSettings.stereoVCA_DefaultDisplayColor; },
-                        [=] { pluginSettings.stereoVCA_DefaultDisplayColor = color; }
+                        [=] { return color == pluginSettings.stVCA_DefaultDisplayColor; },
+                        [=] { pluginSettings.stVCA_DefaultDisplayColor = color; }
                     );
                     menuItem->color = color;
                     menu->addChild (menuItem);
@@ -279,14 +280,15 @@ namespace StereoVCAModule {
                         firstColor = menuItem;
                 }
                 if (firstColor != nullptr) {
-                    menu->addChildBelow (new DisplayColorPickerMenu (module, pluginSettings.stereoVCA_DefaultDisplayColor), firstColor);
+                    menu->addChildBelow (new DisplayColorPickerMenu (module, pluginSettings.stVCA_DefaultDisplayColor), firstColor);
                     menu->addChildBelow (new rack::ui::MenuSeparator, firstColor);
                 } else
-                    menu->addChild (new DisplayColorPickerMenu (module, pluginSettings.stereoVCA_DefaultDisplayColor));
+                    menu->addChild (new DisplayColorPickerMenu (module, pluginSettings.stVCA_DefaultDisplayColor));
             }
         );
-        displayColorItem->color = pluginSettings.stereoVCA_DefaultDisplayColor;
+        displayColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
         menu->addChild (displayColorItem);
     }
+}
 }
 }

@@ -25,8 +25,9 @@
 #include "../Utils.hpp"
 
 namespace OuroborosModules {
-namespace StereoVCAModule {
-    struct StereoVCAModule : ModuleBase {
+namespace Modules {
+namespace STVCA {
+    struct STVCAModule : ModuleBase {
         enum ParamId {
             PARAM_LEVEL,
             PARAM_EXP,
@@ -56,7 +57,7 @@ namespace StereoVCAModule {
         int lastChannels = 1;
         float lastGains [16] = { };
 
-        StereoVCAModule ();
+        STVCAModule ();
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
@@ -65,12 +66,12 @@ namespace StereoVCAModule {
         void onReset (const ResetEvent& e) override;
     };
 
-    struct StereoVCAModuleWidget : Widgets::ModuleWidgetBase<StereoVCAModuleWidget, StereoVCAModule> {
+    struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAWidget, STVCAModule> {
       private:
         Widgets::ImageWidget* emblemWidget;
 
       public:
-        StereoVCAModuleWidget (StereoVCAModule* module);
+        STVCAWidget (STVCAModule* module);
 
       protected:
         void initializeWidget () override;
@@ -81,5 +82,6 @@ namespace StereoVCAModule {
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
+}
 }
 }

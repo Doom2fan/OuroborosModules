@@ -55,9 +55,9 @@ void init (rack::plugin::Plugin* p) {
     rack_themer::logging::setLogger (&rackThemerLogger);
 
     // Module models.
-    p->addModel (OuroborosModules::modelMetaModule);
-    p->addModel (OuroborosModules::modelCableColorModule);
-    p->addModel (OuroborosModules::modelStereoVCAModule);
+    p->addModel (OuroborosModules::modelMeta);
+    p->addModel (OuroborosModules::modelChroma);
+    p->addModel (OuroborosModules::modelSTVCA);
 }
 
 json_t* settingsToJson () {

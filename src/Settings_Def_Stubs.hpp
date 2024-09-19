@@ -20,4 +20,4 @@
 
 #include "CommonTypes.hpp"
 #include "Constants.hpp"
-#include "CableColorModule/CableColorManager.hpp"
+#include "Chroma/CableColorManager.hpp"

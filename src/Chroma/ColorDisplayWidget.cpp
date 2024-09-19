@@ -18,17 +18,18 @@
 
 #include "ColorDisplayWidget.hpp"
 
-#include "../UI/MenuItems/CommonItems.hpp"
 #include "../UI/MenuItems/ColorPicker.hpp"
+#include "../UI/MenuItems/CommonItems.hpp"
 #include "../UI/ThemeUtils.hpp"
-#include "CableColorModule.hpp"
+#include "Chroma.hpp"
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     /*
      * ColorDisplayWidget
      */
-    ColorDisplayWidget::ColorDisplayWidget (CableColorModule* module, rack::math::Rect newBox) {
+    ColorDisplayWidget::ColorDisplayWidget (ChromaModule* module, rack::math::Rect newBox) {
         this->module = module;
         box = newBox;
 
@@ -55,7 +56,7 @@ namespace CableColorModule {
             colorCollection = module->colorManager->getCollection ();
             currentColor = module->colorManager->getCurrentColor ();
         } else {
-            if (!pluginSettings.cableColor_Collections.tryGetDefaultCollection (colorCollection))
+            if (!pluginSettings.chroma_Collections.tryGetDefaultCollection (colorCollection))
                 return;
             currentColor = 0;
         }
@@ -165,7 +166,7 @@ namespace CableColorModule {
         }
         nvgRestore (args.vg);
 
-        if (!pluginSettings.cableColor_DisplayKeys && color.label.empty () && !color.key.isMapped ())
+        if (!pluginSettings.chroma_DisplayKeys && color.label.empty () && !color.key.isMapped ())
             return;
 
         // Configure the text.
@@ -181,7 +182,7 @@ namespace CableColorModule {
         auto labelTextStart = color.label.c_str ();
         auto labelTextEnd = labelTextStart + color.label.length ();
 
-        auto keyText = pluginSettings.cableColor_DisplayKeys && color.key.isMapped () ? color.key.keyText () : "";
+        auto keyText = pluginSettings.chroma_DisplayKeys && color.key.isMapped () ? color.key.keyText () : "";
         auto keyTextStart = keyText.c_str ();
         auto keyTextEnd = keyTextStart + keyText.length ();
 
@@ -201,7 +202,7 @@ namespace CableColorModule {
             nvgFillPaint (args.vg, (i < blurSteps) ? shadowPaint : textPaint);
             nvgAlpha (args.vg, (i < blurSteps) ? blurStepAmount : 1.);
 
-            if (!pluginSettings.cableColor_DisplayKeys) {
+            if (!pluginSettings.chroma_DisplayKeys) {
                 // Centered label.
                 nvgTextAlign (args.vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
                 nvgText (args.vg, VEC_ARGS (textPos), labelTextStart, labelTextEnd);
@@ -281,5 +282,6 @@ namespace CableColorModule {
             [=] { getColorManager ()->removeColor (index); }
         ));
     }
+}
 }
 }

@@ -24,8 +24,9 @@
 #include <rack_themer.hpp>
 
 namespace OuroborosModules {
-namespace CableColorModule {
-    struct CableColorModule;
+namespace Modules {
+namespace Chroma {
+    struct ChromaModule;
     struct ColorDisplayWidget;
 
     struct CableColorWidget : rack_themer::ThemedWidgetBase<rack::widget::Widget> {
@@ -62,13 +63,14 @@ namespace CableColorModule {
         std::vector<CableColorWidget*> colorWidgets;
         rack::ui::ScrollWidget* scrollContainer;
         rack::ui::SequentialLayout* colorContainer;
-        CableColorModule* module;
+        ChromaModule* module;
         uint32_t currentSelectedIndex;
 
       public:
-        ColorDisplayWidget (CableColorModule* module, rack::math::Rect newBox);
+        ColorDisplayWidget (ChromaModule* module, rack::math::Rect newBox);
 
         void step () override;
     };
+}
 }
 }

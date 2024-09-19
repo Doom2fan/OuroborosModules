@@ -21,11 +21,13 @@
 #include "../PluginDef.hpp"
 
 namespace OuroborosModules {
-namespace CableColorModule {
-    struct CableColorModule;
-    extern CableColorModule* masterModule;
+namespace Modules {
+namespace Chroma {
+    struct ChromaModule;
+    extern ChromaModule* masterModule;
 
     struct KeyContainer;
     extern KeyContainer* masterKeyContainer;
+}
 }
 }

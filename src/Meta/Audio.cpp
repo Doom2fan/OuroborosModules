@@ -16,10 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MetaModule.hpp"
+#include "Meta.hpp"
 
 namespace OuroborosModules {
-namespace MetaModule {
+namespace Modules {
+namespace Meta {
     void MetaModule::audio_Reset () {
         for (int i = 0; i < PLUGSOUND_LENGTH; i++)
             plugSound_Channels [i].reset ();
@@ -49,5 +50,6 @@ namespace MetaModule {
         if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
         if (outputRight) outputs [OUTPUT_RIGHT].setVoltage (audioRight);
     }
+}
 }
 }

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CableColorModule.hpp"
+#include "Chroma.hpp"
 
 #include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/CommonItems.hpp"
@@ -28,10 +28,11 @@
 #include <unordered_set>
 
 namespace OuroborosModules {
-namespace CableColorModule {
-    CableColorModuleWidget::CableColorModuleWidget (CableColorModule* module) { constructor (module, "panels/CableColorModule"); }
+namespace Modules {
+namespace Chroma {
+    ChromaWidget::ChromaWidget (ChromaModule* module) { constructor (module, "panels/Chroma"); }
 
-    void CableColorModuleWidget::initializeWidget () {
+    void ChromaWidget::initializeWidget () {
         using rack::createInputCentered;
         using rack::createOutputCentered;
         using rack::createWidget;
@@ -59,7 +60,7 @@ namespace CableColorModule {
         update ();
     }
 
-    CableColorModuleWidget::~CableColorModuleWidget () {
+    ChromaWidget::~ChromaWidget () {
         if (masterModule == module)
             masterModule = nullptr;
 
@@ -70,7 +71,7 @@ namespace CableColorModule {
         }
     }
 
-    void CableColorModuleWidget::update () {
+    void ChromaWidget::update () {
         auto isMaster = module->checkMaster ();
 
         if (isMaster && keyContainer == nullptr) {
@@ -87,7 +88,7 @@ namespace CableColorModule {
         module->colorManager->updateCurrentColor ();
     }
 
-    void CableColorModuleWidget::step () {
+    void ChromaWidget::step () {
         _WidgetBase::step ();
 
         // Skip if we're in the module browser.
@@ -102,7 +103,7 @@ namespace CableColorModule {
         }
     }
 
-    void CableColorModuleWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
+    void ChromaWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
         if (emblemWidget == nullptr)
             return;
 
@@ -114,7 +115,7 @@ namespace CableColorModule {
 
         emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
 
-        auto centerEmblem = pluginSettings.cableColor_CenterEmblem;
+        auto centerEmblem = pluginSettings.chroma_CenterEmblem;
         if (module != nullptr && module->centerEmblem != CenterEmblem::Default)
             centerEmblem = module->centerEmblem == CenterEmblem::True;
 
@@ -126,17 +127,17 @@ namespace CableColorModule {
         emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
-    void CableColorModuleWidget::onChangeTheme (ThemeId themeId) {
+    void ChromaWidget::onChangeTheme (ThemeId themeId) {
         _WidgetBase::onChangeTheme (themeId);
         updateEmblem (themeId, curEmblem);
     }
 
-    void CableColorModuleWidget::onChangeEmblem (EmblemId emblemId) {
+    void ChromaWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
         updateEmblem (curTheme, emblemId);
     }
 
-    void CableColorModuleWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+    void ChromaWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
         auto createEmblemLocationItem = [&] (std::string name, CenterEmblem centerEmblem) {
             struct HistoryEmblemLocation : rack::history::ModuleAction {
                 CenterEmblem oldLocation;
@@ -145,7 +146,7 @@ namespace CableColorModule {
                 HistoryEmblemLocation () { name = "change emblem location"; }
 
                 void undo () override {
-                    auto module = dynamic_cast<CableColorModule*> (APP->engine->getModule (moduleId));
+                    auto module = dynamic_cast<ChromaModule*> (APP->engine->getModule (moduleId));
                     if (module == nullptr)
                         return;
 
@@ -154,7 +155,7 @@ namespace CableColorModule {
                 }
 
                 void redo () override {
-                    auto module = dynamic_cast<CableColorModule*> (APP->engine->getModule (moduleId));
+                    auto module = dynamic_cast<ChromaModule*> (APP->engine->getModule (moduleId));
                     if (module == nullptr)
                         return;
 
@@ -190,7 +191,7 @@ namespace CableColorModule {
         menu->addChild (createEmblemLocationItem ("Center", CenterEmblem::True));
     }
 
-    void CableColorModuleWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+    void ChromaWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
         using rack::createBoolMenuItem;
         using rack::createBoolPtrMenuItem;
         using rack::createMenuItem;
@@ -201,11 +202,11 @@ namespace CableColorModule {
         // Visual.
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (createMenuLabel ("Visual"));
-        menu->addChild (createBoolPtrMenuItem ("Display key mappings", "", &pluginSettings.cableColor_DisplayKeys));
+        menu->addChild (createBoolPtrMenuItem ("Display key mappings", "", &pluginSettings.chroma_DisplayKeys));
         menu->addChild (createBoolMenuItem ("Center emblem", "",
-            [] () { return pluginSettings.cableColor_CenterEmblem; },
+            [] () { return pluginSettings.chroma_CenterEmblem; },
             [&] (bool enable) {
-                pluginSettings.cableColor_CenterEmblem = enable;
+                pluginSettings.chroma_CenterEmblem = enable;
                 module->updateEmblem = true;
             }
         ));
@@ -213,9 +214,9 @@ namespace CableColorModule {
         // Behaviour.
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (createMenuLabel ("Behaviour"));
-        menu->addChild (createBoolPtrMenuItem ("Latch color", "", &pluginSettings.cableColor_Latch));
-        menu->addChild (createBoolPtrMenuItem ("Port hover mode", "", &pluginSettings.cableColor_PortHover));
-        menu->addChild (createBoolPtrMenuItem ("Key mappings always active", "", &pluginSettings.cableColor_GlobalKeys));
+        menu->addChild (createBoolPtrMenuItem ("Latch color", "", &pluginSettings.chroma_Latch));
+        menu->addChild (createBoolPtrMenuItem ("Port hover mode", "", &pluginSettings.chroma_PortHover));
+        menu->addChild (createBoolPtrMenuItem ("Key mappings always active", "", &pluginSettings.chroma_GlobalKeys));
 
         // Key mappings.
         menu->addChild (new rack::ui::MenuSeparator);
@@ -234,11 +235,11 @@ namespace CableColorModule {
                 !key->isMapped ()
             ));
         };
-        keyMappingFunction ("toggle latch color", &pluginSettings.cableColor_LatchKey);
+        keyMappingFunction ("toggle latch color", &pluginSettings.chroma_LatchKey);
         menu->addChild (new rack::ui::MenuEntry);
-        keyMappingFunction ("cycle forwards", &pluginSettings.cableColor_CycleFwdKey);
+        keyMappingFunction ("cycle forwards", &pluginSettings.chroma_CycleFwdKey);
         menu->addChild (new rack::ui::MenuEntry);
-        keyMappingFunction ("cycle backwards", &pluginSettings.cableColor_CycleBackKey);
+        keyMappingFunction ("cycle backwards", &pluginSettings.chroma_CycleBackKey);
     }
 
     static std::string getCableColorMenuItemText (const CableColor& color) {
@@ -247,11 +248,11 @@ namespace CableColorModule {
 
     struct SaveCollectionMenuItem : rack::ui::MenuItem {
       private:
-        CableColorModule* module;
+        ChromaModule* module;
         UI::TextField* nameField;
 
       public:
-        SaveCollectionMenuItem (CableColorModule* newModule, UI::TextField* newNameField) {
+        SaveCollectionMenuItem (ChromaModule* newModule, UI::TextField* newNameField) {
             module = newModule;
             nameField = newNameField;
 
@@ -262,12 +263,12 @@ namespace CableColorModule {
         void saveCollection (const std::string& name) {
             auto collection = module->colorManager->getCollection ();
             collection.setName (name);
-            pluginSettings.cableColor_Collections.addCollection (collection);
+            pluginSettings.chroma_Collections.addCollection (collection);
         }
 
         void onAction (const rack::event::Action& e) override {
             auto name = nameField->text;
-            if (!pluginSettings.cableColor_Collections.hasCollection (name)) {
+            if (!pluginSettings.chroma_Collections.hasCollection (name)) {
                 saveCollection (name);
                 e.consume (this);
 
@@ -280,7 +281,7 @@ namespace CableColorModule {
         }
     };
 
-    void CableColorModuleWidget::createCollectionsMenu (rack::ui::Menu* menu) {
+    void ChromaWidget::createCollectionsMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createMenuItem;
         using rack::createMenuLabel;
@@ -288,7 +289,7 @@ namespace CableColorModule {
 
         menu->addChild (new UI::SafeMenuItem (
             "Reset collections list",
-            [=] { pluginSettings.cableColor_Collections = CollectionsStorage::defaults (); },
+            [=] { pluginSettings.chroma_Collections = CollectionsStorage::defaults (); },
             true
         ));
 
@@ -301,8 +302,8 @@ namespace CableColorModule {
         menu->addChild (new SaveCollectionMenuItem (module, newCollectionNameTextField));
 
         menu->addChild (new rack::ui::MenuSeparator);
-        auto defaultCollectionName = pluginSettings.cableColor_Collections.getDefaultCollectionName ();
-        for (const auto& collectionKVP : pluginSettings.cableColor_Collections) {
+        auto defaultCollectionName = pluginSettings.chroma_Collections.getDefaultCollectionName ();
+        for (const auto& collectionKVP : pluginSettings.chroma_Collections) {
             auto collectionName = collectionKVP.first;
             auto rightText = (collectionName == defaultCollectionName) ? "[Default]" : "";
 
@@ -315,11 +316,11 @@ namespace CableColorModule {
                 menu->addChild (createMenuItem (
                     "Set as default collection",
                     "",
-                    [=] { pluginSettings.cableColor_Collections.setDefaultCollection (collectionName); }
+                    [=] { pluginSettings.chroma_Collections.setDefaultCollection (collectionName); }
                 ));
                 menu->addChild (new UI::SafeMenuItem (
                     "Delete collection",
-                    [=] { pluginSettings.cableColor_Collections.removeCollection (collectionName); },
+                    [=] { pluginSettings.chroma_Collections.removeCollection (collectionName); },
                     true
                 ));
 
@@ -343,7 +344,7 @@ namespace CableColorModule {
     template<typename T = rack::ui::MenuItem>
     struct ReplacePatchCablesItem : public T {
       protected:
-        CableColorModule* module;
+        ChromaModule* module;
         bool isCollectionColor;
         uint32_t collectionIndex;
 
@@ -384,7 +385,7 @@ namespace CableColorModule {
     };
 
     struct ReplacePatchCablesColorItem : ReplacePatchCablesItem<UI::ColorMenuItem> {
-        ReplacePatchCablesColorItem (CableColorModule* newModule, NVGcolor newColor) {
+        ReplacePatchCablesColorItem (ChromaModule* newModule, NVGcolor newColor) {
             module = newModule;
             color = newColor;
             text = "";
@@ -394,7 +395,7 @@ namespace CableColorModule {
             collectionIndex = 0;
         }
 
-        ReplacePatchCablesColorItem (CableColorModule* newModule, uint32_t newIndex) {
+        ReplacePatchCablesColorItem (ChromaModule* newModule, uint32_t newIndex) {
             module = newModule;
 
             auto cableColor = module->colorManager->getCollection () [newIndex];
@@ -427,7 +428,7 @@ namespace CableColorModule {
     };
 
     struct ReplacePatchCablesAllItem : ReplacePatchCablesItem<rack::ui::MenuItem> {
-        ReplacePatchCablesAllItem (CableColorModule* newModule) {
+        ReplacePatchCablesAllItem (ChromaModule* newModule) {
             module = newModule;
             text = "All";
             rightText = RIGHT_ARROW;
@@ -453,7 +454,7 @@ namespace CableColorModule {
         }
     };
 
-    void CableColorModuleWidget::createReplacePatchCablesMenu (rack::ui::Menu* menu) {
+    void ChromaWidget::createReplacePatchCablesMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createMenuItem;
         using rack::createMenuLabel;
@@ -514,7 +515,7 @@ namespace CableColorModule {
         menu->addChild (new ReplacePatchCablesAllItem (module));
     }
 
-    void CableColorModuleWidget::appendContextMenu (rack::ui::Menu* menu) {
+    void ChromaWidget::appendContextMenu (rack::ui::Menu* menu) {
         using rack::createCheckMenuItem;
         using rack::createMenuItem;
         using rack::createMenuLabel;
@@ -547,5 +548,6 @@ namespace CableColorModule {
             [=] { module->colorManager->clearColors (true); }
         ));
     }
+}
 }
 }

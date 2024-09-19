@@ -29,7 +29,8 @@
 #include <memory>
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     struct KeyContainer;
 
     enum class CenterEmblem {
@@ -39,12 +40,12 @@ namespace CableColorModule {
         True = 1,
     };
 
-    struct CableColorModule : ModuleBase {
+    struct ChromaModule : ModuleBase {
         std::shared_ptr<CableColorManager> colorManager = nullptr;
         CenterEmblem centerEmblem = CenterEmblem::Default;
         bool updateEmblem = false;
 
-        CableColorModule ();
+        ChromaModule ();
 
         bool checkMaster ();
 
@@ -52,7 +53,7 @@ namespace CableColorModule {
         void dataFromJson (json_t* rootJ) override;
     };
 
-    struct CableColorModuleWidget : Widgets::ModuleWidgetBase<CableColorModuleWidget, CableColorModule> {
+    struct ChromaWidget : Widgets::ModuleWidgetBase<ChromaWidget, ChromaModule> {
         friend KeyContainer;
 
       private:
@@ -61,8 +62,8 @@ namespace CableColorModule {
         KeyContainer* keyContainer = nullptr;
 
       public:
-        CableColorModuleWidget (CableColorModule* module);
-        ~CableColorModuleWidget ();
+        ChromaWidget (ChromaModule* module);
+        ~ChromaWidget ();
 
       protected:
         void initializeWidget () override;
@@ -84,14 +85,14 @@ namespace CableColorModule {
     struct OverlayWindow;
 
     struct KeyContainer : rack::widget::TransparentWidget {
-        friend CableColorModuleWidget;
+        friend ChromaWidget;
 
       private:
-        CableColorModuleWidget* moduleWidget = nullptr;
+        ChromaWidget* moduleWidget = nullptr;
         OverlayWindow* overlayWindow;
 
       public:
-        KeyContainer (CableColorModuleWidget* moduleWidget);
+        KeyContainer (ChromaWidget* moduleWidget);
         ~KeyContainer ();
 
         void step () override;
@@ -105,5 +106,6 @@ namespace CableColorModule {
         void onHoverText (const rack::event::HoverText& e) override;
         void onHoverScroll (const rack::event::HoverScroll& e) override;
     };
+}
 }
 }

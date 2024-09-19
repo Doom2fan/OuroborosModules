@@ -16,30 +16,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CableColorModule.hpp"
+#include "Chroma.hpp"
 
 #include "../JsonUtils.hpp"
 #include "CCM_Common.hpp"
 
 namespace OuroborosModules {
-    rack::plugin::Model* modelCableColorModule = createModel<CableColorModule::CableColorModuleWidget> ("CableColorModule");
+    rack::plugin::Model* modelChroma = createModel<Modules::Chroma::ChromaWidget> ("CableColorModule");
 }
 
 namespace OuroborosModules {
-namespace CableColorModule {
-    CableColorModule::CableColorModule () {
+namespace Modules {
+namespace Chroma {
+    ChromaModule::ChromaModule () {
         colorManager = getColorManager ();
         checkMaster ();
     }
 
-    bool CableColorModule::checkMaster () {
+    bool ChromaModule::checkMaster () {
         if (masterModule == nullptr)
             masterModule = this;
 
         return masterModule == this;
     }
 
-    json_t* CableColorModule::dataToJson () {
+    json_t* ChromaModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
         json_object_set_new_bool (rootJ, "wasMaster", checkMaster ());
@@ -51,7 +52,7 @@ namespace CableColorModule {
         return rootJ;
     }
 
-    void CableColorModule::dataFromJson (json_t* rootJ) {
+    void ChromaModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
 
         if (!json_is_object (rootJ))
@@ -67,5 +68,6 @@ namespace CableColorModule {
             colorManager->dataFromJson (colorManagerJ);
         }
     }
+}
 }
 }

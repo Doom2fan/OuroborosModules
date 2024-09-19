@@ -23,7 +23,8 @@
 #include <string>
 
 namespace OuroborosModules {
-namespace CableColorModule {
+namespace Modules {
+namespace Chroma {
     struct CableColorKey {
         int button = -1;
         int key = -1;
@@ -171,5 +172,6 @@ namespace CableColorModule {
     };
 
     std::shared_ptr<CableColorManager> getColorManager ();
+}
 }
 }

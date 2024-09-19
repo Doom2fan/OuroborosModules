@@ -16,16 +16,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MetaModule.hpp"
+#include "Meta.hpp"
 
 #include "../JsonUtils.hpp"
 
 namespace OuroborosModules {
-    rack::plugin::Model* modelMetaModule = createModel<MetaModule::MetaModuleWidget> ("MetaModule");
+    rack::plugin::Model* modelMeta = createModel<Modules::Meta::MetaWidget> ("MetaModule");
 }
 
 namespace OuroborosModules {
-namespace MetaModule {
+namespace Modules {
+namespace Meta {
     constexpr int plugSound_SampleCheckRate = 60;
 
     MetaModule::MetaModule () {
@@ -103,5 +104,6 @@ namespace MetaModule {
         for (int i = 0; i < PLUGSOUND_LENGTH; i++)
             plugSound_Channels [i].reset ();
     }
+}
 }
 }

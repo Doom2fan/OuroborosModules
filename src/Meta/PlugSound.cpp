@@ -16,12 +16,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MetaModule.hpp"
+#include "Meta.hpp"
 
 #include <osdialog.h>
 
 namespace OuroborosModules {
-namespace MetaModule {
+namespace Modules {
+namespace Meta {
     const std::string DefaultPlugSounds [] = {
         "res/sounds/Jack_Connect.wav",
         "res/sounds/Jack_Disconnect.wav",
@@ -99,7 +100,7 @@ namespace MetaModule {
         return ret;
     }
 
-    void MetaModuleWidget::plugSound_CheckChannels () {
+    void MetaWidget::plugSound_CheckChannels () {
         auto enabled = pluginSettings.plugSound_Enable;
         auto prevEnabled = module->plugSound_PrevEnabled.exchange (enabled);
 
@@ -133,5 +134,6 @@ namespace MetaModule {
         audioLeft += mixAudioLeft * gain;
         audioRight += mixAudioRight * gain;
     }
+}
 }
 }

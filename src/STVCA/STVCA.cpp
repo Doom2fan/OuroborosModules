@@ -17,17 +17,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StereoVCAModule.hpp"
+#include "STVCA.hpp"
 
 #include "../JsonUtils.hpp"
 
 namespace OuroborosModules {
-    rack::plugin::Model* modelStereoVCAModule = createModel<StereoVCAModule::StereoVCAModuleWidget> ("StereoVCAModule");
+    rack::plugin::Model* modelSTVCA = createModel<Modules::STVCA::STVCAWidget> ("StereoVCAModule");
 }
 
 namespace OuroborosModules {
-namespace StereoVCAModule {
-    StereoVCAModule::StereoVCAModule () {
+namespace Modules {
+namespace STVCA {
+    STVCAModule::STVCAModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure parameters.
@@ -47,7 +48,7 @@ namespace StereoVCAModule {
         configBypass (INPUT_RIGHT, OUTPUT_RIGHT);
     }
 
-    json_t* StereoVCAModule::dataToJson () {
+    json_t* STVCAModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
         json_object_set_new_bool (rootJ, "displayColor::UseDefault", displayColorUseDefault);
@@ -56,14 +57,14 @@ namespace StereoVCAModule {
         return rootJ;
     }
 
-    void StereoVCAModule::dataFromJson (json_t* rootJ) {
+    void STVCAModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
 
         json_object_try_get_bool (rootJ, "displayColor::UseDefault", displayColorUseDefault);
         json_object_try_get_struct (rootJ, "displayColor", displayColor);
     }
 
-    void StereoVCAModule::process (const ProcessArgs& args) {
+    void STVCAModule::process (const ProcessArgs& args) {
         auto channels = std::max ({
             1,
             inputs [INPUT_LEFT].getChannels (),
@@ -103,11 +104,12 @@ namespace StereoVCAModule {
         lastChannels = channels;
     }
 
-    void StereoVCAModule::onReset (const ResetEvent& e) {
+    void STVCAModule::onReset (const ResetEvent& e) {
         ModuleBase::onReset (e);
 
         displayColorUseDefault = true;
         displayColor = RGBColor ();
     }
+}
 }
 }

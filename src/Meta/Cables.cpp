@@ -16,11 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CCM_Common.hpp"
+#include "Meta.hpp"
 
 namespace OuroborosModules {
-namespace CableColorModule {
-    CableColorModule* masterModule = nullptr;
-    KeyContainer* masterKeyContainer = nullptr;
+namespace Modules {
+namespace Meta {
+    void MetaModule::cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected) {
+        cableConnected = cables_NewConnected.exchange (false);
+        cableDisconnected = cables_NewDisconnected.exchange (false);
+    }
+}
 }
 }

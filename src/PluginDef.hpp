@@ -30,7 +30,7 @@ extern rack::plugin::Plugin* pluginInstance;
 
 // Models
 namespace OuroborosModules {
-    extern rack::plugin::Model* modelMetaModule;
-    extern rack::plugin::Model* modelCableColorModule;
-    extern rack::plugin::Model* modelStereoVCAModule;
+    extern rack::plugin::Model* modelMeta;
+    extern rack::plugin::Model* modelChroma;
+    extern rack::plugin::Model* modelSTVCA;
 }

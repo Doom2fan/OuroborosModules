@@ -16,14 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MetaModule.hpp"
+#include "Meta.hpp"
 
 #include "../UI/CommonWidgets.hpp"
 
 #include <fmt/format.h>
 
 namespace OuroborosModules {
-namespace MetaModule {
+namespace Modules {
+namespace Meta {
     struct PremuterTimeQuantity : rack::Quantity {
         float* timeSrc;
         float maxTime;
@@ -53,9 +54,9 @@ namespace MetaModule {
         std::string getUnit () override { return " seconds"; }
     };
 
-    MetaModuleWidget::MetaModuleWidget (MetaModule* module) { constructor (module, "panels/MetaModule"); }
+    MetaWidget::MetaWidget (MetaModule* module) { constructor (module, "panels/Meta"); }
 
-    void MetaModuleWidget::initializeWidget () {
+    void MetaWidget::initializeWidget () {
         using rack::math::Vec;
         using rack::createWidget;
         using rack::createWidgetCentered;
@@ -86,7 +87,7 @@ namespace MetaModule {
             plugSound_CheckChannels ();
     }
 
-    void MetaModuleWidget::updateCableHandler () {
+    void MetaWidget::updateCableHandler () {
         auto isEnabled = false;
 
         isEnabled |= pluginSettings.plugSound_Enable;
@@ -102,7 +103,7 @@ namespace MetaModule {
         }
     }
 
-    void MetaModuleWidget::step () {
+    void MetaWidget::step () {
         _WidgetBase::step ();
 
         // Skip if we're in the module browser.
@@ -113,7 +114,7 @@ namespace MetaModule {
         plugSound_CheckChannels ();
     }
 
-    void MetaModuleWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
+    void MetaWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
         if (emblemWidget == nullptr)
             return;
 
@@ -131,17 +132,17 @@ namespace MetaModule {
         emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
     }
 
-    void MetaModuleWidget::onChangeTheme (ThemeId themeId) {
+    void MetaWidget::onChangeTheme (ThemeId themeId) {
         _WidgetBase::onChangeTheme (themeId);
         updateEmblem (themeId, curEmblem);
     }
 
-    void MetaModuleWidget::onChangeEmblem (EmblemId emblemId) {
+    void MetaWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
         updateEmblem (curTheme, emblemId);
     }
 
-    void MetaModuleWidget::appendContextMenu (rack::ui::Menu* menu) {
+    void MetaWidget::appendContextMenu (rack::ui::Menu* menu) {
         _WidgetBase::appendContextMenu (menu);
 
         // Pre-muter
@@ -153,7 +154,7 @@ namespace MetaModule {
         menu->addChild (premuterTimeSlider);
     }
 
-    void MetaModuleWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+    void MetaWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
         using rack::createMenuItem;
         using rack::createMenuLabel;
 
@@ -208,5 +209,6 @@ namespace MetaModule {
             pluginSettings.plugSound_DisconnectSound = "<Default>";
         }));
     }
+}
 }
 }

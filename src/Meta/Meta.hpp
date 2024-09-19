@@ -27,7 +27,8 @@
 #include "../Utils.hpp"
 
 namespace OuroborosModules {
-namespace MetaModule {
+namespace Modules {
+namespace Meta {
     struct SampleSlot {
       private:
         std::string samplePath = "";
@@ -111,13 +112,13 @@ namespace MetaModule {
         void onUnBypass (const UnBypassEvent& e) override;
     };
 
-    struct MetaModuleWidget : Widgets::ModuleWidgetBase<MetaModuleWidget, MetaModule> {
+    struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
         Widgets::ImageWidget* emblemWidget;
         std::shared_ptr<CableHandler> cables_Handler;
 
       public:
-        MetaModuleWidget (MetaModule* module);
+        MetaWidget (MetaModule* module);
 
       protected:
         void initializeWidget () override;
@@ -132,5 +133,6 @@ namespace MetaModule {
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };
+}
 }
 }
