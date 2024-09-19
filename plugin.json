@@ -18,21 +18,21 @@
             "name": "Meta",
             "description": "Adds features to VCV Rack",
             "tags": [ "Utility" ],
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Meta-Module"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Meta"
         },
         {
             "slug": "CableColorModule",
             "name": "Chroma",
             "description": "A cable colour manager with labels and support for multiple colour collections",
             "tags": [ "Utility" ],
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Cable-Color-Manager"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Chroma"
         },
         {
             "slug": "StereoVCAModule",
             "name": "ST-VCA",
             "description": "A stereo version of the Fundamental VCA",
             "tags": [ "Voltage-controlled amplifier", "Polyphonic" ],
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/ST-VCA"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/ST‐VCA"
         }
     ]
 }
