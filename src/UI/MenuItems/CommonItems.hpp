@@ -24,7 +24,7 @@
 namespace OuroborosModules {
 namespace UI {
     struct ColorMenuItem : rack::ui::MenuItem {
-        NVGcolor color;
+        NVGcolor color = rack::color::BLACK_TRANSPARENT;
 
         void draw (const DrawArgs& args) override;
     };
