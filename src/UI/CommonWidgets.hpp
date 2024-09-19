@@ -34,5 +34,21 @@ namespace Widgets {
     struct CableJackWidget : rack_themer::widgets::SvgPort {
         CableJackWidget () { setSvg (Theme::getThemedSvg ("components/CableJack", nullptr)); }
     };
+
+    struct SlideSwitch2 : rack_themer::widgets::SvgSwitch {
+        SlideSwitch2 () {
+            shadow->opacity = 0.0;
+            addFrame (Theme::getSvg ("components/Slide2_0"));
+            addFrame (Theme::getSvg ("components/Slide2_1"));
+        }
+    };
+
+    struct SlideSwitch2Inverse : rack_themer::widgets::SvgSwitch {
+        SlideSwitch2Inverse () {
+            shadow->opacity = 0.0;
+            addFrame (Theme::getSvg ("components/Slide2_1"));
+            addFrame (Theme::getSvg ("components/Slide2_0"));
+        }
+    };
 }
 }
