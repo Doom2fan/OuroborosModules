@@ -247,6 +247,7 @@ namespace StereoVCAModule {
             return;
 
         menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Visual"));
         struct DisplayColorPickerMenu : UI::ColorPickerMenuItem<UI::ColorMenuItem> {
             StereoVCAModule* module;
 
