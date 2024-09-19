@@ -57,6 +57,7 @@ void init (rack::plugin::Plugin* p) {
     // Module models.
     p->addModel (OuroborosModules::modelMetaModule);
     p->addModel (OuroborosModules::modelCableColorModule);
+    p->addModel (OuroborosModules::modelStereoVCAModule);
 }
 
 json_t* settingsToJson () {

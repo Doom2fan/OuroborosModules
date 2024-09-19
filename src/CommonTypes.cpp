@@ -16,8 +16,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
 #include "CommonTypes.hpp"
-#include "Constants.hpp"
-#include "CableColorModule/CableColorManager.hpp"
+
+#include "JsonUtils.hpp"
+#include "PluginDef.hpp"
+
+namespace OuroborosModules {
+    json_t* RGBColor::dataToJson () const {
+        auto rootJ = json_object ();
+
+        json_object_set_new_float (rootJ, "R", r);
+        json_object_set_new_float (rootJ, "G", g);
+        json_object_set_new_float (rootJ, "B", b);
+        json_object_set_new_float (rootJ, "A", a);
+
+        return rootJ;
+    }
+
+    bool RGBColor::dataFromJson (json_t* rootJ) {
+        if (!json_is_object (rootJ))
+            return false;
+
+        json_object_try_get_float (rootJ, "R", r);
+        json_object_try_get_float (rootJ, "G", g);
+        json_object_try_get_float (rootJ, "B", b);
+        json_object_try_get_float (rootJ, "A", a);
+        return true;
+    }
+}

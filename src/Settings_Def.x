@@ -36,3 +36,5 @@ DEFINE_STRUCT (CableColorModule::CollectionsStorage, cableColor_Collections, "ca
 DEFINE_STRUCT (CableColorModule::CableColorKey, cableColor_LatchKey, "cableColorManager::LatchKey", CableColorModule::CableColorKey ())
 DEFINE_STRUCT (CableColorModule::CableColorKey, cableColor_CycleFwdKey, "cableColorManager::CycleForwardKey", CableColorModule::CableColorKey ())
 DEFINE_STRUCT (CableColorModule::CableColorKey, cableColor_CycleBackKey, "cableColorManager::CycleBackwardKey", CableColorModule::CableColorKey ())
+
+DEFINE_STRUCT (RGBColor, stereoVCA_DefaultDisplayColor, "stereoVCA::DefaultDisplayColor", Colors::DisplayColors.at ("Yellow"))

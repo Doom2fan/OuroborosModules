@@ -144,4 +144,18 @@ namespace OuroborosModules {
     namespace Constants {
         static constexpr float StdEmblemSize = 8.719f;
     }
+
+    namespace Colors {
+        static const std::map<std::string, NVGcolor> DisplayColors = {
+            { "Yellow", nvgRGB (0xFF, 0xD7, 0x14) },
+            { "Red", nvgRGB (0xEC, 0x11, 0x2A) },
+            { "Purple", nvgRGB (0x8E, 0x14, 0xFF) },
+            { "Magenta", nvgRGB (0xFF, 0x14, 0xF1) },
+            { "Pink", nvgRGB (0xFF, 0x14, 0x8E) },
+            { "Blue", nvgRGB (0x14, 0x51, 0xFF) },
+            { "Cyan", nvgRGB (0x14, 0xFC, 0xFF) },
+            { "Green", nvgRGB (0x2A, 0xFF, 0x14) },
+            { "Orange", nvgRGB (0xFF, 0x99, 0x14) },
+        };
+    }
 }
