@@ -20,6 +20,7 @@
 
 #include "Constants.hpp"
 #include "PluginSettings.hpp"
+#include "Logging.hpp"
 
 #include <rack.hpp>
 

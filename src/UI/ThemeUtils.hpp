@@ -49,22 +49,17 @@ namespace Theme {
 
         auto textStyle = theme->getClassStyle (textStyleName);
         if (textStyle == nullptr) {
-            if (pluginSettings.debug_Logging)
-                WARN (fmt::format (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T).c_str ());
-
+            LOG_WARN (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T);
             return NVGpaint ();
         }
         if (!textStyle->hasFill ()) {
-            if (pluginSettings.debug_Logging)
-                WARN (fmt::format (FMT_STRING ("Text style \"{}\" has no fill."), T).c_str ());
-
+            LOG_WARN (FMT_STRING ("Text style \"{}\" has no fill."), T);
             return NVGpaint ();
         }
 
         auto textFill = textStyle->getFill ();
         if (!textFill.isColor ()) {
-            if (pluginSettings.debug_Logging)
-                WARN (fmt::format (FMT_STRING ("Text style \"{}\" is not a plain color fill."), T).c_str ());
+            LOG_WARN (FMT_STRING ("Text style \"{}\" is not a plain color fill."), T);
             return NVGpaint ();
         }
 
@@ -85,9 +80,7 @@ namespace Theme {
 
         auto style = theme->getClassStyle (styleName);
         if (style == nullptr) {
-            if (pluginSettings.debug_Logging)
-                WARN (fmt::format (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T).c_str ());
-
+            LOG_WARN (FMT_STRING ("Attempted to get non-existent style \"{}\"."), T);
             return nullptr;
         }
 
