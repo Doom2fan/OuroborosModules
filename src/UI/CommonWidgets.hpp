@@ -108,5 +108,20 @@ namespace Widgets {
             addFrame (Theme::getSvg ("components/Slide2_0"));
         }
     };
+
+    struct MetalKnobSmall : rack_themer::widgets::SvgKnob {
+        rack_themer::widgets::SvgWidget* background;
+
+        MetalKnobSmall () {
+            minAngle = -0.83 * M_PI;
+            maxAngle = 0.83 * M_PI;
+
+            background = new rack_themer::widgets::SvgWidget;
+            framebuffer->addChildBelow (background, transformWidget);
+
+            setSvg (Theme::getSvg ("components/KnobMetalSmall"));
+            background->setSvg (Theme::getSvg ("components/KnobMetalSmall_BG"));
+        }
+    };
 }
 }
