@@ -98,13 +98,14 @@ namespace STVCA {
     };
 
     void STVCAWidget::initializeWidget () {
-        using rack::math::Vec;
-        using rack::window::mm2px;
-        using rack::createWidget;
-        using rack::createWidgetCentered;
         using rack::createInputCentered;
         using rack::createOutputCentered;
-        using Widgets::CableJackWidget;
+        using rack::createWidget;
+        using rack::createWidgetCentered;
+        using rack::math::Vec;
+        using rack::window::mm2px;
+        using Widgets::CableJackInput;
+        using Widgets::CableJackOutput;
         using Widgets::ImageWidget;
         using Widgets::ScrewWidget;
 
@@ -117,11 +118,11 @@ namespace STVCA {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackWidget> (pos, module, STVCAModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, module, STVCAModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackWidget> (pos, module, STVCAModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, module, STVCAModule::OUTPUT_LEFT + i));
         });
 
         auto displayBox = findNamedBox ("display").value_or (rack::math::Rect ());

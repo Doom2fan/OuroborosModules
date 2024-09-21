@@ -64,6 +64,68 @@
         ".screw-socket": {
             "fill": "#685c12",
             "stroke": "#2b2608"
+        },
+
+        ".jack-outline": {
+            "fill": "#00000000",
+            "fillDisabled": { "gradient": [
+                { "index": 0, "color": "#6f5300" },
+                { "index": 1, "color": "#906c00" }
+            ]}
+        },
+
+        ".jack-nut-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#bf951a" },
+                { "index": 1, "color": "#fae6af" }
+            ]}
+        },
+
+        ".jack-nut-mid": {
+            "fill": "#f1cd62"
+        },
+
+        ".jack-nut-inner": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#cda93e" },
+                { "index": 1, "color": "#9a760b" }
+            ]}
+        },
+
+        ".jack-hole-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#8f8f8f" },
+                { "index": 1, "color": "#d9d9d9" }
+            ]}
+        },
+
+        ".jack-hole-mid": {
+            "fill": "#aaaaaa"
+        },
+
+        ".jack-hole-inner": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#a8a8a8" },
+                { "index": 1, "color": "#757575" }
+            ]}
+        },
+
+        ".jack-hole-outer-out": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#3d3d3d" },
+                { "index": 1, "color": "#757575" }
+            ]}
+        },
+
+        ".jack-hole-mid-out": {
+            "fill": "#525252"
+        },
+
+        ".jack-hole-inner-out": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#696969" },
+                { "index": 1, "color": "#3d3d3d" }
+            ]}
         }
     }
 }

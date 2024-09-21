@@ -57,12 +57,13 @@ namespace Meta {
     MetaWidget::MetaWidget (MetaModule* module) { constructor (module, "panels/Meta"); }
 
     void MetaWidget::initializeWidget () {
-        using rack::math::Vec;
-        using rack::createWidget;
-        using rack::createWidgetCentered;
         using rack::createInputCentered;
         using rack::createOutputCentered;
-        using Widgets::CableJackWidget;
+        using rack::createWidget;
+        using rack::createWidgetCentered;
+        using rack::math::Vec;
+        using Widgets::CableJackInput;
+        using Widgets::CableJackOutput;
         using Widgets::ImageWidget;
         using Widgets::ScrewWidget;
 
@@ -76,11 +77,11 @@ namespace Meta {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackWidget> (pos, module, MetaModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, module, MetaModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackWidget> (pos, module, MetaModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, module, MetaModule::OUTPUT_LEFT + i));
         });
 
         if (module != nullptr)
