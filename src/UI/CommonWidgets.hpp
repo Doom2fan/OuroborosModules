@@ -39,6 +39,60 @@ namespace Widgets {
         CableJackOutput () { setSvg (Theme::getThemedSvg ("components/CableJack_Out", nullptr)); }
     };
 
+    template<typename TBase = rack::app::ModuleLightWidget>
+    struct ResizableLight : TBase {
+      private:
+        float curSize;
+
+      public:
+        rack::widget::FramebufferWidget* framebuffer;
+        rack::widget::TransformWidget* transformWidget;
+        rack::widget::SvgWidget* svgWidget;
+
+        ResizableLight () {
+            framebuffer = new rack::widget::FramebufferWidget;
+            this->addChild (framebuffer);
+
+            transformWidget = new rack::widget::TransformWidget;
+            framebuffer->addChild (transformWidget);
+
+            svgWidget = new rack::widget::SvgWidget;
+            transformWidget->addChild (svgWidget);
+
+            setSize (1);
+        }
+
+        void setSvg (std::shared_ptr<rack::window::Svg> svg) { svgWidget->setSvg (svg); setSize (curSize); }
+        void setSvg (std::shared_ptr<rack::window::Svg> svg, float newSize) { svgWidget->setSvg (svg); setSize (newSize); }
+        void setSize (float newSize) {
+            auto posCenter = this->box.pos.plus (this->box.size.div (2));
+
+            auto svgSize = svgWidget->box.size;
+            auto vecAspectRatio = svgSize.div (std::max (svgSize.x, svgSize.y));
+            auto realSize = vecAspectRatio.mult (newSize);
+
+            transformWidget->box.size = realSize;
+            framebuffer->box.size = realSize;
+
+            transformWidget->identity ();
+            transformWidget->scale (realSize.div (svgSize));
+
+            this->box.size = realSize;
+            this->box.pos = posCenter.minus (realSize.div (2));
+
+            framebuffer->setDirty ();
+
+            curSize = newSize;
+        }
+    };
+
+    template<typename TBase = rack::app::ModuleLightWidget>
+    struct ResizableVCVLight : ResizableLight<TBase> {
+        ResizableVCVLight (float size) {
+            this->setSvg (rack::window::Svg::load (rack::asset::system ("res/ComponentLibrary/SmallLight.svg")), size);
+        }
+    };
+
     struct SlideSwitch2 : rack_themer::widgets::SvgSwitch {
         SlideSwitch2 () {
             shadow->opacity = 0.0;
