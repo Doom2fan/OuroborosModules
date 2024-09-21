@@ -58,6 +58,7 @@ void init (rack::plugin::Plugin* p) {
     p->addModel (OuroborosModules::modelMeta);
     p->addModel (OuroborosModules::modelChroma);
     p->addModel (OuroborosModules::modelSTVCA);
+    p->addModel (OuroborosModules::modelBernoulli);
 }
 
 json_t* settingsToJson () {

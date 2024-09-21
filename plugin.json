@@ -33,6 +33,13 @@
             "description": "A stereo version of the Fundamental VCA",
             "tags": [ "Voltage-controlled amplifier", "Polyphonic" ],
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/ST‐VCA"
+        },
+        {
+            "slug": "BernoulliGates",
+            "name": "Bernoulli",
+            "description": "A bank of 8 bernoulli gates",
+            "tags": [ "Random", "Logic", "Switch", "Clock modulator" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Bernoulli"
         }
     ]
 }
