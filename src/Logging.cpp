@@ -30,6 +30,8 @@ namespace Logging {
             case LogLevel::Warn: return rack::logger::WARN_LEVEL;
             case LogLevel::Fatal: return rack::logger::FATAL_LEVEL;
         }
+
+        return rack::logger::DEBUG_LEVEL;
     }
 
     void logInternal (
