@@ -126,7 +126,7 @@ namespace UI {
         virtual void onApply (NVGcolor newColor) = 0;
         virtual void onCancel (NVGcolor newColor) = 0;
 
-        virtual void onChange (NVGcolor newColor) { }
+        virtual void onColorChange (NVGcolor newColor) { }
 
       private:
         void callApply () {
@@ -147,7 +147,7 @@ namespace UI {
 
         void callOnChange () {
             updateHex ();
-            onChange (currentColor);
+            onColorChange (currentColor);
         }
 
         void setHexColor (std::string hexColor) {

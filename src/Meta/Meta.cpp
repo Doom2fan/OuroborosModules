@@ -27,8 +27,6 @@ namespace OuroborosModules {
 namespace OuroborosModules {
 namespace Modules {
 namespace Meta {
-    constexpr int plugSound_SampleCheckRate = 60;
-
     MetaModule::MetaModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
