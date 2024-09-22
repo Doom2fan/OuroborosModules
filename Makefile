@@ -40,7 +40,7 @@ rack_plugin: $(cmake_rack_plugin)
 # Add files to the ZIP package when running `make dist`
 dist: rack_plugin res
 
-DISTRIBUTABLES += res LICENSE.md license
+DISTRIBUTABLES += res LICENSE.md license README.md
 
 # Include the VCV plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
