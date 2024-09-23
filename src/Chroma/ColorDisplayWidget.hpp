@@ -66,6 +66,9 @@ namespace Chroma {
         ChromaModule* module;
         uint32_t currentSelectedIndex;
 
+        ColorDisplayWidget (const ColorDisplayWidget& x) = delete;
+        void operator= (const ColorDisplayWidget& x) = delete;
+
       public:
         ColorDisplayWidget (ChromaModule* module, rack::math::Rect newBox);
 

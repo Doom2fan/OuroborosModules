@@ -103,6 +103,9 @@ namespace Chroma {
     CableColorWidget::CableColorWidget (ColorDisplayWidget* colorDisplay) {
         colorDisplayWidget = colorDisplay;
         theme = Theme::getCurrentTheme ().getThemeInstance ();
+
+        index = -1;
+        isSelected = false;
     }
 
     std::shared_ptr<CableColorManager>& CableColorWidget::getColorManager () {
@@ -117,7 +120,7 @@ namespace Chroma {
     void CableColorWidget::onButton (const rack::event::Button& e) {
         Widget::onButton (e);
 
-        if (colorDisplayWidget == nullptr || colorDisplayWidget->module == nullptr)
+        if (colorDisplayWidget == nullptr || colorDisplayWidget->module == nullptr || index < 0)
             return;
 
         if (e.button == GLFW_MOUSE_BUTTON_LEFT && e.action == GLFW_PRESS) {
@@ -226,6 +229,9 @@ namespace Chroma {
     }
 
     void CableColorWidget::createContextMenu (rack::ui::Menu* menu) {
+        if (index < 0)
+            return;
+
         // Label.
         auto labelField = UI::createEventTextField (
             color.label,

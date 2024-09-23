@@ -68,7 +68,7 @@ namespace STVCA {
 
     struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAWidget, STVCAModule> {
       private:
-        Widgets::ImageWidget* emblemWidget;
+        Widgets::ImageWidget* emblemWidget = nullptr;
 
       public:
         STVCAWidget (STVCAModule* module);

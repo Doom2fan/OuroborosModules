@@ -83,7 +83,7 @@ namespace Bernoulli {
 
     struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliWidget, BernoulliModule> {
       private:
-        Widgets::ImageWidget* emblemWidget;
+        Widgets::ImageWidget* emblemWidget = nullptr;
 
       public:
         BernoulliWidget (BernoulliModule* module);

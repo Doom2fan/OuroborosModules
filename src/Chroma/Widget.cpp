@@ -143,7 +143,11 @@ namespace Chroma {
                 CenterEmblem oldLocation;
                 CenterEmblem newLocation;
 
-                HistoryEmblemLocation () { name = "change emblem location"; }
+                HistoryEmblemLocation (rack::engine::Module* module, CenterEmblem oldLocation, CenterEmblem newLocation)
+                    : oldLocation (oldLocation), newLocation (newLocation) {
+                    moduleId = module->id;
+                    name = "change emblem location";
+                }
 
                 void undo () override {
                     auto module = dynamic_cast<ChromaModule*> (APP->engine->getModule (moduleId));
@@ -167,14 +171,7 @@ namespace Chroma {
             return rack::createCheckMenuItem (name, "",
                 [=] { return module->centerEmblem == centerEmblem; },
                 [=] {
-                    auto history = new HistoryEmblemLocation;
-
-                    history->moduleId = module->id;
-                    history->oldLocation = module->centerEmblem;
-                    history->newLocation = centerEmblem;
-
-                    APP->history->push (history);
-
+                    APP->history->push (new HistoryEmblemLocation (module, module->centerEmblem, centerEmblem));
                     module->centerEmblem = centerEmblem;
                     module->updateEmblem = true;
                 }

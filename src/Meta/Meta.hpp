@@ -114,7 +114,7 @@ namespace Meta {
 
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
-        Widgets::ImageWidget* emblemWidget;
+        Widgets::ImageWidget* emblemWidget = nullptr;
         std::shared_ptr<CableHandler> cables_Handler;
 
       public:

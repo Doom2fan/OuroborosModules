@@ -31,7 +31,7 @@ namespace UI {
 
       private:
         NVGcolor currentColor;
-        TextField* hexColorField;
+        TextField* hexColorField = nullptr;
 
         struct ColorDisplay : rack::ui::MenuItem {
           private:
@@ -104,7 +104,7 @@ namespace UI {
         };
 
       public:
-        bool cancelOnClose;
+        bool cancelOnClose = false;
 
       protected:
         void closeMenu () {

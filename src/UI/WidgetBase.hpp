@@ -38,8 +38,11 @@ namespace Widgets {
         ThemeId oldTheme;
         ThemeId newTheme;
 
-        HistoryThemeChange (ThemeId oldTheme, ThemeId newTheme)
-            : oldTheme (oldTheme), newTheme (newTheme) { name = "change theme override"; }
+        HistoryThemeChange (rack::engine::Module* module, ThemeId oldTheme, ThemeId newTheme)
+            : oldTheme (oldTheme), newTheme (newTheme) {
+            moduleId = module->id;
+            name = "change theme override";
+        }
 
         void undo () override;
         void redo () override;
@@ -49,8 +52,11 @@ namespace Widgets {
         EmblemId oldEmblem;
         EmblemId newEmblem;
 
-        HistoryEmblemChange (EmblemId oldEmblem, EmblemId newEmblem)
-            : oldEmblem (oldEmblem), newEmblem (newEmblem) { name = "change emblem override"; }
+        HistoryEmblemChange (rack::engine::Module* module, EmblemId oldEmblem, EmblemId newEmblem)
+            : oldEmblem (oldEmblem), newEmblem (newEmblem) {
+            moduleId = module->id;
+            name = "change emblem override";
+        }
 
         void undo () override;
         void redo () override;
@@ -63,11 +69,16 @@ namespace Widgets {
         typedef TModule _ModuleType;
 
       protected:
-        TModule* module;
+        // cppcheck-suppress duplInheritedMember
+        TModule* module = nullptr;
 
         std::string panelName;
         ThemeId curTheme = ThemeId::getUnknown ();
         EmblemId curEmblem = EmblemId::getUnknown ();
+
+        ModuleWidgetBase () { }
+        ModuleWidgetBase (const ModuleWidgetBase& x) = delete;
+        void operator= (const ModuleWidgetBase& x) = delete;
 
       public:
         ThemeId getLocalTheme () {
@@ -124,10 +135,7 @@ namespace Widgets {
             auto oldTheme = module->theme_Override;
             module->theme_Override = themeId;
 
-            auto themeChange = new HistoryThemeChange (oldTheme, themeId);
-            themeChange->moduleId = module->id;
-
-            APP->history->push (themeChange);
+            APP->history->push (new HistoryThemeChange (module, oldTheme, themeId));
 
             updateTheme ();
         }
@@ -136,10 +144,7 @@ namespace Widgets {
             auto oldEmblem = module->theme_Emblem;
             module->theme_Emblem = emblemId;
 
-            auto emblemChange = new HistoryEmblemChange (oldEmblem, emblemId);
-            emblemChange->moduleId = module->id;
-
-            APP->history->push (emblemChange);
+            APP->history->push (new HistoryEmblemChange (module, oldEmblem, emblemId));
 
             updateEmblem ();
         }

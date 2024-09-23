@@ -91,6 +91,9 @@ namespace Chroma {
         ChromaWidget* moduleWidget = nullptr;
         OverlayWindow* overlayWindow;
 
+        KeyContainer (const KeyContainer& x) = delete;
+        void operator= (const KeyContainer& x) = delete;
+
       public:
         KeyContainer (ChromaWidget* moduleWidget);
         ~KeyContainer ();
