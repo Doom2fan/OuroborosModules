@@ -28,6 +28,8 @@ artifacts/
 /dist
 /dep/cmake-build
 /dep/cmake-build_*
+/dep/cppcheck
+/dep/cppcheck_*
 /*.so
 /*.dylib
 /*.dll

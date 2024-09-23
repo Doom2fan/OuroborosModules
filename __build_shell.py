@@ -20,7 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import cmd
+import argparse
+import cmd2
 import scripts.compile_svgs as compile_svgs
 import scripts.make_docs_images as make_docs_images
 import shutil
@@ -31,12 +32,12 @@ from scripts.common import *
 
 CMAKE_BUILD = "dep/cmake-build"
 
-class CmdShell(cmd.Cmd):
+class CmdShell(cmd2.Cmd):
     intro = "Type help or ? to list commands.\n"
     prompt = "> "
 
     def __init__(self):
-        cmd.Cmd.__init__(self)
+        super().__init__(allow_cli_args=False)
         self.globalData = GlobalData()
 
     def do_run(self, args):
@@ -46,43 +47,33 @@ class CmdShell(cmd.Cmd):
             return
 
         print("starting VCV in development mode")
-        subprocess.run([self.globalData.rackPath, "-d"], cwd=self.globalData.rackSdkDir)
+        subprocess.run([self.globalData.rackPath, "-d"], cwd = self.globalData.rackSdkDir)
 
     def do_build(self, argStr):
         'Builds the plugin: build [release|debug]'
         argStr = argStr.strip()
-        buildType = "Release"
         match argStr:
             case "release" | "":
-                buildType = "Release"
+                buildType = BuildType.Release
             case "debug":
-                buildType = "Debug"
+                buildType = BuildType.Debug
 
             case _:
                 print(f"error: expected 'release' or 'debug', got '{argStr}'")
                 return
 
         globalData = self.globalData
-        cmakeBuild = f"{globalData.cmakeBuild}_{buildType}"
+        buildInfo = BuildInfo(globalData, buildType)
 
         if globalData.cmakePath is None:
             print("error: CMake could not be found")
             return
 
-        pluginDll = "plugin.so"
-        match globalData.curOS:
-            case SystemOS.Windows:
-                pluginDLL = "plugin.dll"
-            case SystemOS.MacOS:
-                pluginDLL = "plugin.dylib"
-            case SystemOS.Linux | _:
-                pluginDLL = "plugin.so"
-
         print("generating CMake build files")
-        cmakeResult = subprocess.run(
-            [
-                globalData.cmakePath, "-B", cmakeBuild, f"-DRACK_SDK_DIR={globalData.rackSdkDir}",
-                f"-DCMAKE_BUILD_TYPE={buildType}", f"-DCMAKE_INSTALL_PREFIX={cmakeBuild}/dist", cmakeBuild
+        cmakeResult = subprocess.run([
+                globalData.cmakePath, "-B", buildInfo.dir, f"-DRACK_SDK_DIR={globalData.rackSdkDir}",
+                f"-DCMAKE_BUILD_TYPE={buildInfo.cmakeType}", f"-DCMAKE_INSTALL_PREFIX={buildInfo.dir}/dist",
+                buildInfo.dir
             ],
             cwd = globalData.repoDir
         )
@@ -91,30 +82,102 @@ class CmdShell(cmd.Cmd):
             return
 
         print("building plugin")
-        cmakeResult = subprocess.run([globalData.cmakePath, "--build", cmakeBuild, "--", "-j", str(globalData.threadCount)], cwd=globalData.repoDir)
+        cmakeResult = subprocess.run([globalData.cmakePath, "--build", buildInfo.dir, "--", "-j", str(globalData.threadCount)], cwd = globalData.repoDir)
         if cmakeResult.returncode != 0:
             print(f"failed to generate build files: CMake failed with exit code {cmakeResult.returncode}")
             return
 
         print("installing plugin files")
-        cmakeResult = subprocess.run([globalData.cmakePath, "--install", cmakeBuild], cwd=globalData.repoDir)
+        cmakeResult = subprocess.run([globalData.cmakePath, "--install", buildInfo.dir], cwd = globalData.repoDir)
         if cmakeResult.returncode != 0:
             print(f"failed to generate build files: CMake failed with exit code {cmakeResult.returncode}")
             return
 
         try:
-            print("copying 'compile_commands.json' to repo root")
+            print(f"copying '{COMPILE_DATABASE}' to repo root")
             shutil.copyfile(
-                Path(globalData.repoDir, cmakeBuild, "compile_commands.json").resolve(),
-                Path(globalData.repoDir, "compile_commands.json").resolve()
+                Path(globalData.repoDir, buildInfo.dir, COMPILE_DATABASE).resolve(),
+                Path(globalData.repoDir, COMPILE_DATABASE).resolve()
             )
             print("copying plugin file to repo root")
             shutil.copyfile(
-                Path(globalData.repoDir, cmakeBuild, pluginDLL).resolve(),
-                Path(globalData.repoDir, pluginDLL).resolve()
+                Path(globalData.repoDir, buildInfo.dir, buildInfo.pluginDll).resolve(),
+                Path(globalData.repoDir, buildInfo.pluginDll).resolve()
             )
         except (shutil.SameFileError, OSError) as err:
             print(f"error: {str(err)}")
+
+    cppcheck_parser = cmd2.Cmd2ArgumentParser()
+    cppcheck_parser.add_argument("-f", "--force", action = "store_true", help = "Passes --force to cppcheck")
+    cppcheck_parser.add_argument("--max-config", dest = "maxConfig", default = None, type = int, help = "Passes --max-config <N> to cppcheck")
+    cppcheck_parser.add_argument("-i", "--inconclusive", action = "store_true", help = "Passes --inconclusive to cppcheck")
+    # cppcheck_parser.add_argument("-r", "--html", dest = "asHtml", action = "store_true", help = "Generate report as HTML")
+    cppcheck_parser.add_argument("-o", "--output-file", dest = "outFile", default = None, help = "The file to output to")
+    cppcheck_parser.add_argument("-j", dest = "coreCount", default = None, type = int, help = "How many cores cppcheck should use")
+    cppcheck_parser.add_argument("-b", "--build", choices = [ "debug", "release" ], default = "debug", help = "The type of build")
+    @cmd2.with_argparser(cppcheck_parser)
+    def do_cppcheck(self, args):
+        'Runs cppcheck based on compile_commands.json'
+        match args.build:
+            case "debug" | "":
+                buildType = BuildType.Debug
+            case "release":
+                buildType = BuildType.Release
+
+        globalData = self.globalData
+        buildInfo = BuildInfo(globalData, buildType)
+
+        if globalData.cppcheckPath is None:
+            print("error: cppcheck could not be found")
+            return
+        # if args.asHtml and globalData.cppcheckHTMLPath is None:
+        #     print(f"error: cppcheck-htmlreport could not be found")
+        #     return
+        # if args.asHtml and args.outFile is not None:
+        #     print(f"error: -r/--html cannot be used together with -o/--output-file")
+        #     return
+        if args.force and args.maxConfig is not None:
+            print(f"error: -f/--force cannot be used together with --max-config")
+            return
+
+        cppcheckArgs = [
+            globalData.cppcheckPath,
+            f"--project={COMPILE_DATABASE}",
+            f"--cppcheck-build-dir={buildInfo.cppcheckDir}", "--std=c++17",
+            f"--relative-paths={globalData.rackSdkDir};{globalData.repoDir}",
+            "--error-exitcode=1",
+            "--suppressions-list=CppCheckSuppressions.txt", "--inline-suppr",
+            "--enable=warning,portability,missingInclude",
+            "--check-level=exhaustive",
+        ]
+        if args.inconclusive:
+            cppcheckArgs.append("--inconclusive")
+        if args.force:
+            cppcheckArgs.append("--force")
+        if args.maxConfig is not None:
+            cppcheckArgs.append(f"--max-configs={args.maxConfig}")
+        if args.coreCount is not None:
+            cppcheckArgs.append(f"-j{args.coreCount}")
+        if args.outFile is not None:
+            cppcheckArgs.append(f"--output-file={args.outFile}")
+        # xmlReportPath = f"{buildInfo.cppcheckDir}/__XMLReport.xml"
+        # if args.asHtml:
+        #     cppcheckArgs.append(f"--output-file={xmlReportPath}")
+
+        print(f"running {' '.join(cppcheckArgs)}")
+        Path(globalData.repoDir, buildInfo.cppcheckDir).resolve().mkdir(parents = True, exist_ok = True)
+        cppcheckResult = subprocess.run(cppcheckArgs, cwd = globalData.repoDir)
+
+        # if args.asHtml:
+        #     htmlreportDir = f"{buildInfo.cppcheckDir}/HTMLReport"
+        #     htmlreportArgs = [
+        #         globalData.cppcheckHTMLPath,
+        #         f"--file={xmlReportPath}",
+        #         f"--report-dir={htmlreportDir}",
+        #     ]
+        #     print(f"running {' '.join(htmlreportArgs)}")
+        #     Path(globalData.repoDir, htmlreportDir).resolve().mkdir(parents = True, exist_ok = True)
+        #     subprocess.run(htmlreportArgs, cwd = globalData.repoDir)
 
     def do_svg(self, args):
         'Processes the SVG files'
@@ -130,16 +193,12 @@ class CmdShell(cmd.Cmd):
         except Exception as err:
             print(f"error: {str(err)}")
 
-    def do_exit(self, args):
-        'Exits the shell'
-        return True
-
-    def do_EOF(self, line):
-        return True
-
 def main():
     if len(sys.argv) > 1:
-        CmdShell().onecmd(' '.join(sys.argv[1:]))
+        try:
+            CmdShell().onecmd(' '.join(sys.argv[1:]))
+        except (cmd2.exceptions.Cmd2ArgparseError, cmd2.exceptions.PassThroughException, cmd2.exceptions.SkipPostcommandHooks):
+            return
     else:
         CmdShell().cmdloop()
 

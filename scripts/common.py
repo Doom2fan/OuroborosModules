@@ -32,6 +32,7 @@ SVG_PATH_SRC = "res_src"
 SVG_PATH_DST = "res"
 SCRIPTS_DIR = "scripts"
 DOCS_SCREENSHOTS_DIR = "docs/images/modules"
+COMPILE_DATABASE = "compile_commands.json"
 
 # VCV paths
 VCV_SETTINGS_FILE = "settings.json"
@@ -45,6 +46,33 @@ class SystemOS(Enum):
     Linux = 2,
     MacOS = 3,
 
+class BuildType(Enum):
+    Debug = 1
+    Release = 2
+
+class BuildInfo:
+    def __init__(self, globalData, buildType):
+        self.type = buildType
+        match self.type:
+            case BuildType.Debug:
+                buildDir = "Debug"
+                self.cmakeType = "Debug"
+            case BuildType.Release:
+                buildDir = "Release"
+                self.cmakeType = "Release"
+
+        self.dir = f"{globalData.cmakeBuild}_{buildDir}"
+
+        match globalData.curOS:
+            case SystemOS.Windows:
+                self.pluginDll = "plugin.dll"
+            case SystemOS.MacOS:
+                self.pluginDll = "plugin.dylib"
+            case SystemOS.Linux | _:
+                self.pluginDll = "plugin.so"
+
+        self.cppcheckDir = f"dep/cppcheck_{buildDir}"
+
 class GlobalData:
     def __init__(self):
         self.curOS = getOS()
@@ -52,6 +80,8 @@ class GlobalData:
         self.rackSdkDir = Path(self.repoDir, os.environ.get("RACK_DIR", "../..")).resolve()
         self.cmakePath = shutil.which("cmake")
         self.cmakeBuild = "dep/cmake-build"
+        self.cppcheckPath = shutil.which("cppcheck")
+        #self.cppcheckHTMLPath = shutil.which("cppcheck-htmlreport", mode = os.F_OK)
         self.threadCount = os.cpu_count()
         self.inkscapePath = os.environ.get("INKSCAPE_PATH")
 
