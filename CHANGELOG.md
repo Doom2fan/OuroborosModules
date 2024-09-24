@@ -5,3 +5,7 @@
     * Initial release
   * Meta Module
     * Initial release
+  * ST-VCA
+    * Initial release
+  * Bernoulli
+    * Initial release
