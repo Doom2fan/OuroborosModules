@@ -48,7 +48,7 @@ void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::log
     }
 }
 
-void init (rack::plugin::Plugin* p) {
+__attribute__((__visibility__("default"))) void init (rack::plugin::Plugin* p) {
     pluginInstance = p;
     OuroborosModules::initSettings ();
 
@@ -61,10 +61,10 @@ void init (rack::plugin::Plugin* p) {
     p->addModel (OuroborosModules::modelBernoulli);
 }
 
-json_t* settingsToJson () {
+__attribute__((__visibility__("default"))) json_t* settingsToJson () {
     return pluginSettings.saveToJson ();
 }
 
-void settingsFromJson (json_t* rootJ) {
+__attribute__((__visibility__("default"))) void settingsFromJson (json_t* rootJ) {
     pluginSettings.readFromJson (rootJ);
 }
