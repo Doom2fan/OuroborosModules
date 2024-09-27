@@ -143,6 +143,7 @@ namespace Bernoulli {
     }
 
     void BernoulliModule::process (const ProcessArgs& args) {
+        int lastConnected = -1;
         for (int i = 0; i < GatesCount; i++) {
             auto& gate = bernoulliGates [i];
 
@@ -150,7 +151,14 @@ namespace Bernoulli {
             gate.modeLatch = modeValue >= 2;
             gate.modeToggle = (modeValue % 2) == 1;
 
-            auto gateInput = inputs [INPUT_TRIGGER + i].getVoltage ();
+            float gateInput;
+            if (!inputs [INPUT_TRIGGER + i].isConnected ())
+                gateInput = inputs [INPUT_TRIGGER + (lastConnected >= 0 ? lastConnected : i)].getVoltage ();
+            else {
+                gateInput = inputs [INPUT_TRIGGER + i].getVoltage ();
+                lastConnected = i;
+            }
+
             auto result = gate.process (gateInput);
             outputs [OUTPUT_A + i].setVoltage (result.x);
             outputs [OUTPUT_B + i].setVoltage (result.y);
