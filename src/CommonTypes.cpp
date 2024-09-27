@@ -41,6 +41,7 @@ namespace OuroborosModules {
         json_object_try_get_float (rootJ, "G", g);
         json_object_try_get_float (rootJ, "B", b);
         json_object_try_get_float (rootJ, "A", a);
+
         return true;
     }
 }

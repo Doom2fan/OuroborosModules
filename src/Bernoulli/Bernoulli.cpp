@@ -19,6 +19,7 @@
 
 #include "Bernoulli.hpp"
 
+#include "../JsonUtils.hpp"
 #include "../Utils.hpp"
 
 #include <fmt/format.h>
@@ -90,14 +91,55 @@ namespace Bernoulli {
         return rack::math::Vec (0.f);
     }
 
+    json_t* BernoulliGate::dataToJson () const {
+        auto rootJ = json_object ();
+
+        json_object_set_new_bool (rootJ, "selectedOutput", selectedOutput);
+        int schmittTriggerState;
+        switch (schmittTrigger.s) {
+            default:
+            case rack::dsp::SchmittTrigger::UNINITIALIZED: schmittTriggerState = -1; break;
+            case rack::dsp::SchmittTrigger::LOW:  schmittTriggerState = 0; break;
+            case rack::dsp::SchmittTrigger::HIGH: schmittTriggerState = 1; break;
+        }
+        json_object_set_new_int (rootJ, "schmittTrigger", schmittTriggerState);
+
+        return rootJ;
+    }
+
+    bool BernoulliGate::dataFromJson (json_t* rootJ) {
+        if (!json_is_object (rootJ))
+            return false;
+
+        json_object_try_get_bool (rootJ, "selectedOutput", selectedOutput);
+        int schmittTriggerState = -1;
+        json_object_try_get_int (rootJ, "schmittTrigger", schmittTriggerState);
+        switch (schmittTriggerState) {
+            default:
+            case -1: schmittTrigger.s = rack::dsp::SchmittTrigger::UNINITIALIZED; break;
+            case  0: schmittTrigger.s = rack::dsp::SchmittTrigger::LOW; break;
+            case  1: schmittTrigger.s = rack::dsp::SchmittTrigger::HIGH; break;
+        }
+
+        return true;
+    }
+
+    std::string getGateJsonName (int i) { return fmt::format (FMT_STRING ("bernoulliGates::{}"), i); }
+
     json_t* BernoulliModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
+
+        for (int i = 0; i < GatesCount; i++)
+            json_object_set_new_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
 
         return rootJ;
     }
 
     void BernoulliModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
+
+        for (int i = 0; i < GatesCount; i++)
+            json_object_try_get_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
     }
 
     void BernoulliModule::process (const ProcessArgs& args) {

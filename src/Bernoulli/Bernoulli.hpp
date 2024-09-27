@@ -39,6 +39,9 @@ namespace Bernoulli {
         BernoulliGate (std::function<float ()> probabilityFunc);
 
         rack::math::Vec process (float gateInput);
+
+        json_t* dataToJson () const;
+        bool dataFromJson (json_t* rootJ);
     };
 
     struct BernoulliModule : ModuleBase {
