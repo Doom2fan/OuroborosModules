@@ -122,6 +122,9 @@ namespace Widgets {
             setSvg (Theme::getSvg ("components/KnobMetalSmall"));
             background->setSvg (Theme::getSvg ("components/KnobMetalSmall_BG"));
         }
+
+        MetalKnobSmall (const MetalKnobSmall& x) = delete;
+        void operator= (const MetalKnobSmall& x) = delete;
     };
 }
 }
