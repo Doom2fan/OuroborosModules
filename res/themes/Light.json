@@ -134,6 +134,31 @@
                 { "index": 0, "color": "#696969" },
                 { "index": 1, "color": "#3d3d3d" }
             ]}
+        },
+
+        ".knob-metal-pointer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#d4d4d4" },
+                { "index": 1, "color": "#ffffff" }
+            ]}
+        },
+
+        ".knob-metal-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#676767" },
+                { "index": 1, "color": "#9a9a9a" }
+            ]}
+        },
+
+        ".knob-metal-hilite1": {
+            "fill": "#d9d9d9"
+        },
+
+        ".knob-metal-mid": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#313131" },
+                { "index": 1, "color": "#6e6e6e" }
+            ]}
         }
     }
 }

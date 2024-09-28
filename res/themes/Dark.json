@@ -133,6 +133,27 @@
                 { "index": 0, "color": "#a8a8a8" },
                 { "index": 1, "color": "#757575" }
             ]}
+        },
+
+        ".knob-metal-pointer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#373737" },
+                { "index": 1, "color": "#414141" }
+            ]}
+        },
+
+        ".knob-metal-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#ababab" },
+                { "index": 1, "color": "#c7c7c7" }
+            ]}
+        },
+
+        ".knob-metal-mid": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#6b6b6b" },
+                { "index": 1, "color": "#9a9a9a" }
+            ]}
         }
     }
 }

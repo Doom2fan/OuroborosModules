@@ -134,6 +134,27 @@
                 { "index": 0, "color": "#696969" },
                 { "index": 1, "color": "#3d3d3d" }
             ]}
+        },
+
+        ".knob-metal-pointer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#373737" },
+                { "index": 1, "color": "#414141" }
+            ]}
+        },
+
+        ".knob-metal-outer": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#ddc578" },
+                { "index": 1, "color": "#e9d8a5" }
+            ]}
+        },
+
+        ".knob-metal-mid": {
+            "fill": { "gradient": [
+                { "index": 0, "color": "#ab8b2b" },
+                { "index": 1, "color": "#d6b85c" }
+            ]}
         }
     }
 }
