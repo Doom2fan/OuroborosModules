@@ -20,8 +20,7 @@
 
 #include "../ModuleBase.hpp"
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     std::string getLocalThemeLabel (ThemeId themeId) {
         if (themeId.isUnknown ())
             return "Use default theme";
@@ -65,5 +64,4 @@ namespace Widgets {
 
         module->theme_Emblem = newEmblem;
     }
-}
 }

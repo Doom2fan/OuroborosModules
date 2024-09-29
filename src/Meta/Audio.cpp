@@ -18,9 +18,7 @@
 
 #include "Meta.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     void MetaModule::audio_Reset () {
         for (int i = 0; i < PLUGSOUND_LENGTH; i++)
             plugSound_Channels [i].reset ();
@@ -50,6 +48,4 @@ namespace Meta {
         if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
         if (outputRight) outputs [OUTPUT_RIGHT].setVoltage (audioRight);
     }
-}
-}
 }

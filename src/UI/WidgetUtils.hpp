@@ -20,8 +20,7 @@
 
 #include "../PluginDef.hpp"
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     template<class TModuleLightWidget, typename... TArgs>
     TModuleLightWidget* createLight (
         rack::math::Vec pos,
@@ -45,5 +44,4 @@ namespace Widgets {
         o->box.pos = o->box.pos.minus (o->box.size.div (2));
         return o;
     }
-}
 }

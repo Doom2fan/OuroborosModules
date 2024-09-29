@@ -28,9 +28,7 @@
 
 #include <memory>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     struct KeyContainer;
 
     enum class CenterEmblem {
@@ -109,6 +107,4 @@ namespace Chroma {
         void onHoverText (const rack::event::HoverText& e) override;
         void onHoverScroll (const rack::event::HoverScroll& e) override;
     };
-}
-}
 }

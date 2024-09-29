@@ -28,9 +28,7 @@ namespace OuroborosModules {
     rack::plugin::Model* modelBernoulli = createModel<Modules::Bernoulli::BernoulliWidget> ("BernoulliGates");
 }
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Bernoulli {
+namespace OuroborosModules::Modules::Bernoulli {
     BernoulliModule::BernoulliModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
@@ -170,6 +168,4 @@ namespace Bernoulli {
     void BernoulliModule::onReset (const ResetEvent& e) {
         ModuleBase::onReset (e);
     }
-}
-}
 }

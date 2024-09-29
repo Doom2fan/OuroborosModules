@@ -20,8 +20,7 @@
 
 #include "PluginDef.hpp"
 
-namespace OuroborosModules {
-namespace Logging {
+namespace OuroborosModules::Logging {
     //rack::logger::log(rack::logger::DEBUG_LEVEL, __FILE__, __LINE__, __FUNCTION__, format, ##__VA_ARGS__)
     rack::logger::Level getRackLevel (LogLevel level) {
         switch (level) {
@@ -42,5 +41,4 @@ namespace Logging {
         if (pluginSettings.debug_Logging)
             rack::logger::log (getRackLevel (level), file, line, function, "%s", fmt::vformat (fmt, args).c_str ());
     }
-}
 }

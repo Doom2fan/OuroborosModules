@@ -20,14 +20,10 @@
 
 #include "../PluginDef.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     struct ChromaModule;
     extern ChromaModule* masterModule;
 
     struct KeyContainer;
     extern KeyContainer* masterKeyContainer;
-}
-}
 }

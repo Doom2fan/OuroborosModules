@@ -22,8 +22,7 @@
 
 #include <rack_themer.hpp>
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     struct ImageWidget : rack_themer::ThemedWidgetBase<rack::widget::TransparentWidget> {
       private:
         float zoom = 1.f;
@@ -49,5 +48,4 @@ namespace Widgets {
 
         void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
     };
-}
 }

@@ -18,11 +18,7 @@
 
 #include "CCM_Common.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     ChromaModule* masterModule = nullptr;
     KeyContainer* masterKeyContainer = nullptr;
-}
-}
 }

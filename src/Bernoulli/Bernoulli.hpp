@@ -23,9 +23,7 @@
 #include "../UI/ImageWidget.hpp"
 #include "../UI/WidgetBase.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Bernoulli {
+namespace OuroborosModules::Modules::Bernoulli {
     struct BernoulliGate {
         rack::dsp::SchmittTrigger schmittTrigger;
 
@@ -100,6 +98,4 @@ namespace Bernoulli {
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
-}
-}
 }

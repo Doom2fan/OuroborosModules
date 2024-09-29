@@ -18,8 +18,7 @@
 
 #include "ImageWidget.hpp"
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     void ImageWidget::setZoom (float zoom) {
         if (zoom == this->zoom)
             return;
@@ -58,5 +57,4 @@ namespace Widgets {
         if (autoSwitchTheme)
             svg = svg.withTheme (theme);
     }
-}
 }

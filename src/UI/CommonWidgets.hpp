@@ -23,8 +23,7 @@
 
 #include <rack_themer.hpp>
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     struct ScrewWidget : rack_themer::widgets::SvgScrew {
         ScrewWidget () {
             setSvg (Theme::getThemedSvg ("components/Screw", nullptr));
@@ -126,5 +125,4 @@ namespace Widgets {
         MetalKnobSmall (const MetalKnobSmall& x) = delete;
         void operator= (const MetalKnobSmall& x) = delete;
     };
-}
 }

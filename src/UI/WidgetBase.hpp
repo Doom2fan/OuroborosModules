@@ -24,8 +24,7 @@
 
 #include <rack_themer.hpp>
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     std::string getLocalThemeLabel (ThemeId themeId);
     std::string getLocalEmblemLabel (EmblemId emblemId);
 
@@ -214,5 +213,4 @@ namespace Widgets {
             menu->addChild (createSubmenuItem ("Local style", "", [&] (Menu* menu) { createLocalStyleMenu (menu); }));
         }
     };
-}
 }

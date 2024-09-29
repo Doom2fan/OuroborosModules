@@ -20,8 +20,7 @@
 
 #include <osdialog.h>
 
-namespace OuroborosModules {
-namespace Hashing {
+namespace OuroborosModules::Hashing {
     std::size_t distribute (const std::size_t& n) {
         static constexpr auto digits = std::numeric_limits<std::size_t>::digits;
         static_assert (digits == 64 || digits == 32);
@@ -39,7 +38,6 @@ namespace Hashing {
         assert (false);
         return 0;
     }
-}
 }
 
 namespace OuroborosModules {

@@ -18,8 +18,7 @@
 
 #include "CommonItems.hpp"
 
-namespace OuroborosModules {
-namespace UI {
+namespace OuroborosModules::UI {
     void ColorMenuItem::draw (const DrawArgs& args) {
         MenuItem::draw (args);
 
@@ -42,5 +41,4 @@ namespace UI {
         if (alwaysConsume)
             e.consume (this);
     }
-}
 }

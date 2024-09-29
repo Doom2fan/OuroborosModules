@@ -19,8 +19,7 @@
 
 #include "TextField.hpp"
 
-namespace OuroborosModules {
-namespace UI {
+namespace OuroborosModules::UI {
     struct TextFieldCopyItem : rack::ui::MenuItem {
         rack::WeakPtr<TextField> textField;
 
@@ -437,5 +436,4 @@ namespace UI {
         selectAllItem->textField = this;
         menu->addChild (selectAllItem);
     }
-}
 }

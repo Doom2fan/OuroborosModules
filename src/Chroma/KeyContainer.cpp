@@ -20,9 +20,7 @@
 
 #include "CCM_Common.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     struct OverlayWindow : rack::widget::TransparentWidget {
       private:
         std::string message;
@@ -198,6 +196,4 @@ namespace Chroma {
         if (checkLearningMode (e))
             return;
     }
-}
-}
 }

@@ -22,9 +22,7 @@
 
 #include <fmt/format.h>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     struct PremuterTimeQuantity : rack::Quantity {
         float* timeSrc;
         float maxTime;
@@ -210,6 +208,4 @@ namespace Meta {
             pluginSettings.plugSound_DisconnectSound = "<Default>";
         }));
     }
-}
-}
 }

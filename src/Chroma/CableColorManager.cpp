@@ -31,9 +31,7 @@ namespace {
     std::weak_ptr<OuroborosModules::Modules::Chroma::CableColorManager> currentColorManagerPtr;
 }
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     std::shared_ptr<CableColorManager> getColorManager () {
         if (auto manager = currentColorManagerPtr.lock ())
             return manager;
@@ -626,6 +624,4 @@ namespace Chroma {
 
         return true;
     }
-}
-}
 }

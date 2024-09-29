@@ -20,9 +20,7 @@
 
 #include <osdialog.h>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     const std::string DefaultPlugSounds [] = {
         "res/sounds/Jack_Connect.wav",
         "res/sounds/Jack_Disconnect.wav",
@@ -134,6 +132,4 @@ namespace Meta {
         audioLeft += mixAudioLeft * gain;
         audioRight += mixAudioRight * gain;
     }
-}
-}
 }

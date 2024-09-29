@@ -24,9 +24,7 @@
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace STVCA {
+namespace OuroborosModules::Modules::STVCA {
     struct STVCAModule : ModuleBase {
         enum ParamId {
             PARAM_LEVEL,
@@ -82,6 +80,4 @@ namespace STVCA {
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
-}
-}
 }

@@ -20,8 +20,7 @@
 
 #include <fmt/format.h>
 
-namespace OuroborosModules {
-namespace Input {
+namespace OuroborosModules::Input {
     std::string keyName (int key) {
         if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F25)
             return fmt::format (FMT_STRING ("F{}"), key - GLFW_KEY_F1);
@@ -81,5 +80,4 @@ namespace Input {
             default: return fmt::format (FMT_STRING ("M{}"), button);
         }
     }
-}
 }

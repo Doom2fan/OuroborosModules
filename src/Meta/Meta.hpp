@@ -26,9 +26,7 @@
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     struct SampleSlot {
       private:
         std::string samplePath = "";
@@ -133,6 +131,4 @@ namespace Meta {
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };
-}
-}
 }

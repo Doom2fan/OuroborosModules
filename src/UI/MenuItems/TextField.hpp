@@ -23,8 +23,7 @@
 
 #include <limits>
 
-namespace OuroborosModules {
-namespace UI {
+namespace OuroborosModules::UI {
     struct TextField : rack::widget::OpaqueWidget {
         std::string text;
         std::string placeholder;
@@ -74,5 +73,4 @@ namespace UI {
 
         virtual void createContextMenu ();
     };
-}
 }

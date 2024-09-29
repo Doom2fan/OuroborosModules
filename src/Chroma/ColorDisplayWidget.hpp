@@ -23,9 +23,7 @@
 
 #include <rack_themer.hpp>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     struct ChromaModule;
     struct ColorDisplayWidget;
 
@@ -74,6 +72,4 @@ namespace Chroma {
 
         void step () override;
     };
-}
-}
 }

@@ -27,9 +27,7 @@
 
 #include <unordered_set>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     ChromaWidget::ChromaWidget (ChromaModule* module) { constructor (module, "panels/Chroma"); }
 
     void ChromaWidget::initializeWidget () {
@@ -545,6 +543,4 @@ namespace Chroma {
             [=] { module->colorManager->clearColors (true); }
         ));
     }
-}
-}
 }

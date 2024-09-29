@@ -21,8 +21,7 @@
 #include "../../PluginDef.hpp"
 #include "TextField.hpp"
 
-namespace OuroborosModules {
-namespace UI {
+namespace OuroborosModules::UI {
     struct ColorMenuItem : rack::ui::MenuItem {
         NVGcolor color = rack::color::BLACK_TRANSPARENT;
 
@@ -97,5 +96,4 @@ namespace UI {
 
         return textField;
     }
-}
 }

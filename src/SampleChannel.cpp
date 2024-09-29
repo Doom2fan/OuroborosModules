@@ -24,8 +24,7 @@
 #include <fmt/format.h>
 #include <samplerate.h>
 
-namespace OuroborosModules {
-namespace Audio {
+namespace OuroborosModules::Audio {
     void AudioSample::generateSamples () {
         samples [0] = std::vector<float> ();
         samples [1] = std::vector<float> ();
@@ -194,5 +193,4 @@ namespace Audio {
                 return fmt::format (FMT_STRING ("Unknown error while loading sample file \"{}\"."), path);
         }
     }
-}
 }

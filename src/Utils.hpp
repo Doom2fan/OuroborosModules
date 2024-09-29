@@ -28,8 +28,7 @@
 #define boolToGate(x) (x ? 10.0f : 0.0f)
 #define boolToLight(x) (x ? 1.0f : 0.0f)
 
-namespace OuroborosModules {
-namespace Widgets {
+namespace OuroborosModules::Widgets {
     struct SimpleSlider : rack::ui::Slider {
         SimpleSlider (rack::Quantity* quantity) {
             this->quantity = quantity;
@@ -123,10 +122,8 @@ namespace Widgets {
         std::string getUnit () override { return ""; }
     };
 }
-}
 
-namespace OuroborosModules {
-namespace Hashing {
+namespace OuroborosModules::Hashing {
     template<typename T>
     T xorshift (const T& n, int i) {
         return n ^ (n >> i);
@@ -157,7 +154,6 @@ namespace Hashing {
         seed = hashCombine (seed, v);
         hashCombine (seed, rest...);
     }
-}
 }
 
 namespace OuroborosModules {

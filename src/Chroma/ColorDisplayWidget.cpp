@@ -23,9 +23,7 @@
 #include "../UI/ThemeUtils.hpp"
 #include "Chroma.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     /*
      * ColorDisplayWidget
      */
@@ -288,6 +286,4 @@ namespace Chroma {
             [=] { getColorManager ()->removeColor (index); }
         ));
     }
-}
-}
 }

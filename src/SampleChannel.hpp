@@ -22,8 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace OuroborosModules {
-namespace Audio {
+namespace OuroborosModules::Audio {
     struct AudioSample {
       public:
         enum class LoadStatus {
@@ -75,5 +74,4 @@ namespace Audio {
     };
 
     std::string getErrorMessage (AudioSample::LoadStatus loadStatus, std::string path);
-}
 }

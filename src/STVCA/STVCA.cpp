@@ -25,9 +25,7 @@ namespace OuroborosModules {
     rack::plugin::Model* modelSTVCA = createModel<Modules::STVCA::STVCAWidget> ("StereoVCAModule");
 }
 
-namespace OuroborosModules {
-namespace Modules {
-namespace STVCA {
+namespace OuroborosModules::Modules::STVCA {
     STVCAModule::STVCAModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
@@ -110,6 +108,4 @@ namespace STVCA {
         displayColorUseDefault = true;
         displayColor = RGBColor ();
     }
-}
-}
 }

@@ -20,9 +20,7 @@
 
 #include "../PluginDef.hpp"
 
-namespace OuroborosModules {
-namespace Input {
+namespace OuroborosModules::Input {
     std::string keyName (int key);
     std::string buttonName (int button);
-}
 }

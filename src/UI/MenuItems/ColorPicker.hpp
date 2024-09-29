@@ -22,8 +22,7 @@
 #include "CommonItems.hpp"
 #include "TextField.hpp"
 
-namespace OuroborosModules {
-namespace UI {
+namespace OuroborosModules::UI {
     template<typename TBaseItem = rack::ui::MenuItem>
     struct ColorPickerMenuItem : TBaseItem {
       public:
@@ -196,5 +195,4 @@ namespace UI {
             return menu;
         }
     };
-}
 }

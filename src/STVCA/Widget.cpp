@@ -25,9 +25,7 @@
 
 #include <fmt/format.h>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace STVCA {
+namespace OuroborosModules::Modules::STVCA {
     STVCAWidget::STVCAWidget (STVCAModule* module) { constructor (module, "panels/ST-VCA"); }
 
     struct STVCASlider : rack::app::SliderKnob {
@@ -290,6 +288,4 @@ namespace STVCA {
         displayColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
         menu->addChild (displayColorItem);
     }
-}
-}
 }

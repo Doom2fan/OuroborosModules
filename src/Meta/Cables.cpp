@@ -18,13 +18,9 @@
 
 #include "Meta.hpp"
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     void MetaModule::cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected) {
         cableConnected = cables_NewConnected.exchange (false);
         cableDisconnected = cables_NewDisconnected.exchange (false);
     }
-}
-}
 }

@@ -24,9 +24,7 @@ namespace OuroborosModules {
     rack::plugin::Model* modelMeta = createModel<Modules::Meta::MetaWidget> ("MetaModule");
 }
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Meta {
+namespace OuroborosModules::Modules::Meta {
     MetaModule::MetaModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
@@ -102,6 +100,4 @@ namespace Meta {
         for (int i = 0; i < PLUGSOUND_LENGTH; i++)
             plugSound_Channels [i].reset ();
     }
-}
-}
 }

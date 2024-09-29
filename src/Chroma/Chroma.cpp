@@ -25,9 +25,7 @@ namespace OuroborosModules {
     rack::plugin::Model* modelChroma = createModel<Modules::Chroma::ChromaWidget> ("CableColorModule");
 }
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Chroma {
+namespace OuroborosModules::Modules::Chroma {
     ChromaModule::ChromaModule () {
         colorManager = getColorManager ();
         checkMaster ();
@@ -68,6 +66,4 @@ namespace Chroma {
             colorManager->dataFromJson (colorManagerJ);
         }
     }
-}
-}
 }

@@ -18,14 +18,10 @@
 
 #pragma once
 
-namespace OuroborosModules {
-namespace Theme {
-namespace Styles {
+namespace OuroborosModules::Theme::Styles {
     static constexpr const char text [] = "text";
     static constexpr const char text_output [] = "text-output";
 
     static constexpr const char cable_color_display_BG [] = "cable-color-display-background";
     static constexpr const char cable_color_display_text [] = "cable-color-display-text";
-}
-}
 }

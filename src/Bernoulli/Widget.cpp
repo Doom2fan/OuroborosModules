@@ -24,9 +24,7 @@
 
 #include <fmt/format.h>
 
-namespace OuroborosModules {
-namespace Modules {
-namespace Bernoulli {
+namespace OuroborosModules::Modules::Bernoulli {
     BernoulliWidget::BernoulliWidget (BernoulliModule* module) { constructor (module, "panels/Bernoulli"); }
 
     void BernoulliWidget::initializeWidget () {
@@ -165,6 +163,4 @@ namespace Bernoulli {
 
         _WidgetBase::createPluginSettingsMenu (menu);
     }
-}
-}
 }
