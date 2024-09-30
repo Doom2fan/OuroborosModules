@@ -31,13 +31,9 @@ namespace OuroborosModules::Modules::Chroma {
     ChromaWidget::ChromaWidget (ChromaModule* module) { constructor (module, "panels/Chroma"); }
 
     void ChromaWidget::initializeWidget () {
-        using rack::createInputCentered;
-        using rack::createOutputCentered;
         using rack::createWidget;
-        using rack::createWidgetCentered;
         using rack::math::Vec;
         using rack::math::Rect;
-        using rack::window::mm2px;
         using Widgets::ImageWidget;
         using Widgets::ScrewWidget;
 
@@ -302,7 +298,7 @@ namespace OuroborosModules::Modules::Chroma {
             auto collectionName = collectionKVP.first;
             auto rightText = (collectionName == defaultCollectionName) ? "[Default]" : "";
 
-            menu->addChild (rack::createSubmenuItem (collectionName, rightText, [=] (Menu* menu) {
+            menu->addChild (createSubmenuItem (collectionName, rightText, [=] (Menu* menu) {
                 menu->addChild (createMenuItem (
                     "Load to module",
                     "",

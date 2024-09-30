@@ -32,11 +32,9 @@ namespace OuroborosModules::Modules::Bernoulli {
         using rack::createOutputCentered;
         using rack::createParamCentered;
         using rack::createWidget;
-        using rack::createWidgetCentered;
         using rack::componentlibrary::GreenLight;
         using rack::componentlibrary::RedLight;
         using rack::math::Vec;
-        using rack::window::mm2px;
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;
         using Widgets::createLightCentered;
@@ -110,7 +108,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid state light {} #{}"), captures [0], i);
 
-            const float lightSize = mm2px (1.5f);
+            const float lightSize = rack::window::mm2px (1.5f);
             if (captures [0] == "A")
                 addChild (createLightCentered<ResizableVCVLight<GreenLight>> (pos, module, BernoulliModule::LIGHT_STATE_A + i, lightSize));
             else
@@ -146,21 +144,5 @@ namespace OuroborosModules::Modules::Bernoulli {
     void BernoulliWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
         updateEmblem (curTheme, emblemId);
-    }
-
-    void BernoulliWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
-        using rack::ui::Menu;
-        using rack::createSubmenuItem;
-        using rack::createCheckMenuItem;
-
-        _WidgetBase::createLocalStyleMenu (menu);
-    }
-
-    void BernoulliWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
-        using rack::ui::Menu;
-        using rack::createSubmenuItem;
-        using rack::createCheckMenuItem;
-
-        _WidgetBase::createPluginSettingsMenu (menu);
     }
 }

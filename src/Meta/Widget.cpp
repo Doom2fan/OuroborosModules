@@ -58,7 +58,6 @@ namespace OuroborosModules::Modules::Meta {
         using rack::createInputCentered;
         using rack::createOutputCentered;
         using rack::createWidget;
-        using rack::createWidgetCentered;
         using rack::math::Vec;
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;

@@ -95,7 +95,5 @@ namespace OuroborosModules::Modules::Bernoulli {
         void updateEmblem (ThemeId themeId, EmblemId emblemId);
         void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
-        void createLocalStyleMenu (rack::ui::Menu* menu) override;
-        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
 }
