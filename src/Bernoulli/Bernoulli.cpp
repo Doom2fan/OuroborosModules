@@ -58,6 +58,8 @@ namespace OuroborosModules::Modules::Bernoulli {
                 return params [PARAM_PROBABILITY + i].getValue () + cv;
             });
         }
+
+        clockLights.setDivision (32);
     }
 
     BernoulliGate::BernoulliGate (std::function<float ()> probabilityFunc)
@@ -141,6 +143,9 @@ namespace OuroborosModules::Modules::Bernoulli {
     }
 
     void BernoulliModule::process (const ProcessArgs& args) {
+        auto lightTime = args.sampleTime * clockLights.division;
+        auto lightClocked = clockLights.process ();
+
         int lastConnected = -1;
         for (int i = 0; i < GatesCount; i++) {
             auto& gate = bernoulliGates [i];
@@ -160,8 +165,11 @@ namespace OuroborosModules::Modules::Bernoulli {
             auto result = gate.process (gateInput);
             outputs [OUTPUT_A + i].setVoltage (result.x);
             outputs [OUTPUT_B + i].setVoltage (result.y);
-            lights [LIGHT_STATE_A + i].setSmoothBrightness (result.x, args.sampleTime);
-            lights [LIGHT_STATE_B + i].setSmoothBrightness (result.y, args.sampleTime);
+
+            if (lightClocked) {
+                lights [LIGHT_STATE_A + i].setSmoothBrightness (result.x, lightTime);
+                lights [LIGHT_STATE_B + i].setSmoothBrightness (result.y, lightTime);
+            }
         }
     }
 

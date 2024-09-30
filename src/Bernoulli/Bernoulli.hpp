@@ -73,6 +73,8 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         BernoulliGate bernoulliGates [GatesCount];
 
+        rack::dsp::ClockDivider clockLights;
+
         BernoulliModule ();
 
         json_t* dataToJson () override;
