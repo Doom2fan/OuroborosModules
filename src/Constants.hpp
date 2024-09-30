@@ -146,6 +146,8 @@ namespace OuroborosModules {
 
         static constexpr float TriggerThreshLow = .1f;
         static constexpr float TriggerThreshHigh = 2.f;
+
+        static constexpr int MaxPolyphony = rack::engine::PORT_MAX_CHANNELS;
     }
 
     namespace Colors {
