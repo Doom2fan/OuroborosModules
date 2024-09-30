@@ -40,6 +40,14 @@
             "description": "A bank of 8 bernoulli gates",
             "tags": [ "Random", "Logic", "Switch", "Clock modulator" ],
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Bernoulli"
+        },
+        {
+            "slug": "Median",
+            "name": "Median",
+            "description": "A 3-element voltage sorter, sorts 3 voltages into min, mid and max",
+            "tags": [ "Logic", "Waveshaper", "Polyphonic" ],
+            "keywords": "sort sorting sorter min mid max",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Median"
         }
     ]
 }

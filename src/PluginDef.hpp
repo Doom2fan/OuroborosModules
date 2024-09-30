@@ -35,4 +35,5 @@ namespace OuroborosModules {
     extern rack::plugin::Model* modelChroma;
     extern rack::plugin::Model* modelSTVCA;
     extern rack::plugin::Model* modelBernoulli;
+    extern rack::plugin::Model* modelMedian;
 }
