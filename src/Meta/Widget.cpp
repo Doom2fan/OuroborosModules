@@ -95,10 +95,13 @@ namespace OuroborosModules::Modules::Meta {
         else if (!isEnabled && cables_Handler != nullptr)
             cables_Handler = nullptr;
 
-        if (cables_Handler != nullptr) {
-            module->cables_NewConnected.exchange (cables_Handler->checkCableConnected ());
-            module->cables_NewDisconnected.exchange (cables_Handler->checkCableDisconnected ());
-        }
+        if (cables_Handler == nullptr)
+            return;
+
+        if (cables_Handler->checkCableConnected ())
+            module->cables_NewConnected.store (true);
+        if (cables_Handler->checkCableDisconnected ())
+            module->cables_NewDisconnected.store (true);
     }
 
     void MetaWidget::step () {
