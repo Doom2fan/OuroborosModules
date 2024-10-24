@@ -18,6 +18,7 @@
 
 #include "CableColorManager.hpp"
 
+#include "../CableHandler.hpp"
 #include "../JsonUtils.hpp"
 #include "../PluginSettings.hpp"
 #include "../UI/Input.hpp"
@@ -298,11 +299,6 @@ namespace OuroborosModules::Modules::Chroma {
             colorCollection.resetToDefaults ();
     }
 
-    void CableColorManager::setNextCableColorId () {
-        if (pluginSettings.chroma_Latch)
-            APP->scene->rack->setNextCableColorId (curColorIndex);
-    }
-
     void CableColorManager::setCurrentColor (uint32_t index, bool forced, bool allowPortHover) {
         if (index >= colorCollection.count ())
             return;
@@ -337,16 +333,21 @@ namespace OuroborosModules::Modules::Chroma {
         if (curColorIndex >= colorCollection.count ())
             curColorIndex = colorCollection.count () - 1;
 
-        // Update the colors list and the next cable color.
-        rack::settings::cableColors.clear ();
-        for (uint32_t i = 0; i < colorCollection.count (); i++) {
-            auto curColor = colorCollection [i];
-            rack::settings::cableColors.push_back (curColor.color);
-        }
+        if (cables_Handler == nullptr)
+            cables_Handler = CableHandler::getHandler ();
 
-        setNextCableColorId ();
-        if (!pluginSettings.chroma_Latch && APP->scene->rack->getIncompleteCable () == nullptr)
-            curColorIndex = APP->scene->rack->getNextCableColorId ();
+        // Handle the held cable.
+        auto heldCable = APP->scene->rack->getIncompleteCable ();
+        if (heldCable != nullptr && cables_Handler->checkCableConnected ()) {
+            auto cablesToModify = std::vector<rack::app::CableWidget*> ();
+            cablesToModify.push_back (heldCable);
+            replacePatchCableColor (cablesToModify, curColorIndex);
+
+            if (!pluginSettings.chroma_Latch) {
+                if (++curColorIndex >= colorCollection.count ())
+                    curColorIndex = 0;
+            }
+        }
     }
 
     void CableColorManager::replacePatchCableColor (std::vector<rack::app::CableWidget*>& cables, uint32_t index) {
@@ -620,7 +621,6 @@ namespace OuroborosModules::Modules::Chroma {
             return false;
 
         updateCurrentColor ();
-        setNextCableColorId ();
 
         return true;
     }

@@ -22,6 +22,10 @@
 
 #include <string>
 
+namespace OuroborosModules {
+    struct CableHandler;
+}
+
 namespace OuroborosModules::Modules::Chroma {
     struct CableColorKey {
         int button = -1;
@@ -128,11 +132,12 @@ namespace OuroborosModules::Modules::Chroma {
         CableColorCollection colorCollection;
         uint32_t curColorIndex = 0;
 
+        std::shared_ptr<CableHandler> cables_Handler;
+        bool prevHeldCable = false;
+
         LearnMode learnMode = LearnMode::Off;
         uint32_t learnIndex = 0;
         CableColorKey* learnKeyPtr = nullptr;
-
-        void setNextCableColorId ();
 
         void unsetLearnMode ();
 
