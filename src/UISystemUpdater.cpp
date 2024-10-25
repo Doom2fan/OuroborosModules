@@ -28,7 +28,7 @@ namespace OuroborosModules {
             return;
 
         auto widget = new UISystemUpdater;
-        APP->scene->rack->addChild (widget);
+        APP->scene->rack->addChildBottom (widget);
     }
 
     void UISystemUpdater::addUpdateFunction (std::function<void ()> func) {
