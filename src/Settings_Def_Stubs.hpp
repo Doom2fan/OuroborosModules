@@ -21,3 +21,5 @@
 #include "CommonTypes.hpp"
 #include "Constants.hpp"
 #include "Chroma/CableColorManager.hpp"
+
+#include <rack.hpp>

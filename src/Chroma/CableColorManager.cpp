@@ -329,16 +329,37 @@ namespace OuroborosModules::Modules::Chroma {
         updateCurrentColor ();
     }
 
+    bool CableColorManager::checkUpdateHeldCable (rack::app::CableWidget* heldCable) {
+        // There's no held cable or it's complete.
+        if (heldCable == nullptr || heldCable->isComplete ())
+            return false;
+
+        // No new cable connected.
+        if (cables_Handler == nullptr)
+            cables_Handler = CableHandler::getHandler ();
+        if (!cables_Handler->checkCableConnected ())
+            return false;
+
+        // The held cable has no connected ports. (Impossible?)
+        if (heldCable->inputPort == nullptr && heldCable->outputPort == nullptr)
+            return false;
+
+        // Check if we're trying to duplicate a cable.
+        if ((APP->window->getMods () & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+            auto portWidget = heldCable->inputPort != nullptr ? heldCable->inputPort : heldCable->outputPort;
+            return APP->scene->rack->getTopCable (portWidget) == nullptr;
+        }
+
+        return true;
+    }
+
     void CableColorManager::updateCurrentColor () {
         if (curColorIndex >= colorCollection.count ())
             curColorIndex = colorCollection.count () - 1;
 
-        if (cables_Handler == nullptr)
-            cables_Handler = CableHandler::getHandler ();
-
         // Handle the held cable.
         auto heldCable = APP->scene->rack->getIncompleteCable ();
-        if (heldCable != nullptr && cables_Handler->checkCableConnected ()) {
+        if (checkUpdateHeldCable (heldCable)) {
             auto cablesToModify = std::vector<rack::app::CableWidget*> ();
             cablesToModify.push_back (heldCable);
             replacePatchCableColor (cablesToModify, curColorIndex);

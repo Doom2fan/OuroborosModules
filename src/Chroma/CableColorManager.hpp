@@ -148,6 +148,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         uint32_t getCurrentColor () { return curColorIndex; }
         void setCurrentColor (uint32_t index, bool forced = false, bool allowPortHover = false);
+        bool checkUpdateHeldCable (rack::app::CableWidget* heldCable);
         void updateCurrentColor ();
         void replacePatchCableColor (std::vector<rack::app::CableWidget*>& cables, uint32_t index);
         void replacePatchCableColorAll (std::vector<rack::app::CableWidget*>& cables, bool random);
