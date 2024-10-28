@@ -57,7 +57,6 @@ namespace OuroborosModules::Modules::Meta {
     }
 
     bool SampleSlot::load (std::string newSamplePath, bool forceReload, bool reportErrors) {
-        // Spin-wait if a load was already requested.
         if (loadRequested)
             return false;
 

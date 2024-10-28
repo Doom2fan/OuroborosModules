@@ -74,7 +74,7 @@ namespace OuroborosModules::Audio {
             FILE* file = fopen (path.c_str (), "r");
             if (file == nullptr)
                 return LoadStatus::FileDoesntExist;
-            fclose (file);
+            DEFER ({ fclose (file); });
         }
 
         AudioFile<float> audioFile;
