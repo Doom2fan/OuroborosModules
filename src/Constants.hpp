@@ -148,6 +148,8 @@ namespace OuroborosModules {
         static constexpr float TriggerThreshHigh = 2.f;
 
         static constexpr int MaxPolyphony = rack::engine::PORT_MAX_CHANNELS;
+
+        static const std::string MetaSound_DefaultMarker = "<Default>";
     }
 
     namespace Colors {

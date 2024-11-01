@@ -22,6 +22,9 @@
 #include "PluginDef.hpp"
 
 namespace OuroborosModules {
+    /*
+     * RGBColor
+     */
     json_t* RGBColor::dataToJson () const {
         auto rootJ = json_object ();
 
@@ -41,6 +44,30 @@ namespace OuroborosModules {
         json_object_try_get_float (rootJ, "G", g);
         json_object_try_get_float (rootJ, "B", b);
         json_object_try_get_float (rootJ, "A", a);
+
+        return true;
+    }
+
+    /*
+     * SoundSettings
+     */
+    json_t* SoundSettings::dataToJson () const {
+        auto rootJ = json_object ();
+
+        json_object_set_new_string (rootJ, "Path", path);
+        json_object_set_new_bool (rootJ, "Enabled", enabled);
+        json_object_set_new_float (rootJ, "Volume", volume);
+
+        return rootJ;
+    }
+
+    bool SoundSettings::dataFromJson (json_t* rootJ) {
+        if (!json_is_object (rootJ))
+            return false;
+
+        json_object_try_get_string (rootJ, "Path", path);
+        json_object_try_get_bool (rootJ, "Enabled", enabled);
+        json_object_try_get_float (rootJ, "Volume", volume);
 
         return true;
     }

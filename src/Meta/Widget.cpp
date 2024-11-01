@@ -80,15 +80,12 @@ namespace OuroborosModules::Modules::Meta {
             int i = stoi (captures [0]) - 1;
             addOutput (createOutputCentered<CableJackOutput> (pos, module, MetaModule::OUTPUT_LEFT + i));
         });
-
-        if (module != nullptr)
-            plugSound_CheckChannels ();
     }
 
     void MetaWidget::updateCableHandler () {
         auto isEnabled = false;
 
-        isEnabled |= pluginSettings.plugSound_Enable;
+        isEnabled |= pluginSettings.metaSounds_Enable;
 
         if (isEnabled && cables_Handler == nullptr)
             cables_Handler = CableHandler::getHandler ();
@@ -112,7 +109,6 @@ namespace OuroborosModules::Modules::Meta {
             return;
 
         updateCableHandler ();
-        plugSound_CheckChannels ();
     }
 
     void MetaWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
@@ -166,48 +162,59 @@ namespace OuroborosModules::Modules::Meta {
         // Cable
         menu->addChild (createMenuLabel ("Cable settings"));
 
-        // Plug sound
+        // Meta sounds
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (createMenuLabel ("Plug sound settings"));
-        menu->addChild (rack::createBoolMenuItem ("Enabled", "",
-            [] () { return pluginSettings.plugSound_Enable; },
-            [] (bool enable) { pluginSettings.plugSound_Enable = enable; }
-        ));
+        menu->addChild (createMenuLabel ("Meta sounds settings"));
+        menu->addChild (rack::createBoolPtrMenuItem ("Enabled", "", &pluginSettings.metaSounds_Enable));
 
-        auto plugVolumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
+        auto metaSoundsVolumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
             "Volume",
-            &pluginSettings.plugSound_Volume,
+            &pluginSettings.metaSounds_Volume,
             0.f, 1.f,
             4,
             nullptr
         ));
-        plugVolumeSlider->box.size.x = 200.f;
-        menu->addChild (plugVolumeSlider);
+        metaSoundsVolumeSlider->box.size.x = 200.f;
+        menu->addChild (metaSoundsVolumeSlider);
 
-        menu->addChild (new rack::ui::MenuEntry);
-        menu->addChild (createMenuItem ("Load connect sound", "", [&] () {
-            auto path = selectSoundFile ();
-            if (path == nullptr)
-                return;
+        for (int i = 0; i < MetaModule::METASOUNDS_LENGTH; i++) {
+            auto channelIdx = (MetaModule::MetaSounds_Channels) i;
+            auto data = metaSounds_GetData (channelIdx);
+            if (data == nullptr)
+                continue;
 
-            if (module->plugSound_Channels [MetaModule::PLUGSOUND_CONNECT].load (path, true, true))
-                pluginSettings.plugSound_ConnectSound = path;
-        }));
-        menu->addChild (createMenuItem ("Restore default connect sound", "", [&] () {
-            pluginSettings.plugSound_ConnectSound = "<Default>";
-        }));
+            menu->addChild (rack::createSubmenuItem (data->getName (), "", [=] (rack::ui::Menu* menu) {
+                // Enable
+                menu->addChild (rack::createBoolMenuItem ("Enabled", "",
+                    [=] () { return data->isEnabled (); },
+                    [=] (bool enable) { data->setEnabled (enable); }
+                ));
 
-        menu->addChild (new rack::ui::MenuEntry);
-        menu->addChild (createMenuItem ("Load disconnect sound", "", [&] () {
-            auto path = selectSoundFile ();
-            if (path == nullptr)
-                return;
+                // Volume
+                auto volumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
+                    "Volume",
+                    data->getVolumePtr (),
+                    0.f, 1.f,
+                    4,
+                    nullptr
+                ));
+                volumeSlider->box.size.x = 200.f;
+                menu->addChild (volumeSlider);
 
-            if (module->plugSound_Channels [MetaModule::PLUGSOUND_DISCONNECT].load (path, true, true))
-                pluginSettings.plugSound_DisconnectSound = path;
-        }));
-        menu->addChild (createMenuItem ("Restore default disconnect sound", "", [&] () {
-            pluginSettings.plugSound_DisconnectSound = "<Default>";
-        }));
+                // Load
+                menu->addChild (createMenuItem ("Load sound", "", [&] () {
+                    auto path = selectSoundFile ();
+                    if (path == nullptr)
+                        return;
+
+                    data->tryChangePath (path, true, true);
+                }));
+
+                // Restore default
+                menu->addChild (createMenuItem ("Restore default sound", "", [&] () {
+                    data->tryChangePath (Constants::MetaSound_DefaultMarker, true, true);
+                }));
+            }));
+        }
     }
 }

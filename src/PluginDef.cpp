@@ -27,6 +27,11 @@
 
 rack::plugin::Plugin* pluginInstance;
 
+namespace OuroborosModules::Modules::Meta {
+    void metaSounds_Init ();
+    void metaSounds_Refresh ();
+}
+
 void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::logging::ErrorCode code, std::string info) {
     using namespace rack_themer::logging;
 
@@ -50,9 +55,11 @@ void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::log
 
 __attribute__((__visibility__("default"))) void init (rack::plugin::Plugin* p) {
     pluginInstance = p;
-    OuroborosModules::initSettings ();
 
     rack_themer::logging::setLogger (&rackThemerLogger);
+
+    OuroborosModules::initSettings ();
+    OuroborosModules::Modules::Meta::metaSounds_Init ();
 
     // Module models.
     p->addModel (OuroborosModules::modelMeta);
@@ -68,4 +75,5 @@ __attribute__((__visibility__("default"))) json_t* settingsToJson () {
 
 __attribute__((__visibility__("default"))) void settingsFromJson (json_t* rootJ) {
     pluginSettings.readFromJson (rootJ);
+    OuroborosModules::Modules::Meta::metaSounds_Refresh ();
 }

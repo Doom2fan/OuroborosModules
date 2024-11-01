@@ -18,11 +18,30 @@
 
 #pragma once
 
+#include <samplerate.h>
+#include <rack.hpp>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace OuroborosModules::Audio {
+    struct AudioBuffer {
+      private:
+        int _sampleRate = 0;
+        std::size_t _sampleCount = 0;
+        std::vector<float> _samples;
+
+      public:
+        AudioBuffer () { }
+        AudioBuffer (int sampleRate, std::size_t sampleCount, const std::vector<float>& samples)
+            : _sampleRate (sampleRate), _sampleCount (sampleCount), _samples (samples) { }
+
+        int getSampleRate () const { return _sampleRate; }
+        std::size_t getSampleCount () const { return _sampleCount; }
+        const std::vector<float>& getSamples () const { return _samples; }
+    };
+
     struct AudioSample {
       public:
         enum class LoadStatus {
@@ -32,35 +51,56 @@ namespace OuroborosModules::Audio {
             ChannelCount,
         };
 
-        std::vector<float> samples [2];
+        static LoadStatus load (std::string path, int sampleRate, std::shared_ptr<AudioSample>& audioSample);
+        static LoadStatus load (std::string path, std::shared_ptr<AudioSample>& audioSample);
+        static LoadStatus loadShared (std::string path, int sampleRate, std::shared_ptr<AudioSample>& audioSample);
+        static LoadStatus loadSharedRaw (std::string path, std::shared_ptr<AudioSample>& audioSample);
 
-        bool isStereo () { return _isStereo; }
-        int getRawSampleRate () { return _rawSampleRate; }
-
-        LoadStatus load (std::string path);
-        void clear ();
+        bool isShared () const { return _isShared; }
+        bool isStereo () const { return _isStereo; }
+        int getChannelCount () const { return isStereo () ? 2 : 1; }
+        const AudioBuffer& getRawBuffer () const { return _rawBuffer; }
+        const AudioBuffer& getResampledBuffer () const { return _noResampledBuffer ? _rawBuffer : _resampledBuffer; }
 
         void onSampleRateChange (int newSampleRate);
 
-      private:
-        int _curSampleRate;
-        int _rawSampleRate;
-        std::vector<float> _rawSamples [2];
-        bool _isStereo;
+        std::shared_ptr<AudioSample> withSampleRate (int newSampleRate, bool shared);
 
-        void generateSamples ();
+      private:
+        bool _isShared;
+        bool _isStereo;
+        bool _rawOnly;
+        bool _noResampledBuffer;
+        AudioBuffer _rawBuffer;
+        AudioBuffer _resampledBuffer;
+
+        void generateSamples (int sampleRate);
+
+        static LoadStatus loadInternal (std::string path, std::shared_ptr<AudioSample>& audioSample, bool isShared, int sampleRate);
     };
 
     struct SampleChannel {
       private:
-        int _curSampleRate;
+        int _curSampleRate = 0;
 
-        bool _isPlaying;
-        int _sampleTime;
+        bool _isPlaying = false;
+        bool _isPlayingRaw = false;
+        std::size_t _sampleTime = 0;
 
-        std::shared_ptr<AudioSample> _sampleAudio;
+        SRC_STATE* _src = nullptr;
+        double _srcRatio = 0.f;
+        rack::dsp::DoubleRingBuffer<float, 16 * 2> outBuffer;
+
+        std::shared_ptr<AudioSample> _sampleAudio = nullptr;
+
+        void calcSrcRatio ();
+        void decideBuffer ();
+        const AudioBuffer& getBuffer () const;
 
       public:
+        SampleChannel ();
+        ~SampleChannel ();
+
         bool process (float& audioLeft, float& audioRight);
 
         void load (std::shared_ptr<AudioSample> sample);
@@ -70,7 +110,7 @@ namespace OuroborosModules::Audio {
         void play (std::shared_ptr<AudioSample> sample);
         void reset ();
 
-        void onSampleRateChange (int sampleRate);
+        void onSampleRateChange (int newSampleRate);
     };
 
     std::string getErrorMessage (AudioSample::LoadStatus loadStatus, std::string path);

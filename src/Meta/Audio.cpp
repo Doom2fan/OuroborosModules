@@ -20,8 +20,8 @@
 
 namespace OuroborosModules::Modules::Meta {
     void MetaModule::audio_Reset () {
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Channels [i].reset ();
+        for (int i = 0; i < METASOUNDS_LENGTH; i++)
+            metaSounds_Channels [i].reset ();
     }
 
     void MetaModule::audio_Process (const ProcessArgs& args) {
@@ -43,7 +43,7 @@ namespace OuroborosModules::Modules::Meta {
         float audioRight = inputs [INPUT_RIGHT].isConnected () ? inputs [INPUT_RIGHT].getVoltage () : audioLeft;
 
         (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
-        plugSound_ProcessAudio (args, audioLeft, audioRight);
+        metaSounds_ProcessAudio (args, audioLeft, audioRight);
 
         if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
         if (outputRight) outputs [OUTPUT_RIGHT].setVoltage (audioRight);

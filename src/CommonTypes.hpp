@@ -22,6 +22,7 @@
 #include <nanovg.h>
 
 #include <cstdint>
+#include <string>
 
 namespace OuroborosModules {
     struct RGBColor {
@@ -48,6 +49,20 @@ namespace OuroborosModules {
             color.a = a;
             return color;
         }
+
+        json_t* dataToJson () const;
+        bool dataFromJson (json_t* rootJ);
+    };
+
+    struct SoundSettings {
+        std::string path;
+        bool enabled;
+        float volume;
+
+        SoundSettings (std::string path, bool enabled, float volume = 1.f)
+            : path (path), enabled (enabled), volume (volume) { }
+
+        std::string getPath ();
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);

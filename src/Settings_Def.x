@@ -22,10 +22,10 @@ DEFINE_STRUCT (ThemeId, global_ThemeLight, "global::ThemeLight", ThemeId::getFro
 DEFINE_STRUCT (ThemeId, global_ThemeDark, "global::ThemeDark", ThemeId::getFromKey ("Dark"))
 DEFINE_STRUCT (EmblemId, global_DefaultEmblem, "global::DefaultEmblem", EmblemId::getFromKey ("Dragon"))
 
-DEFINE_BOOL (plugSound_Enable, "plugSound::Enable", true)
-DEFINE_FLOAT (float, plugSound_Volume, "plugSound::Volume", 1.f)
-DEFINE_STD_STRING (plugSound_ConnectSound, "plugSound::ConnectSound", "<Default>")
-DEFINE_STD_STRING (plugSound_DisconnectSound, "plugSound::DisconnectSound", "<Default>")
+DEFINE_BOOL (metaSounds_Enable, "metaSounds::Enable", true)
+DEFINE_FLOAT (float, metaSounds_Volume, "metaSounds::Volume", 1.f)
+DEFINE_STRUCT (SoundSettings, metaSounds_CablePlugged, "metaSounds::CablePlugged", SoundSettings (Constants::MetaSound_DefaultMarker, true, 1.f))
+DEFINE_STRUCT (SoundSettings, metaSounds_CableUnplugged, "metaSounds::CableUnplugged", SoundSettings (Constants::MetaSound_DefaultMarker, true, 1.f))
 
 DEFINE_BOOL (chroma_Latch, "cableColorManager::Latch", true)
 DEFINE_BOOL (chroma_GlobalKeys, "cableColorManager::GlobalKeys", false)

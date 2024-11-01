@@ -37,6 +37,11 @@ namespace OuroborosModules::Modules::Meta {
         configBypass (INPUT_RIGHT, OUTPUT_RIGHT);
 
         premuter_Func = &MetaModule::premuter_Process;
+
+        clockMetaSoundSettings.setDivision (32);
+
+        for (int i = 0; i < METASOUNDS_LENGTH; i++)
+            metaSounds_Channels [i].init (i);
     }
 
     json_t* MetaModule::dataToJson () {
@@ -79,9 +84,9 @@ namespace OuroborosModules::Modules::Meta {
         cables_Process (args, cableConnected, cableDisconnected);
 
         if (cableConnected)
-            plugSound_Channels [PLUGSOUND_CONNECT].play ();
+            metaSounds_Channels [METASOUNDS_CABLECONNECT].play ();
         if (cableDisconnected)
-            plugSound_Channels [PLUGSOUND_DISCONNECT].play ();
+            metaSounds_Channels [METASOUNDS_CABLEDISCONNECT].play ();
 
         audio_Process (args);
     }
@@ -89,15 +94,16 @@ namespace OuroborosModules::Modules::Meta {
     void MetaModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         Module::onSampleRateChange (e);
 
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Channels [i].onSampleRateChange (e.sampleRate);
+        MetaSoundData::global_OnSampleRateChange (e.sampleRate);
+        for (int i = 0; i < METASOUNDS_LENGTH; i++)
+            metaSounds_Channels [i].onSampleRateChange (e.sampleRate);
     }
 
     void MetaModule::onUnBypass (const UnBypassEvent& e) {
         Module::onUnBypass (e);
 
         premuter_Func = &MetaModule::premuter_Passthrough;
-        for (int i = 0; i < PLUGSOUND_LENGTH; i++)
-            plugSound_Channels [i].reset ();
+        for (int i = 0; i < METASOUNDS_LENGTH; i++)
+            metaSounds_Channels [i].reset ();
     }
 }

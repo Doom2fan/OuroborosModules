@@ -29,22 +29,20 @@
 namespace OuroborosModules::Modules::Meta {
     struct SampleSlot {
       private:
-        std::string samplePath = "";
-        std::string sampleLoadPath = "";
-        std::shared_ptr<Audio::AudioSample> sample = nullptr;
-        std::shared_ptr<Audio::AudioSample> sampleLoad = nullptr;
+        int channelIdx;
 
+        float audioGain = 1.f;
+
+        std::shared_ptr<Audio::AudioSample> sample = nullptr;
         Audio::SampleChannel sampleChannel = Audio::SampleChannel ();
 
-        std::atomic<bool> loadRequested = false;
-
-        void checkLoad ();
-
       public:
-        bool load (std::string newSamplePath, bool forceReload, bool reportErrors);
+        void init (int channelIdx) { this->channelIdx = channelIdx; }
 
-        void reset () { checkLoad (); sampleChannel.reset (); }
-        void play () { checkLoad (); sampleChannel.play (); }
+        void update ();
+
+        void reset () { sampleChannel.reset (); }
+        void play () { sampleChannel.play (); }
         bool process (float& audioLeft, float& audioRight);
 
         void onSampleRateChange (int sampleRate) { sampleChannel.onSampleRateChange (sampleRate); }
@@ -68,10 +66,10 @@ namespace OuroborosModules::Modules::Meta {
             LIGHTS_LEN
         };
 
-        enum PlugSound_Channels {
-            PLUGSOUND_CONNECT,
-            PLUGSOUND_DISCONNECT,
-            PLUGSOUND_LENGTH,
+        enum MetaSounds_Channels {
+            METASOUNDS_CABLECONNECT,
+            METASOUNDS_CABLEDISCONNECT,
+            METASOUNDS_LENGTH,
         };
 
         // Common data
@@ -82,8 +80,8 @@ namespace OuroborosModules::Modules::Meta {
         std::atomic<bool> cables_NewDisconnected = false;
 
         // Plug sound data
-        std::atomic<bool> plugSound_PrevEnabled = false;
-        SampleSlot plugSound_Channels [PLUGSOUND_LENGTH];
+        rack::dsp::ClockDivider clockMetaSoundSettings;
+        SampleSlot metaSounds_Channels [METASOUNDS_LENGTH];
 
         // Premuter data
         float premuter_SampleTime = 0.f;
@@ -100,7 +98,7 @@ namespace OuroborosModules::Modules::Meta {
         void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
         void premuter_Passthrough (float sampleTime, float& audioLeft, float& audioRight) { }
 
-        void plugSound_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight);
+        void metaSounds_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight);
 
         void audio_Reset ();
         void audio_Process (const ProcessArgs& args);
@@ -114,6 +112,7 @@ namespace OuroborosModules::Modules::Meta {
       private:
         Widgets::ImageWidget* emblemWidget = nullptr;
         std::shared_ptr<CableHandler> cables_Handler;
+        bool metaSounds_PrevEnabled;
 
       public:
         MetaWidget (MetaModule* module);
@@ -122,7 +121,6 @@ namespace OuroborosModules::Modules::Meta {
         void initializeWidget () override;
 
         void step () override;
-        void plugSound_CheckChannels ();
 
         void updateCableHandler ();
         void updateEmblem (ThemeId themeId, EmblemId emblemId);
@@ -131,4 +129,41 @@ namespace OuroborosModules::Modules::Meta {
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };
+
+    struct MetaSoundData {
+      private:
+        MetaModule::MetaSounds_Channels channelIdx;
+
+        std::string name;
+        std::string defaultPath;
+        SoundSettings* settings;
+
+        std::string samplePath = "";
+        std::shared_ptr<Audio::AudioSample> audioSample = nullptr;
+
+      public:
+        MetaSoundData (std::string name, std::string defaultPath, SoundSettings* settings)
+            : name (name), defaultPath (defaultPath), settings (settings) { }
+
+        void init (MetaModule::MetaSounds_Channels channel);
+
+        const std::string& getName () { return name; }
+
+        void setEnabled (bool enabled);
+        bool isEnabled () { return settings != nullptr ? settings->enabled : true; }
+
+        float* getVolumePtr () { return settings != nullptr ? &settings->volume : nullptr; }
+        float getVolume () { return settings != nullptr ? settings->volume : 1.f; }
+
+        std::shared_ptr<Audio::AudioSample> getAudio () { return audioSample; }
+
+        bool changeSample (std::string path, bool forceReload, bool reportErrors);
+        void tryChangePath (std::string path, bool forceReload, bool reportErrors);
+
+        static void global_OnSampleRateChange (int newSampleRate);
+    };
+
+    void metaSounds_Init ();
+    void metaSounds_Refresh ();
+    MetaSoundData* metaSounds_GetData (MetaModule::MetaSounds_Channels channel);
 }
