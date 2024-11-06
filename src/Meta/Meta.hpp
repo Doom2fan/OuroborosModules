@@ -29,7 +29,7 @@
 namespace OuroborosModules::Modules::Meta {
     struct SampleSlot {
       private:
-        int channelIdx;
+        int channelIdx = 0;
 
         float audioGain = 1.f;
 
@@ -111,8 +111,8 @@ namespace OuroborosModules::Modules::Meta {
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
         Widgets::ImageWidget* emblemWidget = nullptr;
-        std::shared_ptr<CableHandler> cables_Handler;
-        bool metaSounds_PrevEnabled;
+        std::shared_ptr<CableHandler> cables_Handler = nullptr;
+        bool metaSounds_PrevEnabled = false;
 
       public:
         MetaWidget (MetaModule* module);
@@ -132,7 +132,7 @@ namespace OuroborosModules::Modules::Meta {
 
     struct MetaSoundData {
       private:
-        MetaModule::MetaSounds_Channels channelIdx;
+        MetaModule::MetaSounds_Channels channelIdx = (MetaModule::MetaSounds_Channels) 0;
 
         std::string name;
         std::string defaultPath;
