@@ -347,7 +347,16 @@ namespace OuroborosModules::Modules::Chroma {
         // Check if we're trying to duplicate a cable.
         if ((APP->window->getMods () & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
             auto portWidget = heldCable->inputPort != nullptr ? heldCable->inputPort : heldCable->outputPort;
-            return APP->scene->rack->getTopCable (portWidget) == nullptr;
+            auto cableContainer = APP->scene->rack->getCableContainer ();
+            // Check if there's any other cable at the connected end of the cable.
+            for (auto it = cableContainer->children.rbegin (); it != cableContainer->children.rend (); it++) {
+                auto curCable = dynamic_cast<rack::app::CableWidget*> (*it);
+                assert (curCable != nullptr);
+                if (curCable == heldCable || !curCable->isComplete ())
+                    continue;
+                if (curCable->inputPort == portWidget || curCable->outputPort == portWidget)
+                    return false;
+            }
         }
 
         return true;
