@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../CableHandler.hpp"
+#include "../MetaHandler.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../SampleChannel.hpp"
@@ -69,6 +69,8 @@ namespace OuroborosModules::Modules::Meta {
         enum MetaSounds_Channels {
             METASOUNDS_CABLECONNECT,
             METASOUNDS_CABLEDISCONNECT,
+            METASOUNDS_MODULEPLACED,
+            METASOUNDS_MODULEREMOVED,
             METASOUNDS_LENGTH,
         };
 
@@ -79,7 +81,11 @@ namespace OuroborosModules::Modules::Meta {
         std::atomic<bool> cables_NewConnected = false;
         std::atomic<bool> cables_NewDisconnected = false;
 
-        // Plug sound data
+        // Module data
+        std::atomic<bool> modules_NewPlaced = false;
+        std::atomic<bool> modules_NewRemoved = false;
+
+        // Meta sound data
         rack::dsp::ClockDivider clockMetaSoundSettings;
         SampleSlot metaSounds_Channels [METASOUNDS_LENGTH];
 
@@ -93,11 +99,12 @@ namespace OuroborosModules::Modules::Meta {
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
 
-        void cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected);
+        void cables_Process (const ProcessArgs& args);
 
         void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
         void premuter_Passthrough (float sampleTime, float& audioLeft, float& audioRight) { }
 
+        void metaSounds_Process (const ProcessArgs& args);
         void metaSounds_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight);
 
         void audio_Reset ();
@@ -111,7 +118,7 @@ namespace OuroborosModules::Modules::Meta {
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
         Widgets::ImageWidget* emblemWidget = nullptr;
-        std::shared_ptr<CableHandler> cables_Handler = nullptr;
+        std::shared_ptr<MetaHandler> cables_Handler = nullptr;
         bool metaSounds_PrevEnabled = false;
 
       public:
@@ -122,7 +129,7 @@ namespace OuroborosModules::Modules::Meta {
 
         void step () override;
 
-        void updateCableHandler ();
+        void updateMetaHandler ();
         void updateEmblem (ThemeId themeId, EmblemId emblemId);
         void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;

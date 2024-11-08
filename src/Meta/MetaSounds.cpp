@@ -25,6 +25,8 @@ namespace OuroborosModules::Modules::Meta {
     MetaSoundData metaSoundsData [MetaModule::METASOUNDS_LENGTH] = {
         MetaSoundData ("Cable plugged", "res/sounds/Jack_Connect.wav", &pluginSettings.metaSounds_CablePlugged),
         MetaSoundData ("Cable unplugged", "res/sounds/Jack_Disconnect.wav", &pluginSettings.metaSounds_CableUnplugged),
+        MetaSoundData ("Module placed", "res/sounds/Module_Place.wav", &pluginSettings.metaSounds_ModulePlaced),
+        MetaSoundData ("Module removed", "res/sounds/Module_Remove.wav", &pluginSettings.metaSounds_ModuleRemoved),
     };
 
     void metaSounds_Init () {
@@ -120,6 +122,18 @@ namespace OuroborosModules::Modules::Meta {
             auto& data = metaSoundsData [i];
             data.audioSample = data.audioSample->withSampleRate (newSampleRate, true);
         }
+    }
+
+    void MetaModule::metaSounds_Process (const ProcessArgs& args) {
+        if (cables_NewConnected.exchange (false))
+            metaSounds_Channels [METASOUNDS_CABLECONNECT].play ();
+        if (cables_NewDisconnected.exchange (false))
+            metaSounds_Channels [METASOUNDS_CABLEDISCONNECT].play ();
+
+        if (modules_NewPlaced.exchange (false))
+            metaSounds_Channels [METASOUNDS_MODULEPLACED].play ();
+        if (modules_NewRemoved.exchange (false))
+            metaSounds_Channels [METASOUNDS_MODULEREMOVED].play ();
     }
 
     void MetaModule::metaSounds_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight) {
