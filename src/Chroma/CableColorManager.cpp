@@ -206,7 +206,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         auto monotrailCollection = CableColorCollection ("Monotrail Tech Talk");
         monotrailCollection.addColor (fromHexString ("#ff79ad"), CableColorKey (-1, GLFW_KEY_1, 0), "Audio");
-        monotrailCollection.addColor (fromHexString ("#45a6eb"), CableColorKey (-1, GLFW_KEY_2, 0), "Control Voltage);
+        monotrailCollection.addColor (fromHexString ("#45a6eb"), CableColorKey (-1, GLFW_KEY_2, 0), "Control Voltage");
         monotrailCollection.addColor (fromHexString ("#ffac38"), CableColorKey (-1, GLFW_KEY_3, 0), "Trigger / Gate");
         monotrailCollection.addColor (fromHexString ("#8cc53d"), CableColorKey (-1, GLFW_KEY_4, 0), "1v/oct");
         collectionsStorage.addCollection (monotrailCollection);
