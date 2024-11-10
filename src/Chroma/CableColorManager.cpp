@@ -204,6 +204,13 @@ namespace OuroborosModules::Modules::Chroma {
         collectionsStorage.addCollection (defaultCollection);
         collectionsStorage.setDefaultCollection (defaultCollection.getName ());
 
+        auto monotrailCollection = CableColorCollection ("Monotrail Tech Talk");
+        monotrailCollection.addColor (fromHexString ("#ff79ad"), CableColorKey (-1, GLFW_KEY_1, 0), "Audio");
+        monotrailCollection.addColor (fromHexString ("#45a6eb"), CableColorKey (-1, GLFW_KEY_2, 0), "Control Voltage");
+        monotrailCollection.addColor (fromHexString ("#ffac38"), CableColorKey (-1, GLFW_KEY_3, 0), "Trigger / Gate");
+        monotrailCollection.addColor (fromHexString ("#8cc53d"), CableColorKey (-1, GLFW_KEY_4, 0), "1v/oct");
+        collectionsStorage.addCollection (monotrailCollection);
+        
         auto omriCollection = CableColorCollection ("Omri Cohen/Modular Fungi");
         omriCollection.addColor (fromHexString ("#c91847"), CableColorKey (-1, GLFW_KEY_1, 0), "Audio");
         omriCollection.addColor (fromHexString ("#0986ad"), CableColorKey (-1, GLFW_KEY_2, 0), "Clk/Trg/Gate");
