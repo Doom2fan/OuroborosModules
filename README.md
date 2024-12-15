@@ -8,6 +8,7 @@ Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosMo
 
 ## Links
 * [Manual](https://github.com/Doom2fan/OuroborosModules/wiki)
+* [How to build](./COMPILING.md)
 * [Releases](https://github.com/Doom2fan/OuroborosModules/releases)
 * [Nightly builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly)
 * [Bugtracker](https://github.com/Doom2fan/OuroborosModules/issues)
