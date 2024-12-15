@@ -34,7 +34,7 @@ $(cmake_rack_plugin): CMakeLists.txt .FORCE
 	cmake --build $(CMAKE_BUILD) -- -j $(shell getconf _NPROCESSORS_ONLN)
 	cmake --install $(CMAKE_BUILD)
 
-rack_plugin: $(cmake_rack_plugin)
+rack_plugin: $(cmake_rack_plugin) .FORCE
 	cp -vf $(cmake_rack_plugin) .
 
 # Add files to the ZIP package when running `make dist`
