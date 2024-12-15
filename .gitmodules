@@ -4,5 +4,5 @@
 	branch = 10.x
 [submodule "libs/vcv-rackthemer"]
 	path = libs/vcv-rackthemer
-	url = git@github.com:Doom2fan/vcv-rackthemer.git
+	url = https://github.com/Doom2fan/vcv-rackthemer.git
 	branch = master
