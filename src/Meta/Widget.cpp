@@ -67,9 +67,8 @@ namespace OuroborosModules::Modules::Meta {
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        emblemWidget = createWidget<ImageWidget> (Vec ());
-        updateEmblem (curTheme, curEmblem);
-
+        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, emblemPos, 75);
         addChild (emblemWidget);
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
@@ -111,32 +110,9 @@ namespace OuroborosModules::Modules::Meta {
         updateCableHandler ();
     }
 
-    void MetaWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
-        if (emblemWidget == nullptr)
-            return;
-
-        if (emblemId.isNone ()) {
-            emblemWidget->hide ();
-            return;
-        } else
-            emblemWidget->show ();
-
-        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
-
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        emblemWidget->setZoom (75);
-        emblemWidget->setSize (rack::math::Vec (75));
-        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
-    }
-
-    void MetaWidget::onChangeTheme (ThemeId themeId) {
-        _WidgetBase::onChangeTheme (themeId);
-        updateEmblem (themeId, curEmblem);
-    }
-
     void MetaWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
-        updateEmblem (curTheme, emblemId);
+        emblemWidget->setEmblem (emblemId);
     }
 
     void MetaWidget::appendContextMenu (rack::ui::Menu* menu) {

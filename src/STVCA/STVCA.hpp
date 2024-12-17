@@ -20,7 +20,7 @@
 
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
@@ -66,7 +66,7 @@ namespace OuroborosModules::Modules::STVCA {
 
     struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAWidget, STVCAModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
 
       public:
         STVCAWidget (STVCAModule* module);
@@ -74,8 +74,6 @@ namespace OuroborosModules::Modules::STVCA {
       protected:
         void initializeWidget () override;
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
         void createLocalStyleMenu (rack::ui::Menu* menu) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;

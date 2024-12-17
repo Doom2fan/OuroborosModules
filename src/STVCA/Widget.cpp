@@ -19,7 +19,6 @@
 
 #include "STVCA.hpp"
 
-#include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/ColorPicker.hpp"
 #include "../UI/MenuItems/CommonItems.hpp"
 
@@ -104,15 +103,15 @@ namespace OuroborosModules::Modules::STVCA {
         using rack::window::mm2px;
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;
-        using Widgets::ImageWidget;
+        using Widgets::EmblemWidget;
         using Widgets::ScrewWidget;
 
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        emblemWidget = createWidget<ImageWidget> (Vec ());
+        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, emblemPos);
         addChild (emblemWidget);
-        updateEmblem (curTheme, curEmblem);
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
@@ -138,34 +137,9 @@ namespace OuroborosModules::Modules::STVCA {
         addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (expSwitchPos, module, STVCAModule::PARAM_EXP));
     }
 
-    void STVCAWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
-        if (emblemWidget == nullptr)
-            return;
-
-        if (emblemId.isNone ()) {
-            emblemWidget->hide ();
-            return;
-        } else
-            emblemWidget->show ();
-
-        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
-
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        auto emblemSize = rack::window::mm2px (Constants::StdEmblemSize);
-
-        emblemWidget->setZoom (emblemSize);
-        emblemWidget->setSize (rack::math::Vec (emblemSize));
-        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
-    }
-
-    void STVCAWidget::onChangeTheme (ThemeId themeId) {
-        _WidgetBase::onChangeTheme (themeId);
-        updateEmblem (themeId, curEmblem);
-    }
-
     void STVCAWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
-        updateEmblem (curTheme, emblemId);
+        emblemWidget->setEmblem (emblemId);
     }
 
     void STVCAWidget::createLocalStyleMenu (rack::ui::Menu* menu) {

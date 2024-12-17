@@ -22,7 +22,7 @@
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../SampleChannel.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
@@ -110,7 +110,7 @@ namespace OuroborosModules::Modules::Meta {
 
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
         std::shared_ptr<CableHandler> cables_Handler = nullptr;
         bool metaSounds_PrevEnabled = false;
 
@@ -123,8 +123,6 @@ namespace OuroborosModules::Modules::Meta {
         void step () override;
 
         void updateCableHandler ();
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;

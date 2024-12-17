@@ -21,7 +21,7 @@
 #include "../DSP/Filters.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Median {
@@ -80,7 +80,7 @@ namespace OuroborosModules::Modules::Median {
 
     struct MedianWidget : Widgets::ModuleWidgetBase<MedianWidget, MedianModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
 
       public:
         MedianWidget (MedianModule* module);
@@ -88,8 +88,6 @@ namespace OuroborosModules::Modules::Median {
       protected:
         void initializeWidget () override;
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };

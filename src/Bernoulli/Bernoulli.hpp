@@ -20,7 +20,7 @@
 
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Bernoulli {
@@ -86,7 +86,7 @@ namespace OuroborosModules::Modules::Bernoulli {
 
     struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliWidget, BernoulliModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
 
       public:
         BernoulliWidget (BernoulliModule* module);
@@ -94,8 +94,6 @@ namespace OuroborosModules::Modules::Bernoulli {
       protected:
         void initializeWidget () override;
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
     };
 }
