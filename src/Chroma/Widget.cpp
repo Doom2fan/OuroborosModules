@@ -105,11 +105,11 @@ namespace OuroborosModules::Modules::Chroma {
             centerEmblem = module->centerEmblem == CenterEmblem::True;
 
         if (centerEmblem) {
-            emblemWidget->setPos (box.size.div (2));
-            emblemWidget->setSize (rack::window::mm2px (45.296f));
+            emblemWidget->setEmblemPos (box.size.div (2));
+            emblemWidget->setEmblemSize (rack::window::mm2px (45.296f));
         } else {
-            emblemWidget->setPos (findNamed ("widgetLogo").value_or (rack::math::Vec ()));
-            emblemWidget->setSize (rack::window::mm2px (Constants::StdEmblemSize));
+            emblemWidget->setEmblemPos (findNamed ("widgetLogo").value_or (rack::math::Vec ()));
+            emblemWidget->setEmblemSize (rack::window::mm2px (Constants::StdEmblemSize));
         }
     }
 

@@ -28,7 +28,7 @@ namespace OuroborosModules::Widgets {
         framebuffer->addChild (imageWidget);
 
         box.size = rack::math::Vec ();
-        setSize (newSize);
+        setEmblemSize (newSize);
     }
 
     void EmblemWidget::update () {
@@ -44,7 +44,7 @@ namespace OuroborosModules::Widgets {
         framebuffer->setDirty ();
     }
 
-    void EmblemWidget::setPos (rack::math::Vec newPos) {
+    void EmblemWidget::setEmblemPos (rack::math::Vec newPos) {
         if (imageWidget == nullptr)
             return;
 
@@ -52,7 +52,7 @@ namespace OuroborosModules::Widgets {
         update ();
     }
 
-    void EmblemWidget::setSize (float newSize) {
+    void EmblemWidget::setEmblemSize (float newSize) {
         if (imageWidget == nullptr)
             return;
 

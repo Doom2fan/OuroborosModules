@@ -59,11 +59,11 @@ namespace OuroborosModules::Widgets {
 
         void update ();
 
-        rack::math::Vec getPos () { return posCentered; }
-        void setPos (rack::math::Vec newPos);
+        rack::math::Vec getEmblemPos () { return posCentered; }
+        void setEmblemPos (rack::math::Vec newPos);
 
-        float getSize () { return size; }
-        void setSize (float newSize);
+        float getEmblemSize () { return size; }
+        void setEmblemSize (float newSize);
 
         void setEmblem (EmblemId emblemId) { setEmblem (emblemId, size); }
         void setEmblem (EmblemId emblemId, float newSize);

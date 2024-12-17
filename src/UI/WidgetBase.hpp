@@ -106,13 +106,13 @@ namespace OuroborosModules::Widgets {
 
             initializeWidget ();
 
-            updateTheme ();
-            updateEmblem ();
+            callUpdateTheme ();
+            callUpdateEmblem ();
         }
 
         virtual void initializeWidget () = 0;
 
-        void updateTheme () {
+        void callUpdateTheme () {
             auto theme = getLocalTheme ();
             if (curTheme == theme)
                 return;
@@ -121,7 +121,7 @@ namespace OuroborosModules::Widgets {
             onChangeTheme (theme);
         }
 
-        void updateEmblem () {
+        void callUpdateEmblem () {
             auto emblem = getLocalEmblem ();
             if (curEmblem == emblem)
                 return;
@@ -136,7 +136,7 @@ namespace OuroborosModules::Widgets {
 
             APP->history->push (new HistoryThemeChange (module, oldTheme, themeId));
 
-            updateTheme ();
+            callUpdateTheme ();
         }
 
         void setEmblem (EmblemId emblemId) {
@@ -145,7 +145,7 @@ namespace OuroborosModules::Widgets {
 
             APP->history->push (new HistoryEmblemChange (module, oldEmblem, emblemId));
 
-            updateEmblem ();
+            callUpdateEmblem ();
         }
 
         virtual void onChangeTheme (ThemeId themeId) { handleThemeChange (this, themeId.getThemeInstance (), true); }
@@ -195,8 +195,8 @@ namespace OuroborosModules::Widgets {
         }
 
         void step () override {
-            updateTheme ();
-            updateEmblem ();
+            callUpdateTheme ();
+            callUpdateEmblem ();
 
             this->_ThemeHolderWidgetBase::step ();
         }
