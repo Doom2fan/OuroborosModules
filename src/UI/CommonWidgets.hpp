@@ -47,6 +47,9 @@ namespace OuroborosModules::Widgets {
         ImageWidget* imageWidget;
         rack::widget::FramebufferWidget* framebuffer;
 
+        EmblemWidget (const EmblemWidget& x) = delete;
+        void operator= (const EmblemWidget& x) = delete;
+
       public:
         EmblemWidget (
             EmblemId emblemId,

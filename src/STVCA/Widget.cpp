@@ -109,8 +109,7 @@ namespace OuroborosModules::Modules::STVCA {
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        emblemWidget = new Widgets::EmblemWidget (curEmblem, emblemPos);
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
@@ -122,7 +121,7 @@ namespace OuroborosModules::Modules::STVCA {
             addOutput (createOutputCentered<CableJackOutput> (pos, module, STVCAModule::OUTPUT_LEFT + i));
         });
 
-        auto displayBox = findNamedBox ("display").value_or (rack::math::Rect ());
+        auto displayBox = findNamedBox ("display", rack::math::Rect ());
         auto display = rack::createWidget<rack::LedDisplay> (Vec ());
         display->box = displayBox;
         addChild (display);
@@ -133,8 +132,7 @@ namespace OuroborosModules::Modules::STVCA {
         slider->box.size = displayBox.size - mm2px (Vec (knobMarginX, knobMarginY)).mult (2);
         display->addChild (slider);
 
-        auto expSwitchPos = findNamed ("param_Exp").value_or (Vec ());
-        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (expSwitchPos, module, STVCAModule::PARAM_EXP));
+        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (findNamed ("param_Exp", Vec ()), module, STVCAModule::PARAM_EXP));
     }
 
     void STVCAWidget::onChangeEmblem (EmblemId emblemId) {

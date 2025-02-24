@@ -64,7 +64,6 @@ namespace OuroborosModules::Modules::Bernoulli {
 
     BernoulliGate::BernoulliGate (std::function<float ()> probabilityFunc)
         : schmittTrigger (), probabilityFunc (probabilityFunc) {
-        schmittTrigger = rack::dsp::SchmittTrigger ();
         schmittTrigger.reset ();
 
         modeToggle = false;

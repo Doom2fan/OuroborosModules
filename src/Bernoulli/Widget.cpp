@@ -45,8 +45,7 @@ namespace OuroborosModules::Modules::Bernoulli {
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        emblemWidget = new Widgets::EmblemWidget (curEmblem, emblemPos);
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
 
         /*

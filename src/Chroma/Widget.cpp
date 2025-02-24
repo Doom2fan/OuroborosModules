@@ -43,7 +43,7 @@ namespace OuroborosModules::Modules::Chroma {
         addChild (emblemWidget);
         updateEmblem ();
 
-        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay").value_or (Rect ()));
+        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay", Rect ()));
         addChild (colorDisplayWidget);
 
         // Skip if we're in the module browser.
@@ -108,7 +108,7 @@ namespace OuroborosModules::Modules::Chroma {
             emblemWidget->setEmblemPos (box.size.div (2));
             emblemWidget->setEmblemSize (rack::window::mm2px (45.296f));
         } else {
-            emblemWidget->setEmblemPos (findNamed ("widgetLogo").value_or (rack::math::Vec ()));
+            emblemWidget->setEmblemPos (findNamed ("widgetLogo", rack::math::Vec ()));
             emblemWidget->setEmblemSize (rack::window::mm2px (Constants::StdEmblemSize));
         }
     }
