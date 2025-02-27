@@ -41,6 +41,20 @@ namespace OuroborosModules::Modules::Junction {
         configOutput (OUTPUT_B, "B");
     }
 
+    json_t* JunctionModule::dataToJson () {
+        auto rootJ = ModuleBase::dataToJson ();
+
+        json_object_set_new_bool (rootJ, "polyOnDemand", polyOnDemand);
+
+        return rootJ;
+    }
+
+    void JunctionModule::dataFromJson (json_t* rootJ) {
+        ModuleBase::dataFromJson (rootJ);
+
+        json_object_try_get_bool (rootJ, "polyOnDemand", polyOnDemand);
+    }
+
     void JunctionModule::process (const ProcessArgs& args) {
         using rack::simd::float_4;
         using Branchless::ConditionalSet;

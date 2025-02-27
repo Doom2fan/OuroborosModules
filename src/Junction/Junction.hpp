@@ -54,6 +54,9 @@ namespace OuroborosModules::Modules::Junction {
 
         JunctionModule ();
 
+        json_t* dataToJson () override;
+        void dataFromJson (json_t* rootJ) override;
+
         void process (const ProcessArgs& args) override;
     };
 
