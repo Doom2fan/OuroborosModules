@@ -156,6 +156,13 @@ namespace OuroborosModules::Hashing {
     }
 }
 
+namespace OuroborosModules::Branchless {
+    template<typename T>
+    inline void ConditionalSet (T& dest, bool condition, const T& newValue) {
+        dest = condition ? newValue : dest;
+    }
+}
+
 namespace OuroborosModules {
     char* selectSoundFile ();
 
