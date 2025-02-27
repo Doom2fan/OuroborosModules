@@ -64,7 +64,7 @@ namespace OuroborosModules::Modules::Median {
 
         DSP::UpsampleFilter<rack::simd::float_4> upsamplerFilter [SIMDBankCount] [3] {};
         DSP::DownsampleFilter<rack::simd::float_4> downsamplerFilter [SIMDBankCount] [3] {};
-        int oversampleRate;
+        int oversampleRate = 0;
 
         rack::dsp::ClockDivider clockOversample;
         rack::dsp::ClockDivider clockLights;
