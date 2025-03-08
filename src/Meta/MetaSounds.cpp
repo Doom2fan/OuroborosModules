@@ -30,6 +30,8 @@ namespace OuroborosModules::Modules::Meta {
     void metaSounds_Init () {
         for (int i = 0; i < MetaModule::METASOUNDS_LENGTH; i++)
             metaSoundsData [i].init ((MetaModule::MetaSounds_Channels) i);
+
+        metaSounds_Refresh ();
     }
 
     void metaSounds_Refresh () {
