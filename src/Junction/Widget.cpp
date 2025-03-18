@@ -69,7 +69,6 @@ namespace OuroborosModules::Modules::Junction {
     void JunctionWidget::appendContextMenu (rack::ui::Menu* menu) {
         _WidgetBase::appendContextMenu (menu);
 
-        // Pre-muter
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected inputs", "", &module->polyOnDemand));
     }
