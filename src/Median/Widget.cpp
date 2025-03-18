@@ -109,7 +109,7 @@ namespace OuroborosModules::Modules::Median {
 
         _WidgetBase::appendContextMenu (menu);
 
-        // Pre-muter
+        // Oversampling options
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createSubmenuItem ("Oversampling", "", [=] (Menu* menu) {
             auto curOversample = static_cast<int> (module->params [MedianModule::PARAM_OVERSAMPLE].getValue ());
