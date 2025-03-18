@@ -118,4 +118,14 @@ namespace OuroborosModules::Modules::Bernoulli {
         _WidgetBase::onChangeEmblem (emblemId);
         emblemWidget->setEmblem (emblemId);
     }
+
+    void BernoulliWidget::appendContextMenu (rack::ui::Menu* menu) {
+        _WidgetBase::appendContextMenu (menu);
+
+        // Randomization options
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probabilities", "", &module->randomizeProbability));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probability CV attenuators", "", &module->randomizeProbabilityCV));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize modes", "", &module->randomizeModes));
+    }
 }

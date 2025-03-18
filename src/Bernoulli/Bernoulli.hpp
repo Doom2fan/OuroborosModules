@@ -75,13 +75,17 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         rack::dsp::ClockDivider clockLights;
 
+        bool randomizeProbability;
+        bool randomizeProbabilityCV;
+        bool randomizeModes;
+
         BernoulliModule ();
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
 
         void process (const ProcessArgs& args) override;
-        void onReset (const ResetEvent& e) override;
+        void onRandomize (const RandomizeEvent& e) override;
     };
 
     struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliWidget, BernoulliModule> {
@@ -95,5 +99,6 @@ namespace OuroborosModules::Modules::Bernoulli {
         void initializeWidget () override;
 
         void onChangeEmblem (EmblemId emblemId) override;
+        void appendContextMenu (rack::ui::Menu* menu) override;
     };
 }

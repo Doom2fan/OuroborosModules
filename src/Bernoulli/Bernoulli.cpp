@@ -60,6 +60,10 @@ namespace OuroborosModules::Modules::Bernoulli {
         }
 
         clockLights.setDivision (32);
+
+        randomizeProbability = true;
+        randomizeProbabilityCV = true;
+        randomizeModes = true;
     }
 
     BernoulliGate::BernoulliGate (std::function<float ()> probabilityFunc)
@@ -131,6 +135,10 @@ namespace OuroborosModules::Modules::Bernoulli {
         for (int i = 0; i < GatesCount; i++)
             json_object_set_new_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
 
+        json_object_set_new_int (rootJ, "randomizeProbability", randomizeProbability);
+        json_object_set_new_int (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
+        json_object_set_new_int (rootJ, "randomizeModes", randomizeModes);
+
         return rootJ;
     }
 
@@ -139,6 +147,10 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         for (int i = 0; i < GatesCount; i++)
             json_object_try_get_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
+
+        json_object_try_get_int (rootJ, "randomizeProbability", randomizeProbability);
+        json_object_try_get_int (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
+        json_object_try_get_int (rootJ, "randomizeModes", randomizeModes);
     }
 
     void BernoulliModule::process (const ProcessArgs& args) {
@@ -172,7 +184,13 @@ namespace OuroborosModules::Modules::Bernoulli {
         }
     }
 
-    void BernoulliModule::onReset (const ResetEvent& e) {
-        ModuleBase::onReset (e);
+    void BernoulliModule::onRandomize (const RandomizeEvent& e) {
+        for (int i = 0; i < GatesCount; i++) {
+            getParamQuantity (PARAM_PROBABILITY + i)->randomizeEnabled = randomizeProbability;
+            getParamQuantity (PARAM_PROBABILITY_CV + i)->randomizeEnabled = randomizeProbabilityCV;
+            getParamQuantity (PARAM_MODE + i)->randomizeEnabled = randomizeModes;
+        }
+
+        ModuleBase::onRandomize (e);
     }
 }
