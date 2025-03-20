@@ -53,7 +53,7 @@
             "slug": "Junction",
             "name": "Junction",
             "description": "A switched mult with 8 inputs and 2 outputs",
-            "tags": [ "Switch", "Multiple", "Utility", "Mixer" ],
+            "tags": [ "Switch", "Multiple", "Utility", "Mixer", "Polyphonic" ],
             "keywords": "switched mult switchedmult",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Junction"
         }
