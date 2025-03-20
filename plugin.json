@@ -52,10 +52,18 @@
         {
             "slug": "Junction",
             "name": "Junction",
-            "description": "A switched mult with 8 inputs and 2 outputs",
+            "description": "A switched mult with 8 inputs and 2 outputs. Counterpart to Branch",
             "tags": [ "Switch", "Multiple", "Utility", "Mixer", "Polyphonic" ],
             "keywords": "switched mult switchedmult",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Junction"
+        },
+        {
+            "slug": "Branch",
+            "name": "Branch",
+            "description": "A switched mult/router with 2 inputs and 8 outputs. Counterpart to Junction",
+            "tags": [ "Switch", "Multiple", "Utility", "Polyphonic" ],
+            "keywords": "switched mult switchedmult",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Branch"
         }
     ]
 }

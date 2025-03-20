@@ -37,4 +37,5 @@ namespace OuroborosModules {
     extern rack::plugin::Model* modelBernoulli;
     extern rack::plugin::Model* modelMedian;
     extern rack::plugin::Model* modelJunction;
+    extern rack::plugin::Model* modelBranch;
 }

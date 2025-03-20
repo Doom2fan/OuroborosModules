@@ -68,6 +68,7 @@ __attribute__((__visibility__("default"))) void init (rack::plugin::Plugin* p) {
     p->addModel (OuroborosModules::modelBernoulli);
     p->addModel (OuroborosModules::modelMedian);
     p->addModel (OuroborosModules::modelJunction);
+    p->addModel (OuroborosModules::modelBranch);
 }
 
 __attribute__((__visibility__("default"))) json_t* settingsToJson () {
