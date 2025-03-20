@@ -44,7 +44,7 @@ namespace OuroborosModules::Modules::Junction {
         forEachMatched ("input_Signal(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > JunctionModule::SwitchCount)
-                return LOG_WARN (FMT_STRING ("Junction panel has invalid trigger input #{}"), i);
+                return LOG_WARN (FMT_STRING ("Junction panel has invalid signal input #{}"), i);
 
             addInput (createInputCentered<CableJackInput> (pos, module, JunctionModule::INPUT_SIGNAL + i));
         });
@@ -52,7 +52,7 @@ namespace OuroborosModules::Modules::Junction {
         forEachMatched ("param_SignalDest(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > JunctionModule::SwitchCount)
-                return LOG_WARN (FMT_STRING ("Junction panel has invalid trigger input #{}"), i);
+                return LOG_WARN (FMT_STRING ("Junction panel has invalid destination knob #{}"), i);
 
             addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, module, JunctionModule::PARAM_SWITCH + i));
         });
