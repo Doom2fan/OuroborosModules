@@ -73,15 +73,14 @@ namespace OuroborosModules::Modules::Junction {
             auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + signalI].getValue ()), -1, 1);
             auto curChannelCount = curInput.getChannels ();
             inputMaxPolyphony = std::max (inputMaxPolyphony, curChannelCount);
-            if (curSwitchState == 0)
-                continue;
 
-            auto& outputBank = curSwitchState == -1 ? outputA : outputB;
-            auto& outputPolyCount = curSwitchState == -1 ? polyphonyCountA : polyphonyCountB;
-            outputPolyCount = std::max (outputPolyCount, curChannelCount);
-            for (int channel = 0, bankI = 0; channel < inputMaxPolyphony; channel += SIMDBankSize, bankI++) {
-                auto curBank = curInput.getPolyVoltageSimd<float_4> (channel);
-                outputBank [bankI] = outputBank [bankI] + curBank;
+            polyphonyCountA = std::max (polyphonyCountA, curSwitchState == -1 ? curChannelCount : 0);
+            polyphonyCountB = std::max (polyphonyCountB, curSwitchState ==  1 ? curChannelCount : 0);
+            for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
+                auto curBank = curInput.getPolyVoltageSimd<float_4> (bankI * SIMDBankSize);
+
+                outputA [bankI] += (curSwitchState == -1 ? curBank : float_4::zero ());
+                outputB [bankI] += (curSwitchState ==  1 ? curBank : float_4::zero ());
             }
         }
 
