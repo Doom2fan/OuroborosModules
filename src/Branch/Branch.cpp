@@ -63,7 +63,7 @@ namespace OuroborosModules::Modules::Branch {
         float voltages [Constants::MaxPolyphony];
         for (int destI = 0; destI < SwitchCount; destI++) {
             auto& curDest = outputs [OUTPUT_DESTINATION + destI];
-            auto curSwitchState = static_cast<int> (params [PARAM_SWITCH + destI].getValue ());
+            auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + destI].getValue ()), -1, 1);
             if (!curDest.isConnected ())
                 continue;
 

@@ -70,7 +70,7 @@ namespace OuroborosModules::Modules::Junction {
             if (!curInput.isConnected ())
                 continue;
 
-            auto curSwitchState = static_cast<int> (params [PARAM_SWITCH + signalI].getValue ());
+            auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + signalI].getValue ()), -1, 1);
             auto curChannelCount = curInput.getChannels ();
             inputMaxPolyphony = std::max (inputMaxPolyphony, curChannelCount);
             if (curSwitchState == 0)
