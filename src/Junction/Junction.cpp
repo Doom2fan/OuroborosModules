@@ -37,14 +37,15 @@ namespace OuroborosModules::Modules::Junction {
             configInput (INPUT_SIGNAL + i, inputText);
         }
 
-        configOutput (OUTPUT_A, "A");
-        configOutput (OUTPUT_B, "B");
+        configOutput (OUTPUT_SIGNAL    , "A");
+        configOutput (OUTPUT_SIGNAL + 1, "B");
     }
 
     json_t* JunctionModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
         json_object_set_new_bool (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_set_new_bool (rootJ, "clampWhileSumming", clampWhileSumming);
 
         return rootJ;
     }
@@ -53,53 +54,72 @@ namespace OuroborosModules::Modules::Junction {
         ModuleBase::dataFromJson (rootJ);
 
         json_object_try_get_bool (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_try_get_bool (rootJ, "clampWhileSumming", clampWhileSumming);
     }
+
+    struct OutputData {
+        uint8_t inputs [JunctionModule::SwitchCount];
+        uint8_t inputCount = 0;
+
+        void addInput (uint8_t id) { inputs [inputCount++] = id; }
+    };
 
     void JunctionModule::process (const ProcessArgs& args) {
         using rack::simd::float_4;
         using Branchless::ConditionalSet;
 
-        float_4 outputA [SIMDBankCount] = {};
-        float_4 outputB [SIMDBankCount] = {};
-        int polyphonyCountA = 1;
-        int polyphonyCountB = 1;
+        OutputData outputData [OutputCount];
         int inputMaxPolyphony = 1;
 
-        for (int signalI = 0; signalI < SwitchCount; signalI++) {
-            auto& curInput = inputs [INPUT_SIGNAL + signalI];
-            if (!curInput.isConnected ())
+        for (uint8_t signalI = 0; signalI < SwitchCount; signalI++) {
+            if (!inputs [INPUT_SIGNAL + signalI].isConnected ())
                 continue;
 
             auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + signalI].getValue ()), -1, 1);
-            auto curChannelCount = curInput.getChannels ();
-            inputMaxPolyphony = std::max (inputMaxPolyphony, curChannelCount);
+            inputMaxPolyphony = std::max (inputMaxPolyphony, inputs [INPUT_SIGNAL + signalI].getChannels ());
+            if (curSwitchState != 0)
+                outputData [(curSwitchState < 0) ? 0 : 1].addInput (signalI);
+        }
 
-            polyphonyCountA = std::max (polyphonyCountA, curSwitchState == -1 ? curChannelCount : 0);
-            polyphonyCountB = std::max (polyphonyCountB, curSwitchState ==  1 ? curChannelCount : 0);
-            for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
-                auto curBank = curInput.getVoltageSimd<float_4> (bankI * SIMDBankSize);
+        if (!polyOnDemand) {
+            for (int i = 0; i < OutputCount; i++)
+                outputs [OUTPUT_SIGNAL + i].setChannels (inputMaxPolyphony);
+        } else {
+            for (int outputI = 0; outputI < OutputCount; outputI++) {
+                auto& curOutput = outputData [outputI];
 
-                outputA [bankI] += (curSwitchState == -1 ? curBank : float_4::zero ());
-                outputB [bankI] += (curSwitchState ==  1 ? curBank : float_4::zero ());
+                int polyphonyCount = 1;
+                for (int inputI = 0; inputI < curOutput.inputCount; inputI++)
+                    polyphonyCount = std::max (polyphonyCount, inputs [INPUT_SIGNAL + curOutput.inputs [inputI]].getChannels ());
+
+                outputs [OUTPUT_SIGNAL + outputI].setChannels (polyphonyCount);
             }
         }
 
-        ConditionalSet (polyphonyCountA, !polyOnDemand, inputMaxPolyphony);
-        ConditionalSet (polyphonyCountB, !polyOnDemand, inputMaxPolyphony);
-
         auto voltageMax = float_4 (10);
         auto voltageMin = -voltageMax;
-        for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
-            outputA [bankI] = rack::simd::clamp (outputA [bankI], voltageMin, voltageMax);
-            outputB [bankI] = rack::simd::clamp (outputB [bankI], voltageMin, voltageMax);
-        }
 
-        outputs [OUTPUT_A].setChannels (polyphonyCountA);
-        outputs [OUTPUT_B].setChannels (polyphonyCountB);
+        for (int outputI = 0; outputI < OutputCount; outputI++) {
+            auto& curOutput = outputData [outputI];
+            float_4 voltages [SIMDBankCount] = {};
 
-        for (int i = 0; i < SIMDBankCount; i++) {
-            outputs [OUTPUT_A].setVoltageSimd (outputA [i], i * SIMDBankSize);
-            outputs [OUTPUT_B].setVoltageSimd (outputB [i], i * SIMDBankSize);
+            for (int inputI = 0; inputI < curOutput.inputCount; inputI++) {
+                auto inputIdx = curOutput.inputs [inputI];
+                auto inputChannelCount = inputs [inputIdx].getChannels ();
+
+                auto doClamp = clampWhileSumming ? true : (inputI == curOutput.inputCount - 1);
+                for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
+                    auto curChannel = bankI * SIMDBankSize;
+                    auto curBank = inputs [inputIdx].getVoltageSimd<float_4> (curChannel);
+                    curBank &= (float_4 (0, 1, 2, 3) + curChannel) < inputChannelCount;
+
+                    voltages [bankI] += curBank;
+                    ConditionalSet (voltages [bankI], doClamp, rack::simd::clamp (voltages [bankI], voltageMin, voltageMax));
+                }
+            }
+
+            for (int i = 0; i < SIMDBankCount; i++)
+                outputs [OUTPUT_SIGNAL + outputI].setVoltageSimd (voltages [i], i * SIMDBankSize);
         }
     }
 }

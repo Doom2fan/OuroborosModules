@@ -57,8 +57,8 @@ namespace OuroborosModules::Modules::Junction {
             addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, module, JunctionModule::PARAM_SWITCH + i));
         });
 
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_A", Vec ()), module, JunctionModule::OUTPUT_A));
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_B", Vec ()), module, JunctionModule::OUTPUT_B));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_A", Vec ()), module, JunctionModule::OUTPUT_SIGNAL));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_B", Vec ()), module, JunctionModule::OUTPUT_SIGNAL + 1));
     }
 
     void JunctionWidget::onChangeEmblem (EmblemId emblemId) {
@@ -71,5 +71,6 @@ namespace OuroborosModules::Modules::Junction {
 
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected inputs", "", &module->polyOnDemand));
+        menu->addChild (rack::createBoolPtrMenuItem ("Clamp while summing", "", &module->clampWhileSumming));
     }
 }

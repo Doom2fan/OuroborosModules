@@ -25,7 +25,8 @@
 
 namespace OuroborosModules::Modules::Junction {
     struct JunctionModule : ModuleBase {
-        static constexpr int SwitchCount = 8;
+        static constexpr uint8_t SwitchCount = 8;
+        static constexpr uint8_t OutputCount = 2;
 
         static constexpr int SIMDBankSize = 4;
         static constexpr int SIMDBankCount = static_cast<int> (static_cast<float> (Constants::MaxPolyphony) / SIMDBankSize + .5f);
@@ -41,8 +42,7 @@ namespace OuroborosModules::Modules::Junction {
             NUM_INPUTS
         };
         enum OutputIds {
-            OUTPUT_A,
-            OUTPUT_B,
+            ENUMS (OUTPUT_SIGNAL, OutputCount),
 
             NUM_OUTPUTS
         };
@@ -51,6 +51,7 @@ namespace OuroborosModules::Modules::Junction {
         };
 
         bool polyOnDemand = false;
+        bool clampWhileSumming = false;
 
         JunctionModule ();
 
