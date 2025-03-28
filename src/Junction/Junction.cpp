@@ -77,7 +77,7 @@ namespace OuroborosModules::Modules::Junction {
             polyphonyCountA = std::max (polyphonyCountA, curSwitchState == -1 ? curChannelCount : 0);
             polyphonyCountB = std::max (polyphonyCountB, curSwitchState ==  1 ? curChannelCount : 0);
             for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
-                auto curBank = curInput.getPolyVoltageSimd<float_4> (bankI * SIMDBankSize);
+                auto curBank = curInput.getVoltageSimd<float_4> (bankI * SIMDBankSize);
 
                 outputA [bankI] += (curSwitchState == -1 ? curBank : float_4::zero ());
                 outputB [bankI] += (curSwitchState ==  1 ? curBank : float_4::zero ());
