@@ -39,6 +39,11 @@ namespace OuroborosModules::Modules::Junction {
 
         configOutput (OUTPUT_SIGNAL    , "A");
         configOutput (OUTPUT_SIGNAL + 1, "B");
+
+        clockUpdate.setDivision (32);
+
+        for (int i = 0; i < OutputCount; i++)
+            outputData [i] = OutputData ();
     }
 
     json_t* JunctionModule::dataToJson () {
@@ -57,42 +62,40 @@ namespace OuroborosModules::Modules::Junction {
         json_object_try_get_bool (rootJ, "clampWhileSumming", clampWhileSumming);
     }
 
-    struct OutputData {
-        uint8_t inputs [JunctionModule::SwitchCount];
-        uint8_t inputCount = 0;
-
-        void addInput (uint8_t id) { inputs [inputCount++] = id; }
-    };
-
     void JunctionModule::process (const ProcessArgs& args) {
         using rack::simd::float_4;
         using Branchless::ConditionalSet;
 
-        OutputData outputData [OutputCount];
-        int inputMaxPolyphony = 1;
+        std::array<OutputData, OutputCount> outputData = this->outputData;
+        if (clockUpdate.process ()) {
+            int inputMaxPolyphony = 1;
 
-        for (uint8_t signalI = 0; signalI < SwitchCount; signalI++) {
-            if (!inputs [INPUT_SIGNAL + signalI].isConnected ())
-                continue;
-
-            auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + signalI].getValue ()), -1, 1);
-            inputMaxPolyphony = std::max (inputMaxPolyphony, inputs [INPUT_SIGNAL + signalI].getChannels ());
-            if (curSwitchState != 0)
-                outputData [(curSwitchState < 0) ? 0 : 1].addInput (signalI);
-        }
-
-        if (!polyOnDemand) {
             for (int i = 0; i < OutputCount; i++)
-                outputs [OUTPUT_SIGNAL + i].setChannels (inputMaxPolyphony);
-        } else {
-            for (int outputI = 0; outputI < OutputCount; outputI++) {
-                auto& curOutput = outputData [outputI];
+                outputData [i].resetInputs ();
 
-                int polyphonyCount = 1;
-                for (int inputI = 0; inputI < curOutput.inputCount; inputI++)
-                    polyphonyCount = std::max (polyphonyCount, inputs [INPUT_SIGNAL + curOutput.inputs [inputI]].getChannels ());
+            for (uint8_t signalI = 0; signalI < SwitchCount; signalI++) {
+                if (!inputs [INPUT_SIGNAL + signalI].isConnected ())
+                    continue;
 
-                outputs [OUTPUT_SIGNAL + outputI].setChannels (polyphonyCount);
+                auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + signalI].getValue ()), -1, 1);
+                inputMaxPolyphony = std::max (inputMaxPolyphony, inputs [INPUT_SIGNAL + signalI].getChannels ());
+                if (curSwitchState != 0)
+                    outputData [(curSwitchState < 0) ? 0 : 1].addInput (signalI);
+            }
+
+            if (!polyOnDemand) {
+                for (int i = 0; i < OutputCount; i++)
+                    outputs [OUTPUT_SIGNAL + i].setChannels (inputMaxPolyphony);
+            } else {
+                for (int outputI = 0; outputI < OutputCount; outputI++) {
+                    auto& curOutput = outputData [outputI];
+
+                    int polyphonyCount = 1;
+                    for (int inputI = 0; inputI < curOutput.inputCount; inputI++)
+                        polyphonyCount = std::max (polyphonyCount, inputs [INPUT_SIGNAL + curOutput.inputs [inputI]].getChannels ());
+
+                    outputs [OUTPUT_SIGNAL + outputI].setChannels (polyphonyCount);
+                }
             }
         }
 
@@ -105,8 +108,11 @@ namespace OuroborosModules::Modules::Junction {
 
             for (int inputI = 0; inputI < curOutput.inputCount; inputI++) {
                 auto inputIdx = curOutput.inputs [inputI];
-                auto inputChannelCount = inputs [inputIdx].getChannels ();
 
+                if (!inputs [inputIdx].isConnected ())
+                    continue;
+
+                auto inputChannelCount = inputs [inputIdx].getChannels ();
                 auto doClamp = clampWhileSumming ? true : (inputI == curOutput.inputCount - 1);
                 for (int bankI = 0; bankI < SIMDBankCount; bankI++) {
                     auto curChannel = bankI * SIMDBankSize;
@@ -121,5 +127,7 @@ namespace OuroborosModules::Modules::Junction {
             for (int i = 0; i < SIMDBankCount; i++)
                 outputs [OUTPUT_SIGNAL + outputI].setVoltageSimd (voltages [i], i * SIMDBankSize);
         }
+
+        this->outputData = outputData;
     }
 }

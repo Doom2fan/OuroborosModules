@@ -31,6 +31,14 @@ namespace OuroborosModules::Modules::Junction {
         static constexpr int SIMDBankSize = 4;
         static constexpr int SIMDBankCount = static_cast<int> (static_cast<float> (Constants::MaxPolyphony) / SIMDBankSize + .5f);
 
+        struct OutputData {
+            uint8_t inputs [SwitchCount];
+            uint8_t inputCount = 0;
+
+            void resetInputs () { inputCount = 0; }
+            void addInput (uint8_t id) { inputs [inputCount++] = id; }
+        };
+
         enum ParamIds {
             ENUMS (PARAM_SWITCH, SwitchCount),
 
@@ -52,6 +60,9 @@ namespace OuroborosModules::Modules::Junction {
 
         bool polyOnDemand = false;
         bool clampWhileSumming = false;
+
+        std::array<OutputData, OutputCount> outputData;
+        rack::dsp::ClockDivider clockUpdate;
 
         JunctionModule ();
 
