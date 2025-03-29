@@ -20,10 +20,10 @@
 
 #include <fmt/format.h>
 
-#define LOG_DEBUG(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Debug, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
-#define LOG_INFO(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Info, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
-#define LOG_WARN(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Warn, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
-#define LOG_FATAL(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Fatal, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+#define LOG_DEBUG(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Debug, __FILE__, __LINE__, __FUNCTION__, fmt, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Info, __FILE__, __LINE__, __FUNCTION__, fmt, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Warn, __FILE__, __LINE__, __FUNCTION__, fmt, ##__VA_ARGS__)
+#define LOG_FATAL(fmt, ...) OuroborosModules::Logging::log (OuroborosModules::Logging::LogLevel::Fatal, __FILE__, __LINE__, __FUNCTION__, fmt, ##__VA_ARGS__)
 
 namespace OuroborosModules::Logging {
     enum class LogLevel {
