@@ -59,7 +59,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             });
         }
 
-        clockLights.setDivision (32);
+        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
 
         randomizeProbability = true;
         randomizeProbabilityCV = true;

@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../UI/CommonWidgets.hpp"
@@ -73,7 +74,7 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         BernoulliGate bernoulliGates [GatesCount];
 
-        rack::dsp::ClockDivider clockLights;
+        DSP::ClockDivider clockLights;
 
         bool randomizeProbability;
         bool randomizeProbabilityCV;

@@ -38,7 +38,7 @@ namespace OuroborosModules::Modules::Meta {
 
         premuter_Func = &MetaModule::premuter_Process;
 
-        clockMetaSoundSettings.setDivision (32);
+        clockMetaSoundSettings = DSP::ClockDivider (32, rack::random::u32 ());
 
         for (int i = 0; i < METASOUNDS_LENGTH; i++)
             metaSounds_Channels [i].init (i);

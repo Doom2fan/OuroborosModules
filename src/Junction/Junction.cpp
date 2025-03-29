@@ -40,7 +40,7 @@ namespace OuroborosModules::Modules::Junction {
         configOutput (OUTPUT_SIGNAL    , "A");
         configOutput (OUTPUT_SIGNAL + 1, "B");
 
-        clockUpdate.setDivision (32);
+        clockUpdate = DSP::ClockDivider (32, rack::random::u32 ());
 
         for (int i = 0; i < OutputCount; i++)
             outputData [i] = OutputData ();

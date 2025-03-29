@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../CableHandler.hpp"
+#include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../SampleChannel.hpp"
@@ -80,7 +81,7 @@ namespace OuroborosModules::Modules::Meta {
         std::atomic<bool> cables_NewDisconnected = false;
 
         // Plug sound data
-        rack::dsp::ClockDivider clockMetaSoundSettings;
+        DSP::ClockDivider clockMetaSoundSettings;
         SampleSlot metaSounds_Channels [METASOUNDS_LENGTH];
 
         // Premuter data

@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "../DSP/ClockDivider.hpp"
 #include "../DSP/Filters.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
@@ -66,8 +67,8 @@ namespace OuroborosModules::Modules::Median {
         DSP::DownsampleFilter<rack::simd::float_4> downsamplerFilter [SIMDBankCount] [3] {};
         int oversampleRate = 0;
 
-        rack::dsp::ClockDivider clockOversample;
-        rack::dsp::ClockDivider clockLights;
+        DSP::ClockDivider clockOversample;
+        DSP::ClockDivider clockLights;
 
         MedianModule ();
 

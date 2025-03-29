@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../UI/CommonWidgets.hpp"
@@ -62,7 +63,7 @@ namespace OuroborosModules::Modules::Junction {
         bool clampWhileSumming = false;
 
         std::array<OutputData, OutputCount> outputData;
-        rack::dsp::ClockDivider clockUpdate;
+        DSP::ClockDivider clockUpdate;
 
         JunctionModule ();
 
