@@ -113,7 +113,6 @@ namespace OuroborosModules::Modules::Meta {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
         std::shared_ptr<CableHandler> cables_Handler = nullptr;
-        bool metaSounds_PrevEnabled = false;
 
       public:
         MetaWidget (MetaModule* module);
