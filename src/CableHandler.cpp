@@ -19,6 +19,7 @@
 #include "CableHandler.hpp"
 
 #include "UISystemUpdater.hpp"
+#include "Utils.hpp"
 
 namespace {
     static bool initialized;
@@ -50,7 +51,7 @@ namespace OuroborosModules {
 
     void CableHandler::update () {
         auto cableContainer = APP->scene->rack->getCableContainer ();
-        auto incompleteCable = APP->scene->rack->getIncompleteCable ();
+        auto incompleteCable = Utils::getIncompleteCable ();
 
         if (cableContainer == nullptr)
             return;

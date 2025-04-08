@@ -40,6 +40,15 @@ namespace OuroborosModules::Hashing {
     }
 }
 
+namespace OuroborosModules::Utils {
+    rack::app::CableWidget* getIncompleteCable () {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        return APP->scene->rack->getIncompleteCable ();
+#pragma GCC diagnostic pop
+    }
+}
+
 namespace OuroborosModules {
     char* selectSoundFile () {
         static const char FILE_FILTERS [] = "Wave (.wav):wav,WAV;All files (*.*):*.*";

@@ -22,6 +22,7 @@
 #include "../JsonUtils.hpp"
 #include "../PluginSettings.hpp"
 #include "../UI/Input.hpp"
+#include "../Utils.hpp"
 #include "CCM_Common.hpp"
 #include "Chroma.hpp"
 #include "HistoryActions.hpp"
@@ -314,7 +315,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         // Gather the cables.
         auto cablesToModify = std::vector<rack::app::CableWidget*> ();
-        auto heldCable = APP->scene->rack->getIncompleteCable ();
+        auto heldCable = Utils::getIncompleteCable ();
         if (heldCable != nullptr)
             cablesToModify.push_back (heldCable);
         else if (allowPortHover && pluginSettings.chroma_PortHover) {
@@ -374,7 +375,7 @@ namespace OuroborosModules::Modules::Chroma {
             curColorIndex = colorCollection.count () - 1;
 
         // Handle the held cable.
-        auto heldCable = APP->scene->rack->getIncompleteCable ();
+        auto heldCable = Utils::getIncompleteCable ();
         if (checkUpdateHeldCable (heldCable)) {
             auto cablesToModify = std::vector<rack::app::CableWidget*> ();
             cablesToModify.push_back (heldCable);

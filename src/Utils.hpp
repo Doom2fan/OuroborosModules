@@ -163,6 +163,10 @@ namespace OuroborosModules::Branchless {
     }
 }
 
+namespace OuroborosModules::Utils {
+    rack::app::CableWidget* getIncompleteCable ();
+}
+
 namespace OuroborosModules {
     char* selectSoundFile ();
 
