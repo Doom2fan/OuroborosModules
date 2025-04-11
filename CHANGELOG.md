@@ -15,7 +15,7 @@
 ## v2.0.0 (2025-03-05)
   * Initial release
   * New modules:
-    * Cable Color Manager
+    * Chroma
     * Meta
     * ST-VCA
     * Bernoulli
