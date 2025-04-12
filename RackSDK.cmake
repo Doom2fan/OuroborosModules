@@ -62,10 +62,7 @@ add_library(${RACK_PLUGIN_LIB} MODULE)
 set_target_properties(${RACK_PLUGIN_LIB} PROPERTIES PREFIX "")
 
 # Since the plugin's compiler could be a different version than Rack's compiler, link libstdc++ and libgcc statically to avoid ABI issues.
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    add_link_options($<$<CXX_COMPILER_ID:GNU>:-static-libstdc++>)
-endif ()
-add_link_options($<$<PLATFORM_ID:Linux>:-static-libgcc>)
+add_link_options($<$<CXX_COMPILER_ID:GNU>:-static-libstdc++> $<$<PLATFORM_ID:Linux>:-static-libgcc>)
 add_compile_options($<IF:$<STREQUAL:${CMAKE_OSX_ARCHITECTURES},arm64>,-march=armv8-a+fp+simd,-march=nehalem>)
 
 add_library(RackSDK INTERFACE)
