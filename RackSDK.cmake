@@ -77,6 +77,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	endif ()
 	target_compile_definitions(RackSDK INTERFACE ARCH_WIN _USE_MATH_DEFINES)
 	target_compile_options(RackSDK INTERFACE -municode -Wsuggest-override)
+	target_link_options(RackSDK INTERFACE -static-libstdc++)
 endif ()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -98,6 +99,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	target_compile_options(RackSDK INTERFACE -fno-gnu-unique)
 	# When Rack loads a plugin, it symlinks /tmp/Rack2 to its system dir, so the plugin can link to libRack.
 	target_compile_options(RackSDK INTERFACE -Wl,-rpath=/tmp/Rack2)
+	target_link_options(RackSDK INTERFACE -static-libstdc++ -static-libgcc)
 endif ()
 
 target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE RackSDK)
