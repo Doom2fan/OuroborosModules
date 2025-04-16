@@ -1,50 +1,41 @@
+# This place is not a place of honor.
+# No highly esteemed deed is commemorated here.
+# Nothing valued is here.
+
+# This is kept here only in case of emergencies.
+# This is a brittle, fundamentally incorrect way of compiling these dependencies.
+
+# If RACK_DIR is not defined when calling the Makefile, default to two directories above
 RACK_DIR ?= ../..
-include $(RACK_DIR)/arch.mk
 
-EXTRA_CMAKE :=
-RACK_PLUGIN_NAME := plugin
-RACK_PLUGIN_EXT := so
+# FLAGS will be passed to both the C and C++ compiler
+FLAGS += -DFMT_ENFORCE_COMPILE_STRING=1 -Ilibs/fmt/include -Ilibs/vcv-rackthemer/include -Ilibs/header_only_libs
+CFLAGS +=
+CXXFLAGS += -std=c++17
 
-ifdef ARCH_WIN
-	RACK_PLUGIN_EXT := dll
-endif
+# Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
+# Static libraries are fine, but they should be added to this plugin's build system.
+LDFLAGS +=
 
-ifdef ARCH_MAC
-	EXTRA_CMAKE := -DCMAKE_OSX_ARCHITECTURES="x86_64"
-	RACK_PLUGIN_EXT := dylib
-	ifdef ARCH_ARM64
-		EXTRA_CMAKE := -DCMAKE_OSX_ARCHITECTURES="arm64"
-	endif
-endif
-
-RACK_PLUGIN := $(RACK_PLUGIN_NAME).$(RACK_PLUGIN_EXT)
-
-CMAKE_BUILD ?= dep/cmake-build
-cmake_rack_plugin := $(CMAKE_BUILD)/$(RACK_PLUGIN)
-
-# create empty plugin lib to skip the make target execution
-$(shell touch $(RACK_PLUGIN))
-$(info cmake_rack_plugin target is '$(cmake_rack_plugin)')
-
-# trigger CMake build when running `make dep`
-DEPS += $(cmake_rack_plugin)
-
-$(cmake_rack_plugin): CMakeLists.txt .FORCE
-	$(CMAKE) -B $(CMAKE_BUILD) -DRACK_SDK_DIR=$(RACK_DIR) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CMAKE_BUILD)/dist $(EXTRA_CMAKE)
-	cmake --build $(CMAKE_BUILD) -- -j $(shell getconf _NPROCESSORS_ONLN)
-	cmake --install $(CMAKE_BUILD)
-
-rack_plugin: $(cmake_rack_plugin) .FORCE
-	cp -vf $(cmake_rack_plugin) .
+# Add .cpp files to the build
+SOURCES += $(wildcard src/*.cpp)
+SOURCES += $(wildcard src/**/*.cpp)
+SOURCES += $(wildcard src/**/**/*.cpp)
+SOURCES += $(wildcard src/**/**/**/*.cpp)
+SOURCES += $(wildcard libs/fmt/src/format.cc)
+SOURCES += $(wildcard libs/vcv-rackthemer/src/*.cpp)
 
 # Add files to the ZIP package when running `make dist`
-dist: rack_plugin res
+# The compiled plugin and "plugin.json" are automatically added.
+DISTRIBUTABLES += res
+DISTRIBUTABLES += $(wildcard LICENSE*)
+DISTRIBUTABLES += $(wildcard presets)
+DISTRIBUTABLES += LICENSE.md
+DISTRIBUTABLES += license
+DISTRIBUTABLES += README.md
 
-.FORCE:
 
-DISTRIBUTABLES += res LICENSE.md license README.md
-
-# Include the VCV plugin Makefile framework
+# Include the Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
 
-.PHONY: .FORCE
+CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
