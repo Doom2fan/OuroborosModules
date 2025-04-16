@@ -39,3 +39,4 @@ DISTRIBUTABLES += README.md
 include $(RACK_DIR)/plugin.mk
 
 CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
+LDFLAGS := $(filter-out -static-libstdc++,$(LDFLAGS))
