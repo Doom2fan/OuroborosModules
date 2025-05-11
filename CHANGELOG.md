@@ -7,6 +7,7 @@
   * Median
     * Fixed the panel having some incorrectly-coloured text
   * Panel design updates
+  * Optimizations
 
 ## v2.0.1 (2025-03-08)
   * Meta
