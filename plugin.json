@@ -11,7 +11,7 @@
     "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki",
     "sourceUrl": "https://github.com/Doom2fan/OuroborosModules",
     "donateUrl": "",
-    "changelogUrl": "https://github.com/Doom2fan/OuroborosModules/blob/master/CHANGELOG.md",
+    "changelogUrl": "https://github.com/Doom2fan/OuroborosModules/blob/develop/CHANGELOG.md",
     "modules": [
         {
             "slug": "MetaModule",
