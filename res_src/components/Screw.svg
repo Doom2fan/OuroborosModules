@@ -6,13 +6,13 @@
    id="svg18800"
    x="0px"
    y="0px"
-   width="5.0799999mm"
-   height="5.0799999mm"
-   viewBox="0 0 5.0799999 5.0799999"
+   width="15"
+   height="15"
+   viewBox="0 0 15 15"
    enable-background="new 0 0 15 14.9989"
    xml:space="preserve"
    sodipodi:docname="Screw.svg"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -67,7 +67,7 @@
      x2="7.5"
      y2="0.99866295"
      gradientUnits="userSpaceOnUse"
-     gradientTransform="matrix(0.33864534,0,0,0.33864534,1.5990485e-4,3.4608485e-4)" /><linearGradient
+     gradientTransform="matrix(0.99987888,0,0,0.99987888,9.082533e-4,0.00145796)" /><linearGradient
      inkscape:collect="always"
      xlink:href="#linearGradient20"
      id="linearGradient19"
@@ -76,7 +76,7 @@
      y1="14.000237"
      x2="7.5"
      y2="0.99866295"
-     gradientTransform="matrix(0.29533017,0,0,0.29533017,0.32502284,0.32518527)" /><linearGradient
+     gradientTransform="matrix(0.87198722,0,0,0.87198722,0.96009344,0.96057303)" /><linearGradient
      inkscape:collect="always"
      xlink:href="#linearGradient21"
      id="linearGradient22"
@@ -85,7 +85,7 @@
      x2="7.5"
      y2="2.2081118"
      gradientUnits="userSpaceOnUse"
-     gradientTransform="matrix(0.33298826,0,0,0.33298826,0.04258782,0.04277086)" /></defs>
+     gradientTransform="matrix(0.98317588,0,0,0.98317588,0.12618025,0.12672069)" /></defs>
 <sodipodi:namedview
    bordercolor="#666666"
    borderopacity="1.0"
@@ -96,8 +96,8 @@
    id="base"
    inkscape:current-layer="svg18800"
    inkscape:cx="0.46875"
-   inkscape:cy="11.71875"
-   inkscape:document-units="mm"
+   inkscape:cy="11.75"
+   inkscape:document-units="px"
    inkscape:pageopacity="0.0"
    inkscape:pageshadow="2"
    inkscape:window-height="1027"
@@ -121,21 +121,21 @@
 
 
 <circle
-   style="fill:url(#linearGradient18);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.21461;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   style="fill:url(#linearGradient18);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.633654;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
    id="screw-outer"
-   cx="2.54"
-   cy="2.54"
-   r="2.2014613" /><circle
-   style="fill:url(#linearGradient19);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.18716;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   cx="7.5"
+   cy="7.5"
+   r="6.5" /><circle
+   style="fill:url(#linearGradient19);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.552606;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
    id="screw-mid"
-   cx="2.54"
-   cy="2.54"
-   r="1.9198792" /><circle
-   style="fill:url(#linearGradient22);fill-rule:nonzero;stroke:none;stroke-width:0.171765;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+   cx="7.5"
+   cy="7.5"
+   r="5.6686049" /><circle
+   style="fill:url(#linearGradient22);fill-rule:nonzero;stroke:none;stroke-width:0.507151;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
    id="screw-inner"
-   cx="2.54"
-   cy="2.54"
-   r="1.7619535" /><path
+   cx="7.5"
+   cy="7.5"
+   r="5.2023158" /><path
    sodipodi:type="star"
    style="fill:#525252;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.9023;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
    id="screw-socket"
@@ -150,4 +150,4 @@
    inkscape:rounded="0"
    inkscape:randomized="0"
    d="M 5.0157833,-9.3243412e-8 2.5078917,4.3437957 -2.5078916,4.3437958 -5.0157833,9.3243413e-8 -2.5078917,-4.3437957 l 5.0157833,-10e-8 z"
-   transform="matrix(0.23940351,-0.06563875,0.06563875,0.23940351,2.54,2.54)" /></svg>
+   transform="matrix(0.70685904,-0.19380394,0.19380394,0.70685904,7.5000002,7.5000002)" /></svg>

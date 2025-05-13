@@ -106,7 +106,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         if (centerEmblem) {
             emblemWidget->setEmblemPos (box.size.div (2));
-            emblemWidget->setEmblemSize (133.748);
+            emblemWidget->setEmblemSize (135.f);
         } else {
             emblemWidget->setEmblemPos (findNamed ("widgetLogo", rack::math::Vec ()));
             emblemWidget->setEmblemSize (Constants::StdEmblemSize);
