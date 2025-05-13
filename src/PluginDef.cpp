@@ -18,7 +18,7 @@
 
 #include "PluginDef.hpp"
 
-#include "Utils.hpp"
+#include "ModelDeclarations.hpp"
 
 #include <fmt/format.h>
 #include <rack_themer.hpp>
@@ -62,13 +62,7 @@ __attribute__((__visibility__("default"))) void init (rack::plugin::Plugin* p) {
     OuroborosModules::Modules::Meta::metaSounds_Init ();
 
     // Module models.
-    p->addModel (OuroborosModules::modelMeta);
-    p->addModel (OuroborosModules::modelChroma);
-    p->addModel (OuroborosModules::modelSTVCA);
-    p->addModel (OuroborosModules::modelBernoulli);
-    p->addModel (OuroborosModules::modelMedian);
-    p->addModel (OuroborosModules::modelJunction);
-    p->addModel (OuroborosModules::modelBranch);
+    init_InitializeModels (p);
 }
 
 __attribute__((__visibility__("default"))) json_t* settingsToJson () {
