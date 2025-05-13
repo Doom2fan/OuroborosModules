@@ -106,7 +106,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid state light {} #{}"), captures [0], i);
 
-            const float lightSize = rack::window::mm2px (1.5f);
+            const float lightSize = 4.43f;
             if (captures [0] == "A")
                 addChild (createLightCentered<ResizableVCVLight<GreenLight>> (pos, module, BernoulliModule::LIGHT_STATE_A + i, lightSize));
             else

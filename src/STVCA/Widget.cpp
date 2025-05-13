@@ -100,7 +100,6 @@ namespace OuroborosModules::Modules::STVCA {
         using rack::createWidget;
         using rack::createWidgetCentered;
         using rack::math::Vec;
-        using rack::window::mm2px;
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;
         using Widgets::EmblemWidget;
@@ -126,10 +125,10 @@ namespace OuroborosModules::Modules::STVCA {
         display->box = displayBox;
         addChild (display);
 
-        const auto knobMarginX = 2.253;
-        const auto knobMarginY = 2.892;
-        auto slider = rack::createParam<STVCASlider> (mm2px (Vec (knobMarginX, knobMarginY)), module, STVCAModule::PARAM_LEVEL);
-        slider->box.size = displayBox.size - mm2px (Vec (knobMarginX, knobMarginY)).mult (2);
+        const auto knobMarginX = 6.653f;
+        const auto knobMarginY = 8.539f;
+        auto slider = rack::createParam<STVCASlider> (Vec (knobMarginX, knobMarginY), module, STVCAModule::PARAM_LEVEL);
+        slider->box.size = displayBox.size - Vec (knobMarginX, knobMarginY).mult (2);
         display->addChild (slider);
 
         addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (findNamed ("param_Exp", Vec ()), module, STVCAModule::PARAM_EXP));

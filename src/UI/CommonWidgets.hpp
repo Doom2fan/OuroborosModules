@@ -54,11 +54,11 @@ namespace OuroborosModules::Widgets {
         EmblemWidget (
             EmblemId emblemId,
             rack::math::Vec newPos,
-            float newSize = rack::window::mm2px (Constants::StdEmblemSize)
+            float newSize = Constants::StdEmblemSize
         ) : EmblemWidget (newPos, newSize) {
             setEmblem (emblemId);
         }
-        EmblemWidget (rack::math::Vec newPos, float newSize = rack::window::mm2px (Constants::StdEmblemSize));
+        EmblemWidget (rack::math::Vec newPos, float newSize = Constants::StdEmblemSize);
 
         void update ();
 
