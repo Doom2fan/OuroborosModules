@@ -124,6 +124,13 @@ namespace OuroborosModules::Modules::Meta {
         }
     }
 
+    void MetaModule::metaSounds_Process (const ProcessArgs& args) {
+        if (cables_NewConnected.exchange (false))
+            metaSounds_Channels [METASOUNDS_CABLECONNECT].play ();
+        if (cables_NewDisconnected.exchange (false))
+            metaSounds_Channels [METASOUNDS_CABLEDISCONNECT].play ();
+    }
+
     void MetaModule::metaSounds_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight) {
         if (clockMetaSoundSettings.process ()) {
             for (int i = 0; i < MetaModule::METASOUNDS_LENGTH; i++)

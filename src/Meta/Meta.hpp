@@ -80,7 +80,7 @@ namespace OuroborosModules::Modules::Meta {
         std::atomic<bool> cables_NewConnected = false;
         std::atomic<bool> cables_NewDisconnected = false;
 
-        // Plug sound data
+        // Meta sound data
         DSP::ClockDivider clockMetaSoundSettings;
         SampleSlot metaSounds_Channels [METASOUNDS_LENGTH];
 
@@ -94,11 +94,12 @@ namespace OuroborosModules::Modules::Meta {
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
 
-        void cables_Process (const ProcessArgs& args, bool& cableConnected, bool& cableDisconnected);
+        void cables_Process (const ProcessArgs& args);
 
         void premuter_Process (float sampleTime, float& audioLeft, float& audioRight);
         void premuter_Passthrough (float sampleTime, float& audioLeft, float& audioRight) { }
 
+        void metaSounds_Process (const ProcessArgs& args);
         void metaSounds_ProcessAudio (const ProcessArgs& args, float& audioLeft, float& audioRight);
 
         void audio_Reset ();
@@ -113,6 +114,7 @@ namespace OuroborosModules::Modules::Meta {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
         std::shared_ptr<MetaHandler> metaHandler = nullptr;
+        bool metaSounds_PrevEnabled = false;
 
       public:
         MetaWidget (MetaModule* module);

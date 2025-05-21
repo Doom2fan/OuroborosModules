@@ -33,6 +33,8 @@ namespace OuroborosModules {
                 if (auto handler = currentHandler.lock ())
                     handler->update ();
             });
+
+            curTime = 0;
             initialized = true;
         }
         UISystemUpdater::tryCreate ();
@@ -50,6 +52,13 @@ namespace OuroborosModules {
     }
 
     void MetaHandler::update () {
+        updateCables ();
+        updateModules ();
+
+        curTime++;
+    }
+
+    void MetaHandler::updateCables () {
         auto cableContainer = APP->scene->rack->getCableContainer ();
         auto incompleteCable = Utils::getIncompleteCable ();
 
@@ -67,21 +76,58 @@ namespace OuroborosModules {
             cableCount++;
         }
 
-        cableConnected = cableDisconnected = false;
+        cables_Connected = cables_Disconnected = false;
 
-        if (hasIncompleteCable && !hadIncompleteCable) {
-            if (cableCount == prevCableCount)
-                cableConnected = true;
-            else if (cableCount < prevCableCount)
-                cableDisconnected = true;
-        } else if (!hasIncompleteCable && hadIncompleteCable) {
-            if (cableCount > prevCableCount)
-                cableConnected = true;
+        if (hasIncompleteCable && !cables_hadIncomplete) {
+            if (cableCount == cables_prevCount)
+                cables_Connected = true;
+            else if (cableCount < cables_prevCount)
+                cables_Disconnected = true;
+        } else if (!hasIncompleteCable && cables_hadIncomplete) {
+            if (cableCount > cables_prevCount)
+                cables_Connected = true;
             else
-                cableDisconnected = true;
+                cables_Disconnected = true;
         }
 
-        prevCableCount = cableCount;
-        hadIncompleteCable = hasIncompleteCable;
+        cables_prevCount = cableCount;
+        cables_hadIncomplete = hasIncompleteCable;
+    }
+
+    void MetaHandler::updateModules () {
+        modules_Added = false;
+        modules_Removed = false;
+
+        int modulesAdded = 0;
+        int modulesRemoved = 0;
+
+        const int bufferSize = 64;
+        RackModuleId moduleIds [bufferSize];
+        for (int moduleCount = APP->engine->getNumModules (); moduleCount > 0;) {
+            auto returnedCount = APP->engine->getModuleIds (moduleIds, bufferSize);
+
+            for (std::size_t i = 0; i < returnedCount; i++) {
+                auto moduleId = moduleIds [i];
+                auto search = modules_Time.find (moduleId);
+                if (search == modules_Time.end ()) {
+                    modules_Time [moduleId] = curTime;
+                    modulesAdded++;
+                } else
+                    search->second = curTime;
+            }
+
+            moduleCount -= returnedCount;
+        }
+
+        for (auto it = modules_Time.begin (); it != modules_Time.end ();) {
+            if (it->second != curTime){
+                it = modules_Time.erase (it);
+                modulesRemoved++;
+            } else
+                it++;
+        }
+
+        modules_Added   = modulesAdded == 1 && modulesRemoved == 0;
+        modules_Removed = modulesAdded == 0 && modulesRemoved == 1;
     }
 }

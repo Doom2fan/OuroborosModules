@@ -80,14 +80,7 @@ namespace OuroborosModules::Modules::Meta {
         if (isBypassed ())
             return;
 
-        bool cableConnected, cableDisconnected;
-        cables_Process (args, cableConnected, cableDisconnected);
-
-        if (cableConnected)
-            metaSounds_Channels [METASOUNDS_CABLECONNECT].play ();
-        if (cableDisconnected)
-            metaSounds_Channels [METASOUNDS_CABLEDISCONNECT].play ();
-
+        cables_Process (args);
         audio_Process (args);
     }
 

@@ -22,29 +22,42 @@
 
 #include <memory>
 
-namespace {
-    struct MetaHandlerWidget;
-}
-
 namespace OuroborosModules {
     struct MetaHandler {
-        friend MetaHandlerWidget;
+        typedef int64_t RackModuleId;
+        typedef int64_t TimeUnit;
 
     private:
-        int prevCableCount = 0;
-        bool hadIncompleteCable = false;
+        TimeUnit curTime;
 
-        bool cableConnected = false;
-        bool cableDisconnected = false;
+        // Cable data
+        int cables_prevCount = 0;
+        bool cables_hadIncomplete = false;
+
+        bool cables_Connected = false;
+        bool cables_Disconnected = false;
+
+        // Module data
+        std::unordered_map<RackModuleId, TimeUnit> modules_Time;
+
+        bool modules_Added = false;
+        bool modules_Removed = false;
 
         MetaHandler ();
 
         void update ();
+        void updateCables ();
+        void updateModules ();
 
     public:
         static std::shared_ptr<MetaHandler> getHandler ();
 
-        bool checkCableConnected () { return cableConnected; }
-        bool checkCableDisconnected () { return cableDisconnected; }
+        // Cable data
+        bool checkCableConnected () { return cables_Connected; }
+        bool checkCableDisconnected () { return cables_Disconnected; }
+
+        // Module data
+        bool checkModuleAdded () { return modules_Added; }
+        bool checkModuleRemoved () { return modules_Removed; }
     };
 }

@@ -43,6 +43,7 @@ namespace OuroborosModules::Modules::Meta {
         float audioRight = inputs [INPUT_RIGHT].isConnected () ? inputs [INPUT_RIGHT].getVoltage () : audioLeft;
 
         (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
+        metaSounds_Process (args);
         metaSounds_ProcessAudio (args, audioLeft, audioRight);
 
         if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
