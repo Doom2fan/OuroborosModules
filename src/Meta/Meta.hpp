@@ -19,10 +19,11 @@
 #pragma once
 
 #include "../MetaHandler.hpp"
+#include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../SampleChannel.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
@@ -86,7 +87,7 @@ namespace OuroborosModules::Modules::Meta {
         std::atomic<bool> modules_NewRemoved = false;
 
         // Meta sound data
-        rack::dsp::ClockDivider clockMetaSoundSettings;
+        DSP::ClockDivider clockMetaSoundSettings;
         SampleSlot metaSounds_Channels [METASOUNDS_LENGTH];
 
         // Premuter data
@@ -117,8 +118,8 @@ namespace OuroborosModules::Modules::Meta {
 
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
-        std::shared_ptr<MetaHandler> cables_Handler = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
+        std::shared_ptr<MetaHandler> metaHandler = nullptr;
         bool metaSounds_PrevEnabled = false;
 
       public:
@@ -130,8 +131,6 @@ namespace OuroborosModules::Modules::Meta {
         void step () override;
 
         void updateMetaHandler ();
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;

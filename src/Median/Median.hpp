@@ -18,10 +18,11 @@
 
 #pragma once
 
+#include "../DSP/ClockDivider.hpp"
 #include "../DSP/Filters.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Median {
@@ -64,10 +65,10 @@ namespace OuroborosModules::Modules::Median {
 
         DSP::UpsampleFilter<rack::simd::float_4> upsamplerFilter [SIMDBankCount] [3] {};
         DSP::DownsampleFilter<rack::simd::float_4> downsamplerFilter [SIMDBankCount] [3] {};
-        int oversampleRate;
+        int oversampleRate = 0;
 
-        rack::dsp::ClockDivider clockOversample;
-        rack::dsp::ClockDivider clockLights;
+        DSP::ClockDivider clockOversample;
+        DSP::ClockDivider clockLights;
 
         MedianModule ();
 
@@ -80,7 +81,7 @@ namespace OuroborosModules::Modules::Median {
 
     struct MedianWidget : Widgets::ModuleWidgetBase<MedianWidget, MedianModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
 
       public:
         MedianWidget (MedianModule* module);
@@ -88,8 +89,6 @@ namespace OuroborosModules::Modules::Median {
       protected:
         void initializeWidget () override;
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
     };

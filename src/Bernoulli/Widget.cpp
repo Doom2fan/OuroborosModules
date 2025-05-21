@@ -19,7 +19,6 @@
 
 #include "Bernoulli.hpp"
 
-#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetUtils.hpp"
 
 #include <fmt/format.h>
@@ -38,7 +37,7 @@ namespace OuroborosModules::Modules::Bernoulli {
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;
         using Widgets::createLightCentered;
-        using Widgets::ImageWidget;
+        using Widgets::EmblemWidget;
         using Widgets::MetalKnobSmall;
         using Widgets::ResizableVCVLight;
         using Widgets::ScrewWidget;
@@ -46,9 +45,8 @@ namespace OuroborosModules::Modules::Bernoulli {
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        emblemWidget = createWidget<ImageWidget> (Vec ());
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
-        updateEmblem (curTheme, curEmblem);
 
         /*
          * Trigger
@@ -108,7 +106,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid state light {} #{}"), captures [0], i);
 
-            const float lightSize = rack::window::mm2px (1.5f);
+            const float lightSize = 4.43f;
             if (captures [0] == "A")
                 addChild (createLightCentered<ResizableVCVLight<GreenLight>> (pos, module, BernoulliModule::LIGHT_STATE_A + i, lightSize));
             else
@@ -116,33 +114,18 @@ namespace OuroborosModules::Modules::Bernoulli {
         });
     }
 
-    void BernoulliWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
-        if (emblemWidget == nullptr)
-            return;
-
-        if (emblemId.isNone ()) {
-            emblemWidget->hide ();
-            return;
-        } else
-            emblemWidget->show ();
-
-        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
-
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        auto emblemSize = rack::window::mm2px (Constants::StdEmblemSize);
-
-        emblemWidget->setZoom (emblemSize);
-        emblemWidget->setSize (rack::math::Vec (emblemSize));
-        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
-    }
-
-    void BernoulliWidget::onChangeTheme (ThemeId themeId) {
-        _WidgetBase::onChangeTheme (themeId);
-        updateEmblem (themeId, curEmblem);
-    }
-
     void BernoulliWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
-        updateEmblem (curTheme, emblemId);
+        emblemWidget->setEmblem (emblemId);
+    }
+
+    void BernoulliWidget::appendContextMenu (rack::ui::Menu* menu) {
+        _WidgetBase::appendContextMenu (menu);
+
+        // Randomization options
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probabilities", "", &module->randomizeProbability));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probability CV attenuators", "", &module->randomizeProbabilityCV));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize modes", "", &module->randomizeModes));
     }
 }

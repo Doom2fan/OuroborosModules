@@ -22,6 +22,7 @@
 #include "../JsonUtils.hpp"
 #include "../PluginSettings.hpp"
 #include "../UI/Input.hpp"
+#include "../Utils.hpp"
 #include "CCM_Common.hpp"
 #include "Chroma.hpp"
 #include "HistoryActions.hpp"
@@ -134,7 +135,7 @@ namespace OuroborosModules::Modules::Chroma {
     void CableColorCollection::resetToDefaults () {
         clear ();
 
-        setName ("Default");
+        setName ("Default Rack colors");
         addColor (rack::color::fromHexString ("#F3374B"), CableColorKey (-1, GLFW_KEY_1, 0), "");
         addColor (rack::color::fromHexString ("#FFB437"), CableColorKey (-1, GLFW_KEY_2, 0), "");
         addColor (rack::color::fromHexString ("#00B56E"), CableColorKey (-1, GLFW_KEY_3, 0), "");
@@ -203,6 +204,13 @@ namespace OuroborosModules::Modules::Chroma {
         defaultCollection.resetToDefaults ();
         collectionsStorage.addCollection (defaultCollection);
         collectionsStorage.setDefaultCollection (defaultCollection.getName ());
+
+        auto monotrailCollection = CableColorCollection ("Monotrail Tech Talk");
+        monotrailCollection.addColor (fromHexString ("#ff79ad"), CableColorKey (-1, GLFW_KEY_1, 0), "Audio");
+        monotrailCollection.addColor (fromHexString ("#45a6eb"), CableColorKey (-1, GLFW_KEY_2, 0), "Control Voltage");
+        monotrailCollection.addColor (fromHexString ("#ffac38"), CableColorKey (-1, GLFW_KEY_3, 0), "Trigger / Gate");
+        monotrailCollection.addColor (fromHexString ("#8cc53d"), CableColorKey (-1, GLFW_KEY_4, 0), "1v/oct");
+        collectionsStorage.addCollection (monotrailCollection);
 
         auto omriCollection = CableColorCollection ("Omri Cohen/Modular Fungi");
         omriCollection.addColor (fromHexString ("#c91847"), CableColorKey (-1, GLFW_KEY_1, 0), "Audio");
@@ -307,7 +315,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         // Gather the cables.
         auto cablesToModify = std::vector<rack::app::CableWidget*> ();
-        auto heldCable = APP->scene->rack->getIncompleteCable ();
+        auto heldCable = Utils::getIncompleteCable ();
         if (heldCable != nullptr)
             cablesToModify.push_back (heldCable);
         else if (allowPortHover && pluginSettings.chroma_PortHover) {
@@ -335,9 +343,9 @@ namespace OuroborosModules::Modules::Chroma {
             return false;
 
         // No new cable connected.
-        if (cables_Handler == nullptr)
-            cables_Handler = MetaHandler::getHandler ();
-        if (!cables_Handler->checkCableConnected ())
+        if (metaHandler == nullptr)
+            metaHandler = MetaHandler::getHandler ();
+        if (!metaHandler->checkCableConnected ())
             return false;
 
         // The held cable has no connected ports. (Impossible?)
@@ -367,7 +375,7 @@ namespace OuroborosModules::Modules::Chroma {
             curColorIndex = colorCollection.count () - 1;
 
         // Handle the held cable.
-        auto heldCable = APP->scene->rack->getIncompleteCable ();
+        auto heldCable = Utils::getIncompleteCable ();
         if (checkUpdateHeldCable (heldCable)) {
             auto cablesToModify = std::vector<rack::app::CableWidget*> ();
             cablesToModify.push_back (heldCable);

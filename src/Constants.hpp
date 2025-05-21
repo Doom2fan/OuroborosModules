@@ -142,7 +142,7 @@ namespace OuroborosModules {
     };
 
     namespace Constants {
-        static constexpr float StdEmblemSize = 8.719f;
+        static constexpr float StdEmblemSize = 25.f;
 
         static constexpr float TriggerThreshLow = .1f;
         static constexpr float TriggerThreshHigh = 2.f;

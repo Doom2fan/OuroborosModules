@@ -21,7 +21,7 @@
 #include "../MetaHandler.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 #include "CableColorManager.hpp"
 #include "ColorDisplayWidget.hpp"
@@ -56,7 +56,7 @@ namespace OuroborosModules::Modules::Chroma {
 
       private:
         ColorDisplayWidget* colorDisplayWidget;
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
         KeyContainer* keyContainer = nullptr;
 
       public:
@@ -69,8 +69,7 @@ namespace OuroborosModules::Modules::Chroma {
         void step () override;
         void update ();
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
+        void updateEmblem ();
         void onChangeEmblem (EmblemId emblemId) override;
 
         void createLocalStyleMenu (rack::ui::Menu* menu) override;

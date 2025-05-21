@@ -19,7 +19,6 @@
 
 #include "STVCA.hpp"
 
-#include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/ColorPicker.hpp"
 #include "../UI/MenuItems/CommonItems.hpp"
 
@@ -101,18 +100,16 @@ namespace OuroborosModules::Modules::STVCA {
         using rack::createWidget;
         using rack::createWidgetCentered;
         using rack::math::Vec;
-        using rack::window::mm2px;
         using Widgets::CableJackInput;
         using Widgets::CableJackOutput;
-        using Widgets::ImageWidget;
+        using Widgets::EmblemWidget;
         using Widgets::ScrewWidget;
 
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        emblemWidget = createWidget<ImageWidget> (Vec ());
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
-        updateEmblem (curTheme, curEmblem);
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
@@ -123,49 +120,23 @@ namespace OuroborosModules::Modules::STVCA {
             addOutput (createOutputCentered<CableJackOutput> (pos, module, STVCAModule::OUTPUT_LEFT + i));
         });
 
-        auto displayBox = findNamedBox ("display").value_or (rack::math::Rect ());
+        auto displayBox = findNamedBox ("display", rack::math::Rect ());
         auto display = rack::createWidget<rack::LedDisplay> (Vec ());
         display->box = displayBox;
         addChild (display);
 
-        const auto knobMarginX = 2.253;
-        const auto knobMarginY = 2.892;
-        auto slider = rack::createParam<STVCASlider> (mm2px (Vec (knobMarginX, knobMarginY)), module, STVCAModule::PARAM_LEVEL);
-        slider->box.size = displayBox.size - mm2px (Vec (knobMarginX, knobMarginY)).mult (2);
+        const auto knobMarginX = 6.653f;
+        const auto knobMarginY = 8.539f;
+        auto slider = rack::createParam<STVCASlider> (Vec (knobMarginX, knobMarginY), module, STVCAModule::PARAM_LEVEL);
+        slider->box.size = displayBox.size - Vec (knobMarginX, knobMarginY).mult (2);
         display->addChild (slider);
 
-        auto expSwitchPos = findNamed ("param_Exp").value_or (Vec ());
-        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (expSwitchPos, module, STVCAModule::PARAM_EXP));
-    }
-
-    void STVCAWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
-        if (emblemWidget == nullptr)
-            return;
-
-        if (emblemId.isNone ()) {
-            emblemWidget->hide ();
-            return;
-        } else
-            emblemWidget->show ();
-
-        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
-
-        auto emblemPos = findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        auto emblemSize = rack::window::mm2px (Constants::StdEmblemSize);
-
-        emblemWidget->setZoom (emblemSize);
-        emblemWidget->setSize (rack::math::Vec (emblemSize));
-        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
-    }
-
-    void STVCAWidget::onChangeTheme (ThemeId themeId) {
-        _WidgetBase::onChangeTheme (themeId);
-        updateEmblem (themeId, curEmblem);
+        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (findNamed ("param_Exp", Vec ()), module, STVCAModule::PARAM_EXP));
     }
 
     void STVCAWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
-        updateEmblem (curTheme, emblemId);
+        emblemWidget->setEmblem (emblemId);
     }
 
     void STVCAWidget::createLocalStyleMenu (rack::ui::Menu* menu) {

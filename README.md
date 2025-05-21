@@ -8,8 +8,10 @@ Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosMo
 
 ## Links
 * [Manual](https://github.com/Doom2fan/OuroborosModules/wiki)
+* [How to build](./COMPILING.md)
 * [Releases](https://github.com/Doom2fan/OuroborosModules/releases)
-* [Nightly builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly)
+* [Nightly mainline builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly)
+* [Nightly development builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly_develop)
 * [Bugtracker](https://github.com/Doom2fan/OuroborosModules/issues)
 * [VCV Community thread](https://community.vcvrack.com/t/ouroboros-industries-development-thread/22234)
 

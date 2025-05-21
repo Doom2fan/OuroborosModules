@@ -18,9 +18,10 @@
 
 #pragma once
 
+#include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
-#include "../UI/ImageWidget.hpp"
+#include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Bernoulli {
@@ -73,7 +74,11 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         BernoulliGate bernoulliGates [GatesCount];
 
-        rack::dsp::ClockDivider clockLights;
+        DSP::ClockDivider clockLights;
+
+        bool randomizeProbability;
+        bool randomizeProbabilityCV;
+        bool randomizeModes;
 
         BernoulliModule ();
 
@@ -81,12 +86,12 @@ namespace OuroborosModules::Modules::Bernoulli {
         void dataFromJson (json_t* rootJ) override;
 
         void process (const ProcessArgs& args) override;
-        void onReset (const ResetEvent& e) override;
+        void onRandomize (const RandomizeEvent& e) override;
     };
 
     struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliWidget, BernoulliModule> {
       private:
-        Widgets::ImageWidget* emblemWidget = nullptr;
+        Widgets::EmblemWidget* emblemWidget = nullptr;
 
       public:
         BernoulliWidget (BernoulliModule* module);
@@ -94,8 +99,7 @@ namespace OuroborosModules::Modules::Bernoulli {
       protected:
         void initializeWidget () override;
 
-        void updateEmblem (ThemeId themeId, EmblemId emblemId);
-        void onChangeTheme (ThemeId themeId) override;
         void onChangeEmblem (EmblemId emblemId) override;
+        void appendContextMenu (rack::ui::Menu* menu) override;
     };
 }

@@ -132,8 +132,7 @@ namespace OuroborosModules::Modules::Chroma {
         CableColorCollection colorCollection;
         uint32_t curColorIndex = 0;
 
-        std::shared_ptr<MetaHandler> cables_Handler;
-        bool prevHeldCable = false;
+        std::shared_ptr<MetaHandler> metaHandler;
 
         LearnMode learnMode = LearnMode::Off;
         uint32_t learnIndex = 0;

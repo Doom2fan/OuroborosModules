@@ -8,11 +8,12 @@ on:
   push:
     branches:
       - master
+      - develop
     tags:
       - 'v**'
 
 env:
-  rack-sdk-version: latest
+  rack-sdk-version: 2.6.3
   rack-plugin-toolchain-dir: /home/build/rack-plugin-toolchain
 
 defaults:
@@ -20,7 +21,6 @@ defaults:
     shell: bash
 
 jobs:
-
   modify-plugin-version:
     name: Modify plugin version
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
         id: plugin-version-cache
         with:
           path: plugin.json
-          key: ${{ github.sha }}-${{ github.run_id }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       - run: |
           gitrev=`git rev-parse --short HEAD`
           pluginversion=`jq -r '.version' plugin.json`
@@ -44,7 +44,7 @@ jobs:
     needs: modify-plugin-version
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/qno/rack-plugin-toolchain-win-linux
+      image: ghcr.io/bloodbat/rack-plugin-toolchain-win-linux
       options: --user root
     strategy:
       fail-fast: false
@@ -59,7 +59,7 @@ jobs:
         id: plugin-version-cache
         with:
           path: plugin.json
-          key: ${{ github.sha }}-${{ github.run_id }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Build plugin
         run: |
           export PLUGIN_DIR=$GITHUB_WORKSPACE
@@ -74,7 +74,7 @@ jobs:
   build-mac:
     name: mac
     needs: modify-plugin-version
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -87,11 +87,11 @@ jobs:
         id: plugin-version-cache
         with:
           path: plugin.json
-          key: ${{ github.sha }}-${{ github.run_id }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Get Rack-SDK
         run: |
           pushd $HOME
-          wget -O Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-${{ env.rack-sdk-version }}-mac-x64+arm64.zip
+          wget -O Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-${{ env.rack-sdk-version }}-mac-${{ matrix.platform }}.zip
           unzip Rack-SDK.zip
       - name: Build plugin
         run: |
@@ -147,34 +147,34 @@ jobs:
 
   publish-nightly:
     name: Publish Nightly
-    # only create a release if a tag was created that is called e.g. v1.2.3
-    # see also https://vcvrack.com/manual/Manifest#version
-    if: ${{ github.ref == 'refs/heads/master' && github.repository_owner == 'Doom2fan' }}
+    if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') && github.repository_owner == 'Doom2fan' }}
     runs-on: ubuntu-latest
     needs: [build, build-mac]
+    env:
+      NIGHTLY_TAG: ${{ github.ref == 'refs/heads/master' && 'Nightly' || format('Nightly_{0}', github.ref_name) }}
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: _artifacts
-      - name: Delete old release assets
+      - name: Delete old nightly assets
         uses: mknejp/delete-release-assets@v1
         with:
           token: ${{ github.token }}
-          tag: Nightly # This may also be of the form 'refs/tags/staging'
+          tag: ${{ env.NIGHTLY_TAG }}
           assets: '*'
           fail-if-no-assets: false
           fail-if-no-release: false
-      - name: Upload release assets
+      - name: Upload nightly assets
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: _artifacts/**/*.vcvplugin
-          tag: Nightly
+          tag:  ${{ env.NIGHTLY_TAG }}
           file_glob: true
           prerelease: true
       - name: Tag Repo
         uses: richardsimko/update-tag@v1.0.7
         with:
-          tag_name: Nightly
+          tag_name:  ${{ env.NIGHTLY_TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

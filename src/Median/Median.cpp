@@ -50,10 +50,10 @@ namespace OuroborosModules::Modules::Median {
         configOutput (OUTPUT_MID, "Median");
         configOutput (OUTPUT_MAX, "Maximum");
 
-        clockOversample.setDivision (7);
+        clockOversample = DSP::ClockDivider (7, rack::random::u32 ());
         setOversampleRate (1);
 
-        clockLights.setDivision (32);
+        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
     }
 
     rack::simd::float_4 MedianModule::getBank (int inputNum, int currentChannel) {
@@ -86,15 +86,15 @@ namespace OuroborosModules::Modules::Median {
 
         // Check for oversample updates.
         if (clockOversample.process ()) {
-            auto newOversampleRate = static_cast<int> (params [PARAM_OVERSAMPLE].getValue ());
+            const auto newOversampleRate = static_cast<int> (params [PARAM_OVERSAMPLE].getValue ());
             setOversampleRate (newOversampleRate);
         }
 
         // Don't waste CPU if there's nothing connected to the outputs.
-        if (!outputs [OUTPUT_MIN].isConnected () &&
-            !outputs [OUTPUT_MID].isConnected () &&
-            !outputs [OUTPUT_MAX].isConnected ()) {
-
+        const auto outConnectedMin = outputs [OUTPUT_MIN].isConnected ();
+        const auto outConnectedMid = outputs [OUTPUT_MID].isConnected ();
+        const auto outConnectedMax = outputs [OUTPUT_MAX].isConnected ();
+        if (!outConnectedMin && !outConnectedMid && !outConnectedMax) {
             if (clockLights.process ()) {
                 auto lightTime = args.sampleTime * clockLights.getDivision ();
                 for (int i = 0; i < 3 * 3; i++)
@@ -104,10 +104,19 @@ namespace OuroborosModules::Modules::Median {
             return;
         }
 
+        const bool inputConnected [3] = {
+            inputs [INPUT_VALUES + 0].isConnected (),
+            inputs [INPUT_VALUES + 1].isConnected (),
+            inputs [INPUT_VALUES + 2].isConnected (),
+        };
+        const auto oversampleOutMin = (oversampleRate > 1 && outConnectedMin);
+        const auto oversampleOutMid = (oversampleRate > 1 && outConnectedMid);
+        const auto oversampleOutMax = (oversampleRate > 1 && outConnectedMax);
+
         // Calculate polyphony and SIMD counts.
-        const int channelCount = std::max (1, std::min (
+        const int channelCount = std::max (1, std::max (
             inputs [INPUT_VALUES + 0].getChannels (),
-            std::min (inputs [INPUT_VALUES + 1].getChannels (), inputs [INPUT_VALUES + 2].getChannels ())
+            std::max (inputs [INPUT_VALUES + 1].getChannels (), inputs [INPUT_VALUES + 2].getChannels ())
         ));
         int bankCount = channelCount / SIMDBankSize;
         if (bankCount * SIMDBankSize < channelCount)
@@ -124,9 +133,12 @@ namespace OuroborosModules::Modules::Median {
             const int currentChannel = bank * SIMDBankSize;
 
             if (oversampleRate > 1) {
-                upsamplerFilter [bank] [0].process (buffer [0], getBank (0, currentChannel));
-                upsamplerFilter [bank] [1].process (buffer [1], getBank (1, currentChannel));
-                upsamplerFilter [bank] [2].process (buffer [2], getBank (2, currentChannel));
+                for (auto i = 0; i < 3; i++) {
+                    if (inputConnected [i])
+                        upsamplerFilter [bank] [i].process (buffer [i], getBank (i, currentChannel));
+                    else
+                        std::fill (std::begin (buffer [i]), std::begin (buffer [i]) + oversampleRate, getBank (i, currentChannel));
+                }
             } else {
                 buffer [0] [0] = getBank (0, currentChannel);
                 buffer [1] [0] = getBank (1, currentChannel);
@@ -144,16 +156,9 @@ namespace OuroborosModules::Modules::Median {
                 );
             }
 
-            float_4 vecMin, vecMid, vecMax;
-            if (oversampleRate > 1) {
-                vecMin = downsamplerFilter [bank] [0].process (buffer [0]);
-                vecMid = downsamplerFilter [bank] [1].process (buffer [1]);
-                vecMax = downsamplerFilter [bank] [2].process (buffer [2]);
-            } else {
-                vecMin = buffer [0] [0];
-                vecMid = buffer [1] [0];
-                vecMax = buffer [2] [0];
-            }
+            auto vecMin = oversampleOutMin ? downsamplerFilter [bank] [0].process (buffer [0]) : buffer [0] [0];
+            auto vecMid = oversampleOutMid ? downsamplerFilter [bank] [1].process (buffer [1]) : buffer [1] [0];
+            auto vecMax = oversampleOutMax ? downsamplerFilter [bank] [2].process (buffer [2]) : buffer [2] [0];
 
             outputs [OUTPUT_MIN].setVoltageSimd (vecMin, currentChannel);
             outputs [OUTPUT_MID].setVoltageSimd (vecMid, currentChannel);

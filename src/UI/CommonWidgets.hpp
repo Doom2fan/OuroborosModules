@@ -20,6 +20,7 @@
 
 #include "../PluginDef.hpp"
 #include "ThemeUtils.hpp"
+#include "ImageWidget.hpp"
 
 #include <rack_themer.hpp>
 
@@ -36,6 +37,39 @@ namespace OuroborosModules::Widgets {
 
     struct CableJackOutput : rack_themer::widgets::SvgPort {
         CableJackOutput () { setSvg (Theme::getThemedSvg ("components/CableJack_Out", nullptr)); }
+    };
+
+    struct EmblemWidget : rack_themer::ThemedWidgetBase<rack::widget::TransparentWidget> {
+      private:
+        rack::math::Vec posCentered;
+        float size;
+
+        ImageWidget* imageWidget;
+        rack::widget::FramebufferWidget* framebuffer;
+
+        EmblemWidget (const EmblemWidget& x) = delete;
+        void operator= (const EmblemWidget& x) = delete;
+
+      public:
+        EmblemWidget (
+            EmblemId emblemId,
+            rack::math::Vec newPos,
+            float newSize = Constants::StdEmblemSize
+        ) : EmblemWidget (newPos, newSize) {
+            setEmblem (emblemId);
+        }
+        EmblemWidget (rack::math::Vec newPos, float newSize = Constants::StdEmblemSize);
+
+        void update ();
+
+        rack::math::Vec getEmblemPos () { return posCentered; }
+        void setEmblemPos (rack::math::Vec newPos);
+
+        float getEmblemSize () { return size; }
+        void setEmblemSize (float newSize);
+
+        void setEmblem (EmblemId emblemId) { setEmblem (emblemId, size); }
+        void setEmblem (EmblemId emblemId, float newSize);
     };
 
     template<typename TBase = rack::app::ModuleLightWidget>

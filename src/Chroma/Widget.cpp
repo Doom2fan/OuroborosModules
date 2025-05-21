@@ -18,7 +18,6 @@
 
 #include "Chroma.hpp"
 
-#include "../UI/CommonWidgets.hpp"
 #include "../UI/MenuItems/CommonItems.hpp"
 #include "../UI/MenuItems/TextField.hpp"
 #include "CableColorManager.hpp"
@@ -34,17 +33,17 @@ namespace OuroborosModules::Modules::Chroma {
         using rack::createWidget;
         using rack::math::Vec;
         using rack::math::Rect;
-        using Widgets::ImageWidget;
+        using Widgets::EmblemWidget;
         using Widgets::ScrewWidget;
 
         addChild (createWidget<ScrewWidget> (Vec ()));
         addChild (createWidget<ScrewWidget> (Vec (box.size.x, RACK_GRID_HEIGHT).minus (Vec (RACK_GRID_WIDTH))));
 
-        emblemWidget = createWidget<ImageWidget> (Vec ());
+        emblemWidget = new Widgets::EmblemWidget (curEmblem, Vec ());
         addChild (emblemWidget);
-        updateEmblem (curTheme, curEmblem);
+        updateEmblem ();
 
-        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay").value_or (Rect ()));
+        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay", Rect ()));
         addChild (colorDisplayWidget);
 
         // Skip if we're in the module browser.
@@ -92,43 +91,32 @@ namespace OuroborosModules::Modules::Chroma {
         update ();
 
         if (module->updateEmblem) {
-            updateEmblem (curTheme, curEmblem);
+            updateEmblem ();
             module->updateEmblem = false;
         }
     }
 
-    void ChromaWidget::updateEmblem (ThemeId themeId, EmblemId emblemId) {
+    void ChromaWidget::updateEmblem () {
         if (emblemWidget == nullptr)
             return;
-
-        if (emblemId.isNone ()) {
-            emblemWidget->hide ();
-            return;
-        } else
-            emblemWidget->show ();
-
-        emblemWidget->setSvg (emblemId.getSvgInstance (themeId));
 
         auto centerEmblem = pluginSettings.chroma_CenterEmblem;
         if (module != nullptr && module->centerEmblem != CenterEmblem::Default)
             centerEmblem = module->centerEmblem == CenterEmblem::True;
 
-        auto emblemPos = centerEmblem ? box.size.div (2) : findNamed ("widgetLogo").value_or (rack::math::Vec ());
-        auto emblemSize = rack::window::mm2px (centerEmblem ? 45.296f : Constants::StdEmblemSize);
-
-        emblemWidget->setZoom (emblemSize);
-        emblemWidget->setSize (rack::math::Vec (emblemSize));
-        emblemWidget->box.pos = emblemPos.minus (emblemWidget->box.size.div (2));
-    }
-
-    void ChromaWidget::onChangeTheme (ThemeId themeId) {
-        _WidgetBase::onChangeTheme (themeId);
-        updateEmblem (themeId, curEmblem);
+        if (centerEmblem) {
+            emblemWidget->setEmblemPos (box.size.div (2));
+            emblemWidget->setEmblemSize (135.f);
+        } else {
+            emblemWidget->setEmblemPos (findNamed ("widgetLogo", rack::math::Vec ()));
+            emblemWidget->setEmblemSize (Constants::StdEmblemSize);
+        }
     }
 
     void ChromaWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
-        updateEmblem (curTheme, emblemId);
+        emblemWidget->setEmblem (emblemId);
+        updateEmblem ();
     }
 
     void ChromaWidget::createLocalStyleMenu (rack::ui::Menu* menu) {

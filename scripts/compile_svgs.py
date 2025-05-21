@@ -74,7 +74,7 @@ def compile_svgs(globalData):
     argsList = INKSCAPE_ARGS.copy()
     argsList.insert(0, globalData.inkscapePath)
     argsList.extend(newerFiles)
-    subprocess.run(argsList)
+    subprocess.run(argsList, cwd=Path(globalData.inkscapePath).parent)
 
     print("done")
 

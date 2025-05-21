@@ -19,6 +19,7 @@
 #include "MetaHandler.hpp"
 
 #include "UISystemUpdater.hpp"
+#include "Utils.hpp"
 
 namespace {
     static bool initialized;
@@ -32,6 +33,8 @@ namespace OuroborosModules {
                 if (auto handler = currentHandler.lock ())
                     handler->update ();
             });
+
+            curTime = 0;
             initialized = true;
         }
         UISystemUpdater::tryCreate ();
@@ -49,15 +52,15 @@ namespace OuroborosModules {
     }
 
     void MetaHandler::update () {
-        updateCables ();
         updateModules ();
+        updateCables ();
 
         curTime++;
     }
 
     void MetaHandler::updateCables () {
         auto cableContainer = APP->scene->rack->getCableContainer ();
-        auto incompleteCable = APP->scene->rack->getIncompleteCable ();
+        auto incompleteCable = Utils::getIncompleteCable ();
 
         if (cableContainer == nullptr)
             return;
@@ -84,6 +87,11 @@ namespace OuroborosModules {
             if (cableCount > cables_prevCount)
                 cables_Connected = true;
             else
+                cables_Disconnected = true;
+        } else if (hasIncompleteCable == cables_hadIncomplete && !modules_AnyAdded && !modules_AnyRemoved && curTime > 0) {
+            if (cableCount > cables_prevCount)
+                cables_Connected = true;
+            else if (cableCount < cables_prevCount)
                 cables_Disconnected = true;
         }
 
@@ -124,7 +132,8 @@ namespace OuroborosModules {
                 it++;
         }
 
-
+        modules_AnyAdded   = modulesAdded > 0;
+        modules_AnyRemoved = modulesRemoved > 0;
         modules_Added   = modulesAdded == 1 && modulesRemoved == 0;
         modules_Removed = modulesAdded == 0 && modulesRemoved == 1;
     }
