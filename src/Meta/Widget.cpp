@@ -80,22 +80,22 @@ namespace OuroborosModules::Modules::Meta {
         });
     }
 
-    void MetaWidget::updateCableHandler () {
+    void MetaWidget::updateMetaHandler () {
         auto isEnabled = false;
 
         isEnabled |= pluginSettings.metaSounds_Enable;
 
-        if (isEnabled && cables_Handler == nullptr)
-            cables_Handler = CableHandler::getHandler ();
-        else if (!isEnabled && cables_Handler != nullptr)
-            cables_Handler = nullptr;
+        if (isEnabled && metaHandler == nullptr)
+            metaHandler = MetaHandler::getHandler ();
+        else if (!isEnabled && metaHandler != nullptr)
+            metaHandler = nullptr;
 
-        if (cables_Handler == nullptr)
+        if (metaHandler == nullptr)
             return;
 
-        if (cables_Handler->checkCableConnected ())
+        if (metaHandler->checkCableConnected ())
             module->cables_NewConnected.store (true);
-        if (cables_Handler->checkCableDisconnected ())
+        if (metaHandler->checkCableDisconnected ())
             module->cables_NewDisconnected.store (true);
     }
 
@@ -106,7 +106,7 @@ namespace OuroborosModules::Modules::Meta {
         if (module == nullptr)
             return;
 
-        updateCableHandler ();
+        updateMetaHandler ();
     }
 
     void MetaWidget::onChangeEmblem (EmblemId emblemId) {

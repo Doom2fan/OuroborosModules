@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../CableHandler.hpp"
+#include "../MetaHandler.hpp"
 #include "../DSP/ClockDivider.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
@@ -112,7 +112,7 @@ namespace OuroborosModules::Modules::Meta {
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
-        std::shared_ptr<CableHandler> cables_Handler = nullptr;
+        std::shared_ptr<MetaHandler> metaHandler = nullptr;
 
       public:
         MetaWidget (MetaModule* module);
@@ -122,7 +122,7 @@ namespace OuroborosModules::Modules::Meta {
 
         void step () override;
 
-        void updateCableHandler ();
+        void updateMetaHandler ();
         void onChangeEmblem (EmblemId emblemId) override;
         void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void appendContextMenu (rack::ui::Menu* menu) override;

@@ -16,18 +16,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CableHandler.hpp"
+#include "MetaHandler.hpp"
 
 #include "UISystemUpdater.hpp"
 #include "Utils.hpp"
 
 namespace {
     static bool initialized;
-    static std::weak_ptr<OuroborosModules::CableHandler> currentHandler;
+    static std::weak_ptr<OuroborosModules::MetaHandler> currentHandler;
 }
 
 namespace OuroborosModules {
-    CableHandler::CableHandler () {
+    MetaHandler::MetaHandler () {
         if (!initialized) {
             UISystemUpdater::addUpdateFunction ([] () {
                 if (auto handler = currentHandler.lock ())
@@ -38,18 +38,18 @@ namespace OuroborosModules {
         UISystemUpdater::tryCreate ();
     }
 
-    std::shared_ptr<CableHandler> CableHandler::getHandler () {
-        struct CableHandler_Concrete : public CableHandler { };
+    std::shared_ptr<MetaHandler> MetaHandler::getHandler () {
+        struct MetaHandler_Concrete : public MetaHandler { };
 
         if (auto retVal = currentHandler.lock ())
             return retVal;
 
-        auto retVal = std::make_shared<CableHandler_Concrete> ();
+        auto retVal = std::make_shared<MetaHandler_Concrete> ();
         currentHandler = retVal;
         return retVal;
     }
 
-    void CableHandler::update () {
+    void MetaHandler::update () {
         auto cableContainer = APP->scene->rack->getCableContainer ();
         auto incompleteCable = Utils::getIncompleteCable ();
 

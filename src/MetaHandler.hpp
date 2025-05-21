@@ -23,12 +23,12 @@
 #include <memory>
 
 namespace {
-    struct CableHandlerWidget;
+    struct MetaHandlerWidget;
 }
 
 namespace OuroborosModules {
-    struct CableHandler {
-        friend CableHandlerWidget;
+    struct MetaHandler {
+        friend MetaHandlerWidget;
 
     private:
         int prevCableCount = 0;
@@ -37,12 +37,12 @@ namespace OuroborosModules {
         bool cableConnected = false;
         bool cableDisconnected = false;
 
-        CableHandler ();
+        MetaHandler ();
 
         void update ();
 
     public:
-        static std::shared_ptr<CableHandler> getHandler ();
+        static std::shared_ptr<MetaHandler> getHandler ();
 
         bool checkCableConnected () { return cableConnected; }
         bool checkCableDisconnected () { return cableDisconnected; }

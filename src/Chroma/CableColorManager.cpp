@@ -18,7 +18,7 @@
 
 #include "CableColorManager.hpp"
 
-#include "../CableHandler.hpp"
+#include "../MetaHandler.hpp"
 #include "../JsonUtils.hpp"
 #include "../PluginSettings.hpp"
 #include "../UI/Input.hpp"
@@ -343,9 +343,9 @@ namespace OuroborosModules::Modules::Chroma {
             return false;
 
         // No new cable connected.
-        if (cables_Handler == nullptr)
-            cables_Handler = CableHandler::getHandler ();
-        if (!cables_Handler->checkCableConnected ())
+        if (metaHandler == nullptr)
+            metaHandler = MetaHandler::getHandler ();
+        if (!metaHandler->checkCableConnected ())
             return false;
 
         // The held cable has no connected ports. (Impossible?)

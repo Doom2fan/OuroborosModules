@@ -23,7 +23,7 @@
 #include <string>
 
 namespace OuroborosModules {
-    struct CableHandler;
+    struct MetaHandler;
 }
 
 namespace OuroborosModules::Modules::Chroma {
@@ -132,7 +132,7 @@ namespace OuroborosModules::Modules::Chroma {
         CableColorCollection colorCollection;
         uint32_t curColorIndex = 0;
 
-        std::shared_ptr<CableHandler> cables_Handler;
+        std::shared_ptr<MetaHandler> metaHandler;
 
         LearnMode learnMode = LearnMode::Off;
         uint32_t learnIndex = 0;
