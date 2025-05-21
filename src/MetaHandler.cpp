@@ -52,8 +52,8 @@ namespace OuroborosModules {
     }
 
     void MetaHandler::update () {
-        updateCables ();
         updateModules ();
+        updateCables ();
 
         curTime++;
     }
@@ -87,6 +87,11 @@ namespace OuroborosModules {
             if (cableCount > cables_prevCount)
                 cables_Connected = true;
             else
+                cables_Disconnected = true;
+        } else if (hasIncompleteCable == cables_hadIncomplete && !modules_AnyAdded && !modules_AnyRemoved && curTime > 0) {
+            if (cableCount > cables_prevCount)
+                cables_Connected = true;
+            else if (cableCount < cables_prevCount)
                 cables_Disconnected = true;
         }
 
@@ -127,6 +132,8 @@ namespace OuroborosModules {
                 it++;
         }
 
+        modules_AnyAdded   = modulesAdded > 0;
+        modules_AnyRemoved = modulesRemoved > 0;
         modules_Added   = modulesAdded == 1 && modulesRemoved == 0;
         modules_Removed = modulesAdded == 0 && modulesRemoved == 1;
     }

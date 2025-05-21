@@ -42,6 +42,8 @@ namespace OuroborosModules {
 
         bool modules_Added = false;
         bool modules_Removed = false;
+        bool modules_AnyAdded = false;
+        bool modules_AnyRemoved = false;
 
         MetaHandler ();
 

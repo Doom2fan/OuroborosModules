@@ -6,6 +6,8 @@
     * Branch
   * Median
     * Fixed the panel having some incorrectly-coloured text
+  * Meta
+    * Play cable plugging and unplugging sounds when undoing, redoing, removing all cables, etc.
   * Panel design updates
   * Optimizations
 
