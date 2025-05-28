@@ -28,5 +28,26 @@ namespace OuroborosModules {
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
+
+        template <class TParamQuantity = rack::engine::ParamQuantity>
+        TParamQuantity* configParamSnap (
+            int paramId,
+            float minValue, float maxValue, float defaultValue,
+            std::string name = "", std::string unit = "",
+            float displayBase = 0.f, float displayMultiplier = 1.f, float displayOffset = 0.f
+        ) {
+            assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
+
+            auto quantity = configParam<TParamQuantity> (
+                paramId,
+                minValue, maxValue, defaultValue,
+                name, unit,
+                displayBase, displayMultiplier, displayOffset
+            );
+            quantity->ParamQuantity::snapEnabled = true;
+            quantity->ParamQuantity::smoothEnabled = false;
+
+            return quantity;
+        }
     };
 }
