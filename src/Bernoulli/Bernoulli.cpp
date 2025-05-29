@@ -178,8 +178,8 @@ namespace OuroborosModules::Modules::Bernoulli {
             outputs [OUTPUT_B + i].setVoltage (result.y);
 
             if (lightClocked) {
-                lights [LIGHT_STATE_A + i].setSmoothBrightness (result.x, lightTime);
-                lights [LIGHT_STATE_B + i].setSmoothBrightness (result.y, lightTime);
+                lights [LIGHT_STATE_A + i].setBrightnessSmooth (result.x, lightTime);
+                lights [LIGHT_STATE_B + i].setBrightnessSmooth (result.y, lightTime);
             }
         }
     }
