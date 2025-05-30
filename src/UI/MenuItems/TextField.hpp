@@ -1,6 +1,6 @@
 /*
  *  OuroborosModules
- *  Copyright (C) 2024 Chronos "phantombeta" Ouroboros
+ *  Copyright (C) 2024-2025 Chronos "phantombeta" Ouroboros
  *  Copyright (C) 2016-2023 VCV
  *
  *  This program is free software: you can redistribute it and/or modify
