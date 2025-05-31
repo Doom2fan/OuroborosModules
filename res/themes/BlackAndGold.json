@@ -13,7 +13,8 @@
         },
 
         "output-fill": {
-            "fill": "#bf9b30"
+            "fill": "#1f1f1f",
+            "stroke": { "color": "#bf9b30", "line_cap": "round", "width": 1.5 }
         },
 
         "moduleName": {
@@ -25,7 +26,7 @@
         },
 
         "text-output": {
-            "fill": "#1f1f1f"
+            "fill": "#bf9b30"
         },
 
         "silkscreen": {
@@ -33,7 +34,7 @@
         },
 
         "silkscreen-out": {
-            "fill": "#1f1f1f"
+            "fill": "#bf9b30"
         },
 
         "cable-color-display-background": {
