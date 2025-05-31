@@ -162,7 +162,8 @@ namespace OuroborosModules::Audio {
     /*
      * SampleChannel
      */
-    SampleChannel::SampleChannel () {
+    SampleChannel::SampleChannel () : outBuffer () {
+        outBuffer.clear ();
     }
 
     SampleChannel::~SampleChannel () {

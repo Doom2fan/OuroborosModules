@@ -34,7 +34,7 @@ namespace OuroborosModules::Modules::Bernoulli {
         std::function<float ()> probabilityFunc;
         bool selectedOutput;
 
-        BernoulliGate () { }
+        BernoulliGate () : BernoulliGate (nullptr) { }
         BernoulliGate (std::function<float ()> probabilityFunc);
 
         rack::math::Vec process (float gateInput);
