@@ -9,6 +9,7 @@
   * Meta
     * Play cable plugging and unplugging sounds when undoing, redoing, removing all cables, etc.
   * Panel design updates
+  * Slightly changed how the "Black and Gold" theme looks
   * Optimizations
 
 ## v2.0.1 (2025-03-08)
