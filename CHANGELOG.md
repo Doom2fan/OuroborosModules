@@ -4,6 +4,8 @@
   * New modules:
     * Junction
     * Branch
+  * Bernoulli
+    * Add randomization options
   * Median
     * Fixed the panel having some incorrectly-coloured text
   * Meta
@@ -21,6 +23,6 @@
   * New modules:
     * Chroma
     * Meta
-    * ST-VCA
+    * ST-VCA 
     * Bernoulli
     * Median
