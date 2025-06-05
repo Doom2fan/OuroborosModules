@@ -1,5 +1,7 @@
 # OuroborosModules Changelog
 
+## v2.2.0 (Not released yet)
+
 ## v2.1.0 (2025-06-05)
   * New modules:
     * Junction
