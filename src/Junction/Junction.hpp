@@ -24,6 +24,8 @@
 #include "../UI/CommonWidgets.hpp"
 #include "../UI/WidgetBase.hpp"
 
+#include <array>
+
 namespace OuroborosModules::Modules::Junction {
     struct JunctionModule : ModuleBase {
         static constexpr uint8_t SwitchCount = 8;
