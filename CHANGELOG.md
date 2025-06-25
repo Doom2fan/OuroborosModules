@@ -1,5 +1,10 @@
 # OuroborosModules Changelog
 
+## v2.2.0 (Not released yet)
+
+## v2.1.1 (2025-06-08)
+  * Fixed compilation on MacOS when using the toolchain
+
 ## v2.1.0 (2025-06-05)
   * New modules:
     * Junction
@@ -23,6 +28,6 @@
   * New modules:
     * Chroma
     * Meta
-    * ST-VCA 
+    * ST-VCA
     * Bernoulli
     * Median
