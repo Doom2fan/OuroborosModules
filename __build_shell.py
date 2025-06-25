@@ -40,14 +40,32 @@ class CmdShell(cmd2.Cmd):
         super().__init__(allow_cli_args=False)
         self.globalData = GlobalData()
 
+    runCmd_parser = cmd2.Cmd2ArgumentParser()
+    runCmd_LogGroup = runCmd_parser.add_mutually_exclusive_group()
+    runCmd_LogGroup.add_argument("-l", "--logfile", default = None, help = "When passed, logs VCV Rack's output to the specified file")
+    runCmd_LogGroup.add_argument("-s", "--stdout", action = "store_true", help = "When passed, logs VCV Rack's output to stdout")
+    @cmd2.with_argparser(runCmd_parser)
     def do_run(self, args):
-        'Runs VCV in development mode'
+        'Runs VCV Rack in development mode'
         if self.globalData.rackPath is None:
             print(VCV_NOT_FOUND_ERROR_MSG)
             return
 
-        print("starting VCV in development mode")
-        subprocess.run([self.globalData.rackPath, "-d"], cwd = self.globalData.rackSdkDir)
+        print("starting VCV Rack in development mode")
+        process = subprocess.Popen(
+            [self.globalData.rackPath, "-d"],
+            cwd = self.globalData.rackSdkDir,
+            text = True,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.STDOUT
+        )
+        if args.logfile is not None:
+            with open(args.logfile, "w") as outFile:
+                while process.poll() is None:
+                    outFile.write(process.stdout.readline())
+        elif args.stdout and process.stdout is not None:
+            while process.poll() is None:
+                self.stdout.write(process.stdout.readline())
 
     def do_build(self, argStr):
         'Builds the plugin: build [release|debug]'
