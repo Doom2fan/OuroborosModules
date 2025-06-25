@@ -52,12 +52,18 @@ class CmdShell(cmd2.Cmd):
             return
 
         print("starting VCV Rack in development mode")
+        stdoutRedirect = subprocess.DEVNULL
+        stderrRedirect = subprocess.DEVNULL
+        if args.logfile is not None or args.stdout:
+            stdoutRedirect = subprocess.PIPE
+            stderrRedirect = subprocess.STDOUT
+
         process = subprocess.Popen(
             [self.globalData.rackPath, "-d"],
             cwd = self.globalData.rackSdkDir,
             text = True,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT
+            stdout = stdoutRedirect,
+            stderr = stderrRedirect
         )
         if args.logfile is not None:
             with open(args.logfile, "w") as outFile:
@@ -66,6 +72,8 @@ class CmdShell(cmd2.Cmd):
         elif args.stdout and process.stdout is not None:
             while process.poll() is None:
                 self.stdout.write(process.stdout.readline())
+        else:
+            process.wait()
 
     def do_build(self, argStr):
         'Builds the plugin: build [release|debug]'
