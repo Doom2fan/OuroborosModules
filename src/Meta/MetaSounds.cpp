@@ -20,6 +20,8 @@
 
 #include <osdialog.h>
 
+#include <atomic>
+
 namespace OuroborosModules::Modules::Meta {
     std::atomic<int> metaSoundsSampleRate = 48000;
     MetaSoundData metaSoundsData [MetaModule::METASOUNDS_LENGTH] = {

@@ -27,6 +27,8 @@
 #include "../UI/WidgetBase.hpp"
 #include "../Utils.hpp"
 
+#include <atomic>
+
 namespace OuroborosModules::Modules::Meta {
     struct SampleSlot {
       private:
