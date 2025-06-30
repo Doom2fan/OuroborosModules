@@ -55,7 +55,7 @@ namespace OuroborosModules::Widgets {
     template<class TWidget, typename... TArgs>
     TWidget* createWidgetCentered (rack::math::Vec pos, TArgs &&...args) {
         TWidget* o = new TWidget (std::forward<TArgs> (args) ...);
-        o->box.pos = o->box.pos.minus (o->box.size.div (2));
+        o->box.pos = pos.minus (o->box.size.div (2));
         return o;
     }
 }
