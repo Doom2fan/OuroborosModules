@@ -35,20 +35,19 @@ namespace OuroborosModules::Modules::Meta {
 void rackThemerLogger (rack_themer::logging::Severity severity, rack_themer::logging::ErrorCode code, std::string info) {
     using namespace rack_themer::logging;
 
-    if (!pluginSettings.debug_Logging)
+    if (!pluginSettings.debug_Logging && severity == Severity::Info)
         return;
 
-    auto message = fmt::format (FMT_STRING ("[vcv-rackthemer: {}] {}"), severityName (severity), info);
     switch (severity) {
         default:
         case Severity::Info:
-            INFO ("%s", message.c_str ());
+            LOG_INFO (FMT_STRING ("[vcv-rackthemer: {}] {}"), severityName (severity), info);
             break;
 
         case Severity::Warn:
         case Severity::Error:
         case Severity::Critical:
-            WARN ("%s", message.c_str ());
+            LOG_WARN (FMT_STRING ("[vcv-rackthemer: {}] {}"), severityName (severity), info);
             break;
     }
 }
