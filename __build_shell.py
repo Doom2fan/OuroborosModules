@@ -125,11 +125,6 @@ class CmdShell(cmd2.Cmd):
                 Path(globalData.repoDir, buildInfo.dir, COMPILE_DATABASE).resolve(),
                 Path(globalData.repoDir, COMPILE_DATABASE).resolve()
             )
-            print("copying plugin file to repo root")
-            shutil.copyfile(
-                Path(globalData.repoDir, buildInfo.dir, buildInfo.pluginDll).resolve(),
-                Path(globalData.repoDir, buildInfo.pluginDll).resolve()
-            )
         except (shutil.SameFileError, OSError) as err:
             print(f"error: {str(err)}")
 
