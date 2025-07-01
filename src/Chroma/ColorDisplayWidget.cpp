@@ -136,6 +136,10 @@ namespace OuroborosModules::Modules::Chroma {
 
         Widget::draw (args);
 
+        auto font = APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata_Condensed-Medium.ttf"));
+        if (font == nullptr)
+            return;
+
         // Draw the background.
         auto styleBG = Theme::getStyle<Theme::Styles::cable_color_display_BG> (theme);
         auto bgPaint = !isSelected
@@ -172,7 +176,6 @@ namespace OuroborosModules::Modules::Chroma {
 
         // Configure the text.
         nvgSave (args.vg);
-        auto font = APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata_Condensed-Medium.ttf"));
         nvgFontFaceId (args.vg, font->handle);
         nvgFontSize (args.vg, 13);
         nvgTextLetterSpacing (args.vg, 0);
