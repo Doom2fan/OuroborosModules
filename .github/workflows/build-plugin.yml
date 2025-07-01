@@ -63,6 +63,7 @@ jobs:
         run: |
           export PLUGIN_DIR=$GITHUB_WORKSPACE
           pushd ${{ env.rack-plugin-toolchain-dir }}
+          sed -i 's/\$(STRIP) -s dist\/\$(SLUG)\/\$(TARGET)/#&/g' ./Rack-SDK-win-x64/plugin.mk
           make plugin-build-${{ matrix.platform }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
