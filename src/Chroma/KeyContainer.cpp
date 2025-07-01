@@ -50,6 +50,8 @@ namespace OuroborosModules::Modules::Chroma {
             TransparentWidget::draw (args);
 
             auto font = APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/RobotoCondensed.ttf"));
+            if (font == nullptr)
+                return;
 
             auto msgStart = message.c_str ();
             auto msgEnd = msgStart + message.length ();

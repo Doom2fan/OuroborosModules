@@ -113,6 +113,11 @@ set(STABLE_PLUGIN_BUILD_TARGET build_plugin)
 add_custom_target(${STABLE_PLUGIN_BUILD_TARGET})
 add_dependencies(${STABLE_PLUGIN_BUILD_TARGET} ${RACK_PLUGIN_LIB})
 
+add_custom_target(copy_plugin ALL
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${RACK_PLUGIN_LIB}> ${CMAKE_SOURCE_DIR}/
+    DEPENDS ${RACK_PLUGIN_LIB}
+)
+
 # A quick installation target to copy the plugin library and plugin.json into VCV Rack plugin folder for development.
 # CMAKE_INSTALL_PREFIX needs to point to the VCV Rack plugin folder in user documents.
 add_custom_target(${STABLE_PLUGIN_BUILD_TARGET}_quick_install
