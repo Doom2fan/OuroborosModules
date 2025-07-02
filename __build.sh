@@ -31,7 +31,7 @@ do
     shift
 done
 
-CMAKE_BUILD=dep/cmake-build_$BUILD_TYPE
+CMAKE_BUILD=build/cmake-build_$BUILD_TYPE
 cmake -B $CMAKE_BUILD -DRACK_SDK_DIR=$RACK_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_BUILD/dist
 cmake --build $CMAKE_BUILD -- -j $(getconf _NPROCESSORS_ONLN)
 cmake --install $CMAKE_BUILD

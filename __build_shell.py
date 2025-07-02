@@ -30,7 +30,7 @@ import sys
 
 from scripts.common import *
 
-CMAKE_BUILD = "dep/cmake-build"
+CMAKE_BUILD = "build/cmake-build"
 
 class CmdShell(cmd2.Cmd):
     intro = "Type help or ? to list commands.\n"
@@ -124,11 +124,6 @@ class CmdShell(cmd2.Cmd):
             shutil.copyfile(
                 Path(globalData.repoDir, buildInfo.dir, COMPILE_DATABASE).resolve(),
                 Path(globalData.repoDir, COMPILE_DATABASE).resolve()
-            )
-            print("copying plugin file to repo root")
-            shutil.copyfile(
-                Path(globalData.repoDir, buildInfo.dir, buildInfo.pluginDll).resolve(),
-                Path(globalData.repoDir, buildInfo.pluginDll).resolve()
             )
         except (shutil.SameFileError, OSError) as err:
             print(f"error: {str(err)}")
