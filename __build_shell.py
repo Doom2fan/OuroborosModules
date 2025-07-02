@@ -30,7 +30,7 @@ import sys
 
 from scripts.common import *
 
-CMAKE_BUILD = "dep/cmake-build"
+CMAKE_BUILD = "build/cmake-build"
 
 class CmdShell(cmd2.Cmd):
     intro = "Type help or ? to list commands.\n"
