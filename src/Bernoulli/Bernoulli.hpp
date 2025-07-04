@@ -89,7 +89,7 @@ namespace OuroborosModules::Modules::Bernoulli {
         void onRandomize (const RandomizeEvent& e) override;
     };
 
-    struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliWidget, BernoulliModule> {
+    struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
 

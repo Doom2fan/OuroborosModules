@@ -112,7 +112,7 @@ namespace OuroborosModules::Modules::Meta {
         void onUnBypass (const UnBypassEvent& e) override;
     };
 
-    struct MetaWidget : Widgets::ModuleWidgetBase<MetaWidget, MetaModule> {
+    struct MetaWidget : Widgets::ModuleWidgetBase<MetaModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
         std::shared_ptr<MetaHandler> metaHandler = nullptr;

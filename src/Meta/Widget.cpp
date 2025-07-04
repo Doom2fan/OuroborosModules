@@ -72,11 +72,11 @@ namespace OuroborosModules::Modules::Meta {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackInput> (pos, module, MetaModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, MetaModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackOutput> (pos, module, MetaModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, MetaModule::OUTPUT_LEFT + i));
         });
     }
 
@@ -94,16 +94,16 @@ namespace OuroborosModules::Modules::Meta {
             return;
 
         if (metaHandler->checkCableConnected ())
-            module->cables_NewConnected.store (true);
+            moduleT->cables_NewConnected.store (true);
         if (metaHandler->checkCableDisconnected ())
-            module->cables_NewDisconnected.store (true);
+            moduleT->cables_NewDisconnected.store (true);
     }
 
     void MetaWidget::step () {
         _WidgetBase::step ();
 
         // Skip if we're in the module browser.
-        if (module == nullptr)
+        if (moduleT == nullptr)
             return;
 
         updateMetaHandler ();
@@ -121,7 +121,7 @@ namespace OuroborosModules::Modules::Meta {
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createMenuLabel ("Pre-muter settings"));
 
-        auto premuterTimeSlider = new Widgets::SimpleSlider (new PremuterTimeQuantity (&module->premuter_SelectedTime, 15.f));
+        auto premuterTimeSlider = new Widgets::SimpleSlider (new PremuterTimeQuantity (&moduleT->premuter_SelectedTime, 15.f));
         premuterTimeSlider->box.size.x = 200.f;
         menu->addChild (premuterTimeSlider);
     }

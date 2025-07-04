@@ -50,21 +50,21 @@ namespace OuroborosModules::Modules::Median {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > 3)
                 return LOG_WARN (FMT_STRING ("Median panel has invalid input #{}"), i);
-            addInput (createInputCentered<CableJackInput> (pos, module, MedianModule::INPUT_VALUES + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, MedianModule::INPUT_VALUES + i));
         });
 
         forEachMatched ("param_Scale(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > 3)
                 return LOG_WARN (FMT_STRING ("Median panel has invalid scale param #{}"), i);
-            addChild (createParamCentered<MetalKnobSmall> (pos, module, MedianModule::PARAM_VAL_SCALE + i));
+            addChild (createParamCentered<MetalKnobSmall> (pos, moduleT, MedianModule::PARAM_VAL_SCALE + i));
         });
 
         forEachMatched ("param_Offs(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > 3)
                 return LOG_WARN (FMT_STRING ("Median panel has invalid offset param #{}"), i);
-            addChild (createParamCentered<MetalKnobSmall> (pos, module, MedianModule::PARAM_VAL_OFFSET + i));
+            addChild (createParamCentered<MetalKnobSmall> (pos, moduleT, MedianModule::PARAM_VAL_OFFSET + i));
         });
 
         forEachMatched ("output_(Min|Mid|Max)", [&] (std::vector<std::string> captures, Vec pos) {
@@ -78,7 +78,7 @@ namespace OuroborosModules::Modules::Median {
             else
                 return;
 
-            addChild (createOutputCentered<CableJackOutput> (pos, module, outputId));
+            addChild (createOutputCentered<CableJackOutput> (pos, moduleT, outputId));
         });
 
         forEachMatched ("light_(Min|Mid|Max)Out", [&] (std::vector<std::string> captures, Rect box) {
@@ -94,7 +94,7 @@ namespace OuroborosModules::Modules::Median {
 
             auto pos = box.getCenter ();
             auto lightSize = std::max (box.size.x, box.size.y);
-            addChild (createLightCentered<ResizableVCVLight<RedGreenBlueLight>> (pos, module, lightId, lightSize));
+            addChild (createLightCentered<ResizableVCVLight<RedGreenBlueLight>> (pos, moduleT, lightId, lightSize));
         });
     }
 
@@ -111,14 +111,14 @@ namespace OuroborosModules::Modules::Median {
         // Oversampling options
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createSubmenuItem ("Oversampling", "", [=] (Menu* menu) {
-            auto curOversample = static_cast<int> (module->params [MedianModule::PARAM_OVERSAMPLE].getValue ());
+            auto curOversample = static_cast<int> (moduleT->params [MedianModule::PARAM_OVERSAMPLE].getValue ());
             for (int accum = 1; accum <= MedianModule::MaxOversample; accum *= 2) {
                 auto label = accum > 1 ? fmt::format (FMT_STRING ("{}x"), accum) : "Off";
                 auto isCurrent = accum == curOversample;
 
                 menu->addChild (rack::createCheckMenuItem (label, "",
                     [=] { return isCurrent; },
-                    [=] { APP->engine->setParamValue (module, MedianModule::PARAM_OVERSAMPLE, accum); }
+                    [=] { APP->engine->setParamValue (moduleT, MedianModule::PARAM_OVERSAMPLE, accum); }
                 ));
             }
         }));

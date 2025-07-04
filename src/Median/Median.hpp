@@ -79,7 +79,7 @@ namespace OuroborosModules::Modules::Median {
         void setOversampleRate (int newOversampleRate);
     };
 
-    struct MedianWidget : Widgets::ModuleWidgetBase<MedianWidget, MedianModule> {
+    struct MedianWidget : Widgets::ModuleWidgetBase<MedianModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
 

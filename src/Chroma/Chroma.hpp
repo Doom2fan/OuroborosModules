@@ -51,7 +51,7 @@ namespace OuroborosModules::Modules::Chroma {
         void dataFromJson (json_t* rootJ) override;
     };
 
-    struct ChromaWidget : Widgets::ModuleWidgetBase<ChromaWidget, ChromaModule> {
+    struct ChromaWidget : Widgets::ModuleWidgetBase<ChromaModule> {
         friend KeyContainer;
 
       private:

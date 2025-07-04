@@ -43,18 +43,18 @@ namespace OuroborosModules::Modules::Chroma {
         addChild (emblemWidget);
         updateEmblem ();
 
-        colorDisplayWidget = new ColorDisplayWidget (module, findNamedBox ("widgetColorDisplay", Rect ()));
+        colorDisplayWidget = new ColorDisplayWidget (moduleT, findNamedBox ("widgetColorDisplay", Rect ()));
         addChild (colorDisplayWidget);
 
         // Skip if we're in the module browser.
-        if (module == nullptr)
+        if (moduleT == nullptr)
             return;
 
         update ();
     }
 
     ChromaWidget::~ChromaWidget () {
-        if (masterModule == module)
+        if (masterModule == moduleT)
             masterModule = nullptr;
 
         if (keyContainer != nullptr) {
@@ -65,7 +65,7 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void ChromaWidget::update () {
-        auto isMaster = module->checkMaster ();
+        auto isMaster = moduleT->checkMaster ();
 
         if (isMaster && keyContainer == nullptr) {
             keyContainer = new KeyContainer (this);
@@ -78,21 +78,21 @@ namespace OuroborosModules::Modules::Chroma {
         if (!isMaster)
             return;
 
-        module->colorManager->updateCurrentColor ();
+        moduleT->colorManager->updateCurrentColor ();
     }
 
     void ChromaWidget::step () {
         _WidgetBase::step ();
 
         // Skip if we're in the module browser.
-        if (module == nullptr)
+        if (moduleT == nullptr)
             return;
 
         update ();
 
-        if (module->updateEmblem) {
+        if (moduleT->updateEmblem) {
             updateEmblem ();
-            module->updateEmblem = false;
+            moduleT->updateEmblem = false;
         }
     }
 
@@ -101,8 +101,8 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto centerEmblem = pluginSettings.chroma_CenterEmblem;
-        if (module != nullptr && module->centerEmblem != CenterEmblem::Default)
-            centerEmblem = module->centerEmblem == CenterEmblem::True;
+        if (moduleT != nullptr && moduleT->centerEmblem != CenterEmblem::Default)
+            centerEmblem = moduleT->centerEmblem == CenterEmblem::True;
 
         if (centerEmblem) {
             emblemWidget->setEmblemPos (box.size.div (2));
@@ -151,11 +151,11 @@ namespace OuroborosModules::Modules::Chroma {
             };
 
             return rack::createCheckMenuItem (name, "",
-                [=] { return module->centerEmblem == centerEmblem; },
+                [=] { return moduleT->centerEmblem == centerEmblem; },
                 [=] {
-                    APP->history->push (new HistoryEmblemLocation (module, module->centerEmblem, centerEmblem));
-                    module->centerEmblem = centerEmblem;
-                    module->updateEmblem = true;
+                    APP->history->push (new HistoryEmblemLocation (moduleT, moduleT->centerEmblem, centerEmblem));
+                    moduleT->centerEmblem = centerEmblem;
+                    moduleT->updateEmblem = true;
                 }
             );
         };
@@ -186,7 +186,7 @@ namespace OuroborosModules::Modules::Chroma {
             [] () { return pluginSettings.chroma_CenterEmblem; },
             [&] (bool enable) {
                 pluginSettings.chroma_CenterEmblem = enable;
-                module->updateEmblem = true;
+                moduleT->updateEmblem = true;
             }
         ));
 
@@ -204,7 +204,7 @@ namespace OuroborosModules::Modules::Chroma {
             menu->addChild (createMenuItem (
                 fmt::format (FMT_STRING ("Set {}"), keyName),
                 key->keyText (),
-                [=] { module->colorManager->setLearnMode (keyName, key); },
+                [=] { moduleT->colorManager->setLearnMode (keyName, key); },
                 false, true
             ));
             menu->addChild (createMenuItem (
@@ -278,7 +278,7 @@ namespace OuroborosModules::Modules::Chroma {
         newCollectionNameTextField->text = "";
         newCollectionNameTextField->placeholder = "Collection name...";
         menu->addChild (newCollectionNameTextField);
-        menu->addChild (new SaveCollectionMenuItem (module, newCollectionNameTextField));
+        menu->addChild (new SaveCollectionMenuItem (moduleT, newCollectionNameTextField));
 
         menu->addChild (new rack::ui::MenuSeparator);
         auto defaultCollectionName = pluginSettings.chroma_Collections.getDefaultCollectionName ();
@@ -290,7 +290,7 @@ namespace OuroborosModules::Modules::Chroma {
                 menu->addChild (createMenuItem (
                     "Load to module",
                     "",
-                    [=] { module->colorManager->changeCollection (collectionKVP.second, true); }
+                    [=] { moduleT->colorManager->changeCollection (collectionKVP.second, true); }
                 ));
                 menu->addChild (createMenuItem (
                     "Set as default collection",
@@ -439,7 +439,7 @@ namespace OuroborosModules::Modules::Chroma {
         using rack::createMenuLabel;
         using rack::createSubmenuItem;
 
-        auto colorManager = module->colorManager;
+        auto colorManager = moduleT->colorManager;
         const auto& colorCollection = colorManager->getCollection ();
 
         std::vector<NVGcolor> patchColors;
@@ -468,7 +468,7 @@ namespace OuroborosModules::Modules::Chroma {
             if (auto search = patchColorsSet.find (color); search == patchColorsSet.end ())
                 continue;
 
-            menu->addChild (new ReplacePatchCablesColorItem (module, i));
+            menu->addChild (new ReplacePatchCablesColorItem (moduleT, i));
 
             patchColorsSet.erase (color);
             hasCollectionColors = true;
@@ -483,7 +483,7 @@ namespace OuroborosModules::Modules::Chroma {
             if (!hasNonCollectionColors && hasCollectionColors)
                 menu->addChild (new rack::ui::MenuSeparator);
 
-            menu->addChild (new ReplacePatchCablesColorItem (module, color));
+            menu->addChild (new ReplacePatchCablesColorItem (moduleT, color));
 
             patchColorsSet.erase (color);
             hasNonCollectionColors = true;
@@ -491,7 +491,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         // Add the item for replacing all colors.
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (new ReplacePatchCablesAllItem (module));
+        menu->addChild (new ReplacePatchCablesAllItem (moduleT));
     }
 
     void ChromaWidget::appendContextMenu (rack::ui::Menu* menu) {
@@ -514,7 +514,7 @@ namespace OuroborosModules::Modules::Chroma {
         menu->addChild (createMenuItem (
             "Add new color", "",
             [=] {
-                module->colorManager->addNewColor (
+                moduleT->colorManager->addNewColor (
                     nvgHSL (rack::random::uniform (), 1, .5 + rack::random::normal () / 2.),
                     CableColorKey (),
                     ""
@@ -524,7 +524,7 @@ namespace OuroborosModules::Modules::Chroma {
         ));
         menu->addChild (createMenuItem (
             "Delete all colors", "",
-            [=] { module->colorManager->clearColors (true); }
+            [=] { moduleT->colorManager->clearColors (true); }
         ));
     }
 }
