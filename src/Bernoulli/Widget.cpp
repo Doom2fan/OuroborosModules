@@ -54,7 +54,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid trigger input #{}"), i);
-            addInput (createInputCentered<CableJackInput> (pos, module, BernoulliModule::INPUT_TRIGGER + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, BernoulliModule::INPUT_TRIGGER + i));
         });
 
         /*
@@ -64,19 +64,19 @@ namespace OuroborosModules::Modules::Bernoulli {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid probability param #{}"), i);
-            addChild (createParamCentered<MetalKnobSmall> (pos, module, BernoulliModule::PARAM_PROBABILITY + i));
+            addChild (createParamCentered<MetalKnobSmall> (pos, moduleT, BernoulliModule::PARAM_PROBABILITY + i));
         });
         forEachMatched ("inputProbabilityCV_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid probability CV input #{}"), i);
-            addInput (createInputCentered<CableJackInput> (pos, module, BernoulliModule::INPUT_PROBABILITY_CV + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, BernoulliModule::INPUT_PROBABILITY_CV + i));
         });
         forEachMatched ("paramProbabilityCVScale_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid probability CV scale param #{}"), i);
-            addChild (createParamCentered<MetalKnobSmall> (pos, module, BernoulliModule::PARAM_PROBABILITY_CV + i));
+            addChild (createParamCentered<MetalKnobSmall> (pos, moduleT, BernoulliModule::PARAM_PROBABILITY_CV + i));
         });
 
         /*
@@ -86,7 +86,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BernoulliModule::GatesCount)
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid mode param #{}"), i);
-            addChild (createParamCentered<MetalKnobSmall> (pos, module, BernoulliModule::PARAM_MODE + i));
+            addChild (createParamCentered<MetalKnobSmall> (pos, moduleT, BernoulliModule::PARAM_MODE + i));
         });
 
         /*
@@ -98,7 +98,7 @@ namespace OuroborosModules::Modules::Bernoulli {
                 return LOG_WARN (FMT_STRING ("Bernoulli panel has invalid output {} #{}"), captures [0], i);
 
             auto baseIdx = captures [0] == "B" ? BernoulliModule::OUTPUT_B : BernoulliModule::OUTPUT_A;
-            addOutput (createOutputCentered<CableJackOutput> (pos, module, baseIdx + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, baseIdx + i));
         });
         forEachMatched ("lightState([AB])_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [1]) - 1;
@@ -107,9 +107,9 @@ namespace OuroborosModules::Modules::Bernoulli {
 
             const float lightSize = 4.43f;
             if (captures [0] == "A")
-                addChild (createLightCentered<ResizableVCVLight<GreenLight>> (pos, module, BernoulliModule::LIGHT_STATE_A + i, lightSize));
+                addChild (createLightCentered<ResizableVCVLight<GreenLight>> (pos, moduleT, BernoulliModule::LIGHT_STATE_A + i, lightSize));
             else
-                addChild (createLightCentered<ResizableVCVLight<RedLight>> (pos, module, BernoulliModule::LIGHT_STATE_B + i, lightSize));
+                addChild (createLightCentered<ResizableVCVLight<RedLight>> (pos, moduleT, BernoulliModule::LIGHT_STATE_B + i, lightSize));
         });
     }
 
@@ -123,8 +123,8 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         // Randomization options
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probabilities", "", &module->randomizeProbability));
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probability CV attenuators", "", &module->randomizeProbabilityCV));
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize modes", "", &module->randomizeModes));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probabilities", "", &moduleT->randomizeProbability));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probability CV attenuators", "", &moduleT->randomizeProbabilityCV));
+        menu->addChild (rack::createBoolPtrMenuItem ("Randomize modes", "", &moduleT->randomizeModes));
     }
 }

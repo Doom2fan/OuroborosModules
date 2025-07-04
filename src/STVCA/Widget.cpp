@@ -113,11 +113,11 @@ namespace OuroborosModules::Modules::STVCA {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackInput> (pos, module, STVCAModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, STVCAModule::INPUT_LEFT + i));
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackOutput> (pos, module, STVCAModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, STVCAModule::OUTPUT_LEFT + i));
         });
 
         auto displayBox = findNamedBox ("display", rack::math::Rect ());
@@ -127,11 +127,11 @@ namespace OuroborosModules::Modules::STVCA {
 
         const auto knobMarginX = 6.653f;
         const auto knobMarginY = 8.539f;
-        auto slider = rack::createParam<STVCASlider> (Vec (knobMarginX, knobMarginY), module, STVCAModule::PARAM_LEVEL);
+        auto slider = rack::createParam<STVCASlider> (Vec (knobMarginX, knobMarginY), moduleT, STVCAModule::PARAM_LEVEL);
         slider->box.size = displayBox.size - Vec (knobMarginX, knobMarginY).mult (2);
         display->addChild (slider);
 
-        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (findNamed ("param_Exp", Vec ()), module, STVCAModule::PARAM_EXP));
+        addChild (rack::createParamCentered<Widgets::SlideSwitch2Inverse> (findNamed ("param_Exp", Vec ()), moduleT, STVCAModule::PARAM_EXP));
     }
 
     void STVCAWidget::onChangeEmblem (EmblemId emblemId) {
@@ -146,7 +146,7 @@ namespace OuroborosModules::Modules::STVCA {
 
         _WidgetBase::createLocalStyleMenu (menu);
 
-        if (module == nullptr)
+        if (moduleT == nullptr)
             return;
 
         menu->addChild (new rack::ui::MenuSeparator);
@@ -172,13 +172,13 @@ namespace OuroborosModules::Modules::STVCA {
 
                 auto defaultColorItem = createCheckMenuItem<UI::ColorMenuItem> (
                     "     Default", "",
-                    [=] { return module->displayColorUseDefault; },
-                    [=] { module->displayColorUseDefault = true; module->displayColor = RGBColor (); }
+                    [=] { return moduleT->displayColorUseDefault; },
+                    [=] { moduleT->displayColorUseDefault = true; moduleT->displayColor = RGBColor (); }
                 );
                 defaultColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
                 menu->addChild (defaultColorItem);
-                menu->addChild (new DisplayColorPickerMenu (module,
-                    !module->displayColorUseDefault ? module->displayColor : pluginSettings.stVCA_DefaultDisplayColor
+                menu->addChild (new DisplayColorPickerMenu (moduleT,
+                    !moduleT->displayColorUseDefault ? moduleT->displayColor : pluginSettings.stVCA_DefaultDisplayColor
                 ));
 
                 auto firstColor = true;
@@ -193,16 +193,16 @@ namespace OuroborosModules::Modules::STVCA {
 
                     auto menuItem = createCheckMenuItem<UI::ColorMenuItem> (
                         fmt::format (FMT_STRING ("     {}"), name), "",
-                        [=] { return color == module->displayColor && !module->displayColorUseDefault; },
-                        [=] { module->displayColor = color; module->displayColorUseDefault = false; }
+                        [=] { return color == moduleT->displayColor && !moduleT->displayColorUseDefault; },
+                        [=] { moduleT->displayColor = color; moduleT->displayColorUseDefault = false; }
                     );
                     menuItem->color = color;
                     menu->addChild (menuItem);
                 }
             }
         );
-        displayColorItem->color = !module->displayColorUseDefault
-                                ? module->displayColor
+        displayColorItem->color = !moduleT->displayColorUseDefault
+                                ? moduleT->displayColor
                                 : pluginSettings.stVCA_DefaultDisplayColor;
         menu->addChild (displayColorItem);
     }
@@ -214,7 +214,7 @@ namespace OuroborosModules::Modules::STVCA {
 
         _WidgetBase::createPluginSettingsMenu (menu);
 
-        if (module == nullptr)
+        if (moduleT == nullptr)
             return;
 
         menu->addChild (new rack::ui::MenuSeparator);
@@ -250,10 +250,10 @@ namespace OuroborosModules::Modules::STVCA {
                         firstColor = menuItem;
                 }
                 if (firstColor != nullptr) {
-                    menu->addChildBelow (new DisplayColorPickerMenu (module, pluginSettings.stVCA_DefaultDisplayColor), firstColor);
+                    menu->addChildBelow (new DisplayColorPickerMenu (moduleT, pluginSettings.stVCA_DefaultDisplayColor), firstColor);
                     menu->addChildBelow (new rack::ui::MenuSeparator, firstColor);
                 } else
-                    menu->addChild (new DisplayColorPickerMenu (module, pluginSettings.stVCA_DefaultDisplayColor));
+                    menu->addChild (new DisplayColorPickerMenu (moduleT, pluginSettings.stVCA_DefaultDisplayColor));
             }
         );
         displayColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;

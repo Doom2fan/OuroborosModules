@@ -65,7 +65,7 @@ namespace OuroborosModules::Modules::STVCA {
         void onReset (const ResetEvent& e) override;
     };
 
-    struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAWidget, STVCAModule> {
+    struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
 

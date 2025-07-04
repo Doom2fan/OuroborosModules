@@ -75,7 +75,7 @@ namespace OuroborosModules::Modules::Junction {
         void process (const ProcessArgs& args) override;
     };
 
-    struct JunctionWidget : Widgets::ModuleWidgetBase<JunctionWidget, JunctionModule> {
+    struct JunctionWidget : Widgets::ModuleWidgetBase<JunctionModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
 

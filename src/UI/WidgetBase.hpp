@@ -61,15 +61,14 @@ namespace OuroborosModules::Widgets {
         void redo () override;
     };
 
-    template<typename TSelf, typename TModule, typename TBase = rack::app::ModuleWidget>
-    struct ModuleWidgetBase : rack_themer::ThemeHolderWidgetBase<TBase>, rack_themer::IThemedWidget, rack_themer::SvgHelper<ModuleWidgetBase<TSelf, TModule, TBase>> {
+    template<typename TModule, typename TBase = rack::app::ModuleWidget>
+    struct ModuleWidgetBase : rack_themer::SvgHelper<rack_themer::ThemeHolderWidgetBase<TBase>>, rack_themer::IThemedWidget {
       public:
-        typedef ModuleWidgetBase<TSelf, TModule, TBase> _WidgetBase;
+        typedef ModuleWidgetBase<TModule, TBase> _WidgetBase;
         typedef TModule _ModuleType;
 
       protected:
-        // cppcheck-suppress duplInheritedMember
-        TModule* module = nullptr;
+        TModule* moduleT = nullptr;
 
         std::string panelName;
         ThemeId curTheme = ThemeId::getUnknown ();
@@ -81,13 +80,13 @@ namespace OuroborosModules::Widgets {
 
       public:
         ThemeId getLocalTheme () {
-            if (module != nullptr && !module->theme_Override.isUnknown ())
-                return module->theme_Override;
+            if (moduleT != nullptr && !moduleT->theme_Override.isUnknown ())
+                return moduleT->theme_Override;
             return Theme::getCurrentTheme ();
         }
         EmblemId getLocalEmblem () {
-            if (module != nullptr && !module->theme_Emblem.isUnknown ())
-                return module->theme_Emblem;
+            if (moduleT != nullptr && !moduleT->theme_Emblem.isUnknown ())
+                return moduleT->theme_Emblem;
             return pluginSettings.global_DefaultEmblem;
         }
 
@@ -95,7 +94,7 @@ namespace OuroborosModules::Widgets {
 
       protected:
         void constructor (TModule* module, std::string panelName) {
-            this->module = module;
+            this->moduleT = module;
             this->panelName = panelName;
 
             this->loadPanel (Theme::getThemedSvg (panelName, nullptr));
@@ -131,19 +130,19 @@ namespace OuroborosModules::Widgets {
         }
 
         void setTheme (ThemeId themeId) {
-            auto oldTheme = module->theme_Override;
-            module->theme_Override = themeId;
+            auto oldTheme = moduleT->theme_Override;
+            moduleT->theme_Override = themeId;
 
-            APP->history->push (new HistoryThemeChange (module, oldTheme, themeId));
+            APP->history->push (new HistoryThemeChange (moduleT, oldTheme, themeId));
 
             callUpdateTheme ();
         }
 
         void setEmblem (EmblemId emblemId) {
-            auto oldEmblem = module->theme_Emblem;
-            module->theme_Emblem = emblemId;
+            auto oldEmblem = moduleT->theme_Emblem;
+            moduleT->theme_Emblem = emblemId;
 
-            APP->history->push (new HistoryEmblemChange (module, oldEmblem, emblemId));
+            APP->history->push (new HistoryEmblemChange (moduleT, oldEmblem, emblemId));
 
             callUpdateEmblem ();
         }
@@ -178,10 +177,10 @@ namespace OuroborosModules::Widgets {
             using rack::createCheckMenuItem;
 
             auto createThemeOverrideItem = [=] (std::string name, ThemeId themeId) {
-                return createCheckMenuItem (name, "", [=] { return module->theme_Override == themeId; }, [=] { setTheme (themeId); });
+                return createCheckMenuItem (name, "", [=] { return moduleT->theme_Override == themeId; }, [=] { setTheme (themeId); });
             };
             auto createEmblemOverrideItem = [=] (std::string name, EmblemId emblem) {
-                return createCheckMenuItem (name, "", [=] { return module->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
+                return createCheckMenuItem (name, "", [=] { return moduleT->theme_Emblem == emblem; }, [=] { setEmblem (emblem); });
             };
 
             menu->addChild (createMenuLabel ("Theme"));
