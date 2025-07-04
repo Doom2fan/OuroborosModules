@@ -40,15 +40,15 @@ namespace OuroborosModules::Modules::Branch {
         emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
 
-        addInput (createInputCentered<CableJackInput> (findNamed ("input_A", Vec ()), module, BranchModule::INPUT_A));
-        addInput (createInputCentered<CableJackInput> (findNamed ("input_B", Vec ()), module, BranchModule::INPUT_B));
+        addInput (createInputCentered<CableJackInput> (findNamed ("input_A", Vec ()), moduleT, BranchModule::INPUT_A));
+        addInput (createInputCentered<CableJackInput> (findNamed ("input_B", Vec ()), moduleT, BranchModule::INPUT_B));
 
         forEachMatched ("output_Destination(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
             if (i < 0 || i > BranchModule::SwitchCount)
                 return LOG_WARN (FMT_STRING ("Branch panel has invalid destination output #{}"), i);
 
-            addOutput (createOutputCentered<CableJackOutput> (pos, module, BranchModule::OUTPUT_DESTINATION + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, BranchModule::OUTPUT_DESTINATION + i));
         });
 
         forEachMatched ("param_DestinationSource(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
@@ -56,7 +56,7 @@ namespace OuroborosModules::Modules::Branch {
             if (i < 0 || i > BranchModule::SwitchCount)
                 return LOG_WARN (FMT_STRING ("Branch panel has invalid source knob #{}"), i);
 
-            addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, module, BranchModule::PARAM_SWITCH + i));
+            addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, moduleT, BranchModule::PARAM_SWITCH + i));
         });
     }
 
@@ -69,6 +69,6 @@ namespace OuroborosModules::Modules::Branch {
         _WidgetBase::appendContextMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected source", "", &module->polyOnDemand));
+        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected source", "", &moduleT->polyOnDemand));
     }
 }

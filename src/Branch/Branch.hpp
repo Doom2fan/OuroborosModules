@@ -57,7 +57,7 @@ namespace OuroborosModules::Modules::Branch {
         void process (const ProcessArgs& args) override;
     };
 
-    struct BranchWidget : Widgets::ModuleWidgetBase<BranchWidget, BranchModule> {
+    struct BranchWidget : Widgets::ModuleWidgetBase<BranchModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
 

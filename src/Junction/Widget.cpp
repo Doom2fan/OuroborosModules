@@ -45,7 +45,7 @@ namespace OuroborosModules::Modules::Junction {
             if (i < 0 || i > JunctionModule::SwitchCount)
                 return LOG_WARN (FMT_STRING ("Junction panel has invalid signal input #{}"), i);
 
-            addInput (createInputCentered<CableJackInput> (pos, module, JunctionModule::INPUT_SIGNAL + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, JunctionModule::INPUT_SIGNAL + i));
         });
 
         forEachMatched ("param_SignalDest(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
@@ -53,11 +53,11 @@ namespace OuroborosModules::Modules::Junction {
             if (i < 0 || i > JunctionModule::SwitchCount)
                 return LOG_WARN (FMT_STRING ("Junction panel has invalid destination knob #{}"), i);
 
-            addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, module, JunctionModule::PARAM_SWITCH + i));
+            addChild (createParamCentered<Widgets::MetalKnobSmall> (pos, moduleT, JunctionModule::PARAM_SWITCH + i));
         });
 
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_A", Vec ()), module, JunctionModule::OUTPUT_SIGNAL));
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_B", Vec ()), module, JunctionModule::OUTPUT_SIGNAL + 1));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_A", Vec ()), moduleT, JunctionModule::OUTPUT_SIGNAL));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_B", Vec ()), moduleT, JunctionModule::OUTPUT_SIGNAL + 1));
     }
 
     void JunctionWidget::onChangeEmblem (EmblemId emblemId) {
@@ -69,7 +69,7 @@ namespace OuroborosModules::Modules::Junction {
         _WidgetBase::appendContextMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected inputs", "", &module->polyOnDemand));
-        menu->addChild (rack::createBoolPtrMenuItem ("Clamp while summing", "", &module->clampWhileSumming));
+        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected inputs", "", &moduleT->polyOnDemand));
+        menu->addChild (rack::createBoolPtrMenuItem ("Clamp while summing", "", &moduleT->clampWhileSumming));
     }
 }

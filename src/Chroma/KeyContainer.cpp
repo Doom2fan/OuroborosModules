@@ -135,7 +135,7 @@ namespace OuroborosModules::Modules::Chroma {
         if (moduleWidget == nullptr || moduleWidget->module == nullptr)
             return false;
 
-        if (!moduleWidget->module->colorManager->isLearnMode ())
+        if (!moduleWidget->moduleT->colorManager->isLearnMode ())
             return false;
 
         e.consume (this);
@@ -158,7 +158,7 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto cableKey = CableColorKey (e.button, -1, e.mods & RACK_MOD_MASK);
-        if (moduleWidget->module->colorManager->handleKey (cableKey))
+        if (moduleWidget->moduleT->colorManager->handleKey (cableKey))
             e.consume (this);
     }
 
@@ -185,7 +185,7 @@ namespace OuroborosModules::Modules::Chroma {
         }
 
         auto cableKey = CableColorKey (-1, e.key, e.mods & RACK_MOD_MASK);
-        if (moduleWidget->module->colorManager->handleKey (cableKey))
+        if (moduleWidget->moduleT->colorManager->handleKey (cableKey))
             e.consume (this);
     }
 
