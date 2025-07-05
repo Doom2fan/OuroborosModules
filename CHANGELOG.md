@@ -2,6 +2,9 @@
 
 ## v2.2.0 (Not released yet)
 
+## v2.1.2 (2025-07-05)
+  * Fixed a rare crash involving SVG rendering
+
 ## v2.1.1 (2025-06-08)
   * Fixed compilation on MacOS when using the toolchain
 
