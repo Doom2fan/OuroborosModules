@@ -7,9 +7,7 @@ permissions:
 on:
   push:
     branches:
-      - Issue31Debug
-    tags:
-      - 'v**'
+      - Issue31DebugMakefile
 
 env:
   rack-sdk-version: 2.6.3
