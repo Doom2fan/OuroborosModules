@@ -159,4 +159,32 @@ namespace OuroborosModules::Widgets {
         MetalKnobSmall (const MetalKnobSmall& x) = delete;
         void operator= (const MetalKnobSmall& x) = delete;
     };
+
+    template<typename TLightBase = rack::componentlibrary::WhiteLight>
+    struct LightButton : rack_themer::widgets::SvgSwitch {
+        struct ButtonLight : TLightBase {
+            ButtonLight () {
+                this->borderColor = rack::color::BLACK_TRANSPARENT;
+                this->bgColor = rack::color::BLACK_TRANSPARENT;
+                this->box.size = rack::math::Vec (21);
+            }
+        };
+
+        rack::app::ModuleLightWidget* light;
+
+        LightButton () {
+            momentary = true;
+            addFrame (Theme::getSvg ("components/LightButton"));
+
+            light = new ButtonLight;
+            // Move center of light to center of box
+            light->box.pos = box.size.div (2).minus (light->box.size.div (2));
+            addChild (light);
+        }
+
+        rack::app::ModuleLightWidget* getLight () { return light; }
+
+        LightButton (const LightButton& x) = delete;
+        void operator= (const LightButton& x) = delete;
+    };
 }
