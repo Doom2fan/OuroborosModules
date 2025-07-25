@@ -187,4 +187,22 @@ namespace OuroborosModules::Widgets {
         LightButton (const LightButton& x) = delete;
         void operator= (const LightButton& x) = delete;
     };
+
+    struct TrimmerKnob : rack_themer::widgets::SvgKnob {
+        rack_themer::widgets::SvgWidget* background;
+
+        TrimmerKnob () {
+            minAngle = -0.75 * M_PI;
+            maxAngle = 0.75 * M_PI;
+
+            background = new rack_themer::widgets::SvgWidget;
+            framebuffer->addChildBelow (background, transformWidget);
+
+            setSvg (Theme::getSvg ("components/Trimmer"));
+            background->setSvg (Theme::getSvg ("components/Trimmer_BG"));
+        }
+
+        TrimmerKnob (const TrimmerKnob& x) = delete;
+        void operator= (const TrimmerKnob& x) = delete;
+    };
 }
