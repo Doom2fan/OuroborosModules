@@ -22,6 +22,9 @@
 #include "PluginSettings.hpp"
 #include "Logging.hpp"
 
+#include <cstdint>
+#include <cstddef>
+
 #include <rack.hpp>
 
 using rack::app::RACK_GRID_WIDTH;

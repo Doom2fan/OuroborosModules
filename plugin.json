@@ -68,6 +68,14 @@
             "tags": [ "Switch", "Multiple", "Utility", "Polyphonic" ],
             "keywords": "switched mult switchedmult mults switchedmults",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Branch"
+        },
+        {
+            "slug": "Automata",
+            "name": "Automata",
+            "description": "Sequencer based on Conway's Game of Life, with support for other Life-like cellular automatons through By/Sx rules",
+            "tags": [ "Sequencer" ],
+            "keywords": "conway gol life cellular automaton gameoflife",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Automata"
         }
     ]
 }
