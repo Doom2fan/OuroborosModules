@@ -299,8 +299,10 @@ namespace OuroborosModules::Modules::Automata {
 
         auto module = panelWidget->getAutomata ();
         auto modeSelect = module->currentMode;
-        if (modeSelect == AutomataMode::Play)
+        if (modeSelect == AutomataMode::Play) {
+            e.consume (this);
             return;
+        }
 
         AutomataCell cellMask;
         if (modeSelect == AutomataMode::EditSeed)
