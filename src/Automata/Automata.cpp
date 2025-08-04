@@ -117,6 +117,7 @@ namespace OuroborosModules::Modules::Automata {
                 cmd->undo (lifeBoard.getBoard ());
 
             cmd->executed = true;
+            lifeBoard.markUpdated ();
         }
 
         auto newRules = this->newRules;
