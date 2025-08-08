@@ -3,7 +3,7 @@
 Modules for [VCV Rack 2](https://vcvrack.com/).
 
 ## Download
-The plugin is currently not available in the VCV Library, it can be downloaded from the [Releases page](https://github.com/Doom2fan/OuroborosModules/releases).  
+The plugin can be installed from the [VCV Library](https://library.vcvrack.com/OuroborosModules) or downloaded from the [Releases page](https://github.com/Doom2fan/OuroborosModules/releases).  
 Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly).
 
 ## Links
@@ -13,7 +13,8 @@ Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosMo
 * [Nightly mainline builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly)
 * [Nightly development builds](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly_develop)
 * [Bugtracker](https://github.com/Doom2fan/OuroborosModules/issues)
-* [VCV Community thread](https://community.vcvrack.com/t/ouroboros-industries-development-thread/22234)
+* [VCV Community announcements thread](https://community.vcvrack.com/t/ouroboros-industries-releases/24105)
+* [VCV Community development thread](https://community.vcvrack.com/t/ouroboros-industries-development-thread/22234)
 
 ## Built with
 * [fmt](https://github.com/fmtlib/fmt)
