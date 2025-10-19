@@ -22,8 +22,12 @@
 #include "PluginSettings.hpp"
 #include "Logging.hpp"
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
+
+#include <algorithm>
+#include <array>
+#include <vector>
 
 #include <rack.hpp>
 
