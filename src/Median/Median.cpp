@@ -74,8 +74,8 @@ namespace OuroborosModules::Modules::Median {
 
         for (int bank = 0; bank < SIMDBankCount; bank++) {
             for (int i = 0; i < 3; i++) {
-                upsamplerFilter [bank] [i].setOversampleRate (newOversampleRate);
-                downsamplerFilter [bank] [i].setOversampleRate (newOversampleRate);
+                upsamplerFilter [bank] [i].setParams (newOversampleRate);
+                downsamplerFilter [bank] [i].setParams (newOversampleRate);
             }
         }
     }

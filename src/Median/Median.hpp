@@ -19,7 +19,7 @@
 #pragma once
 
 #include "../DSP/ClockDivider.hpp"
-#include "../DSP/Filters.hpp"
+#include "../DSP/Resamplers.hpp"
 #include "../ModuleBase.hpp"
 #include "../PluginDef.hpp"
 #include "../UI/CommonWidgets.hpp"
@@ -63,8 +63,8 @@ namespace OuroborosModules::Modules::Median {
         static constexpr int SIMDBankCount = static_cast<int> (static_cast<float> (Constants::MaxPolyphony) / SIMDBankSize + .5f);
         static constexpr int MaxOversample = 16;
 
-        DSP::UpsampleFilter<rack::simd::float_4> upsamplerFilter [SIMDBankCount] [3] {};
-        DSP::DownsampleFilter<rack::simd::float_4> downsamplerFilter [SIMDBankCount] [3] {};
+        DSP::Butterworth6PInterpolator<rack::simd::float_4> upsamplerFilter [SIMDBankCount] [3] {};
+        DSP::Butterworth6PDecimator<rack::simd::float_4> downsamplerFilter [SIMDBankCount] [3] {};
         int oversampleRate = 0;
 
         DSP::ClockDivider clockOversample;
