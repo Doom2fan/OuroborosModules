@@ -24,34 +24,9 @@
 #include <array>
 
 namespace OuroborosModules::DSP {
-    template<typename T>
-    struct Decimator {
-        Decimator () { }
-        virtual ~Decimator () { }
-
-        virtual void setParams (int factor) = 0;
-        virtual T process (const T* inputBuffer) = 0;
-    };
-
-    template<typename T>
-    struct Butterworth6PDecimator : Decimator<T> {
-      private:
-        int oversampleFactor = 1;
-        Butterworth6P<T> filter = Butterworth6P<T> ();
-
-      public:
-        void setParams (int newOversampleFactor) override {
-            oversampleFactor = newOversampleFactor;
-            filter.setCutoffFreq (1.f / (newOversampleFactor * 4));
-        }
-
-        T process (const T* inputBuffer) override {
-            for (int i = 0; i < oversampleFactor - 1; ++i)
-                filter.process (inputBuffer [i]);
-            return filter.process (inputBuffer [oversampleFactor - 1]);
-        }
-    };
-
+    /*
+     * Interfaces
+     */
     template<typename T>
     struct Interpolator {
         Interpolator () { }
@@ -61,6 +36,18 @@ namespace OuroborosModules::DSP {
         virtual void process (T* outputBuffer, T input) = 0;
     };
 
+    template<typename T>
+    struct Decimator {
+        Decimator () { }
+        virtual ~Decimator () { }
+
+        virtual void setParams (int factor) = 0;
+        virtual T process (const T* inputBuffer) = 0;
+    };
+
+    /*
+     * Butterworth 6P
+     */
     template<typename T>
     struct Butterworth6PInterpolator : Interpolator<T> {
       private:
@@ -79,6 +66,25 @@ namespace OuroborosModules::DSP {
             auto zero = T (0);
             for (int i = 1; i < oversampleFactor; ++i)
                 outputBuffer [i] = filter.process (zero);
+        }
+    };
+
+    template<typename T>
+    struct Butterworth6PDecimator : Decimator<T> {
+      private:
+        int oversampleFactor = 1;
+        Butterworth6P<T> filter = Butterworth6P<T> ();
+
+      public:
+        void setParams (int factor) override {
+            oversampleFactor = factor;
+            filter.setCutoffFreq (1.f / (factor * 4));
+        }
+
+        T process (const T* inputBuffer) override {
+            for (int i = 0; i < oversampleFactor - 1; ++i)
+                filter.process (inputBuffer [i]);
+            return filter.process (inputBuffer [oversampleFactor - 1]);
         }
     };
 }
