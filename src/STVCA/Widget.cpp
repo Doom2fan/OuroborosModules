@@ -139,6 +139,54 @@ namespace OuroborosModules::Modules::STVCA {
         emblemWidget->setEmblem (emblemId);
     }
 
+    struct HistoryChangeDisplayColor : rack::history::ModuleAction {
+      private:
+        struct ColorValue {
+            bool isDefault;
+            RGBColor color;
+
+            ColorValue (bool isDefault, RGBColor color) : isDefault (isDefault), color (color) { }
+        };
+
+        static ColorValue createDefault () { return ColorValue (true, RGBColor ()); }
+        static ColorValue createColor (RGBColor color) { return ColorValue (false, color); }
+        static ColorValue createFromModule (STVCAModule* module) {
+            return module->displayColorUseDefault ? createDefault () : createColor (module->displayColor);
+        }
+
+        ColorValue oldValue;
+        ColorValue newValue;
+
+        HistoryChangeDisplayColor (STVCAModule* module, ColorValue oldValue, ColorValue newValue)
+            : oldValue (oldValue), newValue (newValue) {
+            moduleId = module->id;
+            this->name = "Set ST-VCA display color";
+
+            setValue (newValue);
+        }
+
+      public:
+        static void createDefault (STVCAModule* module) {
+            APP->history->push (new HistoryChangeDisplayColor (module, createFromModule (module), createDefault ()));
+        }
+
+        static void createColor (STVCAModule* module, RGBColor color) {
+            APP->history->push (new HistoryChangeDisplayColor (module, createFromModule (module), createColor (color)));
+        }
+
+        void setValue (const ColorValue& value) {
+            auto module = dynamic_cast<STVCAModule*> (APP->engine->getModule (moduleId));
+            if (module == nullptr)
+                return;
+
+            module->displayColorUseDefault = value.isDefault;
+            module->displayColor = value.color;
+        }
+
+        void undo () override { setValue (oldValue); }
+        void redo () override { setValue (newValue); }
+    };
+
     void STVCAWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createSubmenuItem;
@@ -170,10 +218,11 @@ namespace OuroborosModules::Modules::STVCA {
             "     Display color", "",
             [=] (Menu* menu) {
 
+
                 auto defaultColorItem = createCheckMenuItem<UI::ColorMenuItem> (
                     "     Default", "",
                     [=] { return moduleT->displayColorUseDefault; },
-                    [=] { moduleT->displayColorUseDefault = true; moduleT->displayColor = RGBColor (); }
+                    [=] { HistoryChangeDisplayColor::createDefault (moduleT); }
                 );
                 defaultColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
                 menu->addChild (defaultColorItem);
@@ -194,7 +243,7 @@ namespace OuroborosModules::Modules::STVCA {
                     auto menuItem = createCheckMenuItem<UI::ColorMenuItem> (
                         fmt::format (FMT_STRING ("     {}"), name), "",
                         [=] { return color == moduleT->displayColor && !moduleT->displayColorUseDefault; },
-                        [=] { moduleT->displayColor = color; moduleT->displayColorUseDefault = false; }
+                        [=] { HistoryChangeDisplayColor::createColor (moduleT, color); }
                     );
                     menuItem->color = color;
                     menu->addChild (menuItem);

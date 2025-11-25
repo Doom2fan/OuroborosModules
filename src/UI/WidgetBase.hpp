@@ -109,6 +109,65 @@ namespace OuroborosModules::Widgets {
             callUpdateEmblem ();
         }
 
+        template<typename T>
+        void createContextMenuHistory (
+            std::string name,
+            std::function<void (TModule*, T value)> setFunction,
+            T oldValue,
+            T newValue
+        ) {
+            using SetFunction = std::function<void (TModule*, T value)>;
+
+            struct HistoryContextMenuOption : rack::history::ModuleAction {
+                SetFunction setFunction;
+
+                T oldValue;
+                T newValue;
+
+                HistoryContextMenuOption (
+                    TModule* module, std::string name,
+                    SetFunction setFunc,
+                    T oldValue, T newValue
+                ) : setFunction (setFunc), oldValue (oldValue), newValue (newValue) {
+                    moduleId = module->id;
+                    this->name = name;
+                }
+
+                void setValue (T value) {
+                    auto module = dynamic_cast<TModule*> (APP->engine->getModule (moduleId));
+                    if (module == nullptr)
+                        return;
+
+                    setFunction (module, value);
+                }
+
+                void undo () override { setValue (oldValue); }
+                void redo () override { setValue (newValue); }
+            };
+
+            setFunction (moduleT, newValue);
+            APP->history->push (new HistoryContextMenuOption (moduleT, name, setFunction, oldValue, newValue));
+        }
+
+        rack::ui::MenuItem* createBoolPtrMenuItemWithHistory (
+            std::string menuText, std::string rightText,
+            std::string historyName,
+            bool TModule::*boolPtr
+        ) {
+            assert (boolPtr != nullptr);
+
+            return rack::createCheckMenuItem (menuText, rightText,
+                [=] { return moduleT->*boolPtr; },
+                [=] {
+                    createContextMenuHistory<bool> (
+                        historyName, [=] (TModule* module, bool value) {
+                            module->*boolPtr = value;
+                        }, moduleT->*boolPtr, !(moduleT->*boolPtr)
+                    );
+                }
+            );
+        }
+
         virtual void initializeWidget () = 0;
 
         void callUpdateTheme () {

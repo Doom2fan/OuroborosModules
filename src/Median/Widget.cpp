@@ -118,7 +118,11 @@ namespace OuroborosModules::Modules::Median {
 
                 menu->addChild (rack::createCheckMenuItem (label, "",
                     [=] { return isCurrent; },
-                    [=] { APP->engine->setParamValue (moduleT, MedianModule::PARAM_OVERSAMPLE, accum); }
+                    [=] {
+                        createContextMenuHistory<int> ("Set Median oversampling factor", [=] (MedianModule* module, int value) {
+                            APP->engine->setParamValue (module, MedianModule::PARAM_OVERSAMPLE, value);
+                        }, curOversample, accum);
+                    }
                 ));
             }
         }));

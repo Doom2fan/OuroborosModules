@@ -125,9 +125,21 @@ namespace OuroborosModules::Modules::Automata {
         }));
 
         menu->addChild (new rack::ui::MenuEntry);
-        menu->addChild (createBoolPtrMenuItem ("Randomize on manual reset", "", &moduleT->randomizeOnManualReset));
-        menu->addChild (createBoolPtrMenuItem ("Randomize on automatic reset", "", &moduleT->randomizeOnAutoReset));
-        menu->addChild (createBoolPtrMenuItem ("Momentary length enable input", "", &moduleT->momentaryLengthEnable));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Randomize on manual reset", "",
+            "Toggle Automata \"Randomize on manual reset\"",
+            &AutomataModule::randomizeOnManualReset
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Randomize on automatic reset", "",
+            "Toggle Automata \"Randomize on automatic reset\"",
+            &AutomataModule::randomizeOnAutoReset
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Momentary length enable input", "",
+            "Toggle Automata \"Momentary length enable input\"",
+            &AutomataModule::momentaryLengthEnable
+        ));
     }
 
     void AutomataWidget::generateRulesContextMenu (rack::ui::Menu* menu) {

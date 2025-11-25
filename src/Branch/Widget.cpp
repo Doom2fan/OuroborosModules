@@ -69,6 +69,9 @@ namespace OuroborosModules::Modules::Branch {
         _WidgetBase::appendContextMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected source", "", &moduleT->polyOnDemand));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Determine polyphony from selected source", "", "Toggle Branch \"Determine polyphony from selected source\"",
+            &BranchModule::polyOnDemand
+        ));
     }
 }

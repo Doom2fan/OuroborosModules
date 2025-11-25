@@ -69,7 +69,15 @@ namespace OuroborosModules::Modules::Junction {
         _WidgetBase::appendContextMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Determine polyphony from selected inputs", "", &moduleT->polyOnDemand));
-        menu->addChild (rack::createBoolPtrMenuItem ("Clamp while summing", "", &moduleT->clampWhileSumming));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Determine polyphony from selected inputs", "",
+            "Toggle Junction \"Determine polyphony from selected inputs\"",
+            &JunctionModule::polyOnDemand
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Clamp while summing", "",
+            "Toggle Junction \"Clamp while summing\"",
+            &JunctionModule::clampWhileSumming
+        ));
     }
 }

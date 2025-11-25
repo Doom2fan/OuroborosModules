@@ -123,8 +123,16 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         // Randomization options
         menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probabilities", "", &moduleT->randomizeProbability));
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize probability CV attenuators", "", &moduleT->randomizeProbabilityCV));
-        menu->addChild (rack::createBoolPtrMenuItem ("Randomize modes", "", &moduleT->randomizeModes));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Randomize probabilities", "", "Toggle Bernoulli \"Randomize probabilities\"", &BernoulliModule::randomizeProbability
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Randomize probability CV attenuators", "",
+            "Toggle Bernoulli \"Randomize probability CV attenuators\"",
+            &BernoulliModule::randomizeProbabilityCV
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Randomize modes", "", "Toggle Bernoulli \"Randomize modes\"", &BernoulliModule::randomizeModes
+        ));
     }
 }
