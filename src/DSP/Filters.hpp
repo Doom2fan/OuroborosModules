@@ -20,19 +20,21 @@
 
 #include "../PluginDef.hpp"
 
+#include "ChowDSP_IIR.hpp"
+
 namespace OuroborosModules::DSP {
     template<typename T>
     struct Butterworth6P {
       private:
-        rack::dsp::TBiquadFilter<T> biquad [3] {};
+        TBiquadFilter<T> biquad [3] {};
 
       public:
         void setCutoffFreq (float normalizedCutoff) {
             assert (normalizedCutoff > 0 && normalizedCutoff < .5f);
 
-            biquad [0].setParameters (rack::dsp::TBiquadFilter<T>::LOWPASS, normalizedCutoff, .51763809f, 1);
-            biquad [1].setParameters (rack::dsp::TBiquadFilter<T>::LOWPASS, normalizedCutoff, .70710678f, 1);
-            biquad [2].setParameters (rack::dsp::TBiquadFilter<T>::LOWPASS, normalizedCutoff, 1.9318517f, 1);
+            biquad [0].setParameters (TBiquadFilter<T>::LOWPASS, normalizedCutoff, .51763809f, 1);
+            biquad [1].setParameters (TBiquadFilter<T>::LOWPASS, normalizedCutoff, .70710678f, 1);
+            biquad [2].setParameters (TBiquadFilter<T>::LOWPASS, normalizedCutoff, 1.9318517f, 1);
         }
 
         T process (T x) {
