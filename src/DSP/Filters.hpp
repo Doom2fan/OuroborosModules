@@ -44,4 +44,39 @@ namespace OuroborosModules::DSP {
             return x;
         }
     };
+
+    template<typename T>
+    struct DCBlocker {
+      private:
+        // Param
+        float r = 0.f;
+
+        // State
+        T x1 = 0.f, y1 = 0.f;
+
+      public:
+        void setCutoffFreq (float cutoffFreq, float sampleRate) {
+            assert (cutoffFreq > 0.f && cutoffFreq < sampleRate / 2.f);
+            assert (sampleRate > 0.f);
+
+            setCoefficient (std::expf (-2.f * M_PI * cutoffFreq / sampleRate));
+        }
+
+        void setCoefficient (float paramR) {
+            assert (paramR > 0.f && paramR < 1.f);
+            r = paramR;
+        }
+
+        T process (T x) {
+            auto y = x - x1 + r * y1;
+            x1 = x;
+            y1 = y;
+
+            return y;
+        }
+
+        void reset () {
+            x1 = y1 = 0.f;
+        }
+    };
 }
