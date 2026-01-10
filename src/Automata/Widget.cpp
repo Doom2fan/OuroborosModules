@@ -154,7 +154,8 @@ namespace OuroborosModules::Modules::Automata {
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (createMenuLabel ("Preset rules"));
         for (auto rulePair : presetRules) {
-            auto [name, rules] = rulePair;
+            auto name = rulePair.first;
+            auto rules = rulePair.second;
 
             menu->addChild (createCheckMenuItem (
                 name, rules.getRuleString (),
