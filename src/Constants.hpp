@@ -150,6 +150,8 @@ namespace OuroborosModules {
         static constexpr int MaxPolyphony = rack::engine::PORT_MAX_CHANNELS;
 
         static const std::string MetaSound_DefaultMarker = "<Default>";
+
+        static constexpr float DefaultDCBlockerCutoff = 20.f;
     }
 
     namespace Colors {

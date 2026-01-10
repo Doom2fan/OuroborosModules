@@ -76,6 +76,14 @@
             "tags": [ "Sequencer" ],
             "keywords": "conway gol life cellular automaton gameoflife",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Automata"
+        },
+        {
+            "slug": "PhaseDistortion",
+            "name": "Warp",
+            "description": "Audio phase-distortion waveshaper",
+            "tags": [ "Distortion", "Effect", "Polyphonic", "Waveshaper" ],
+            "keywords": "drive phase distortion",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Warp"
         }
     ]
 }
