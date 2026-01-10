@@ -73,9 +73,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="3.0963836"
      inkscape:cx="100.27827"
-     inkscape:cy="217.35033"
+     inkscape:cy="217.02737"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="true"
      units="mm"
      inkscape:snap-bbox="true"
@@ -269,7 +269,7 @@
        style="fill:#00ff00;stroke-width:0.57378;paint-order:stroke fill markers"
        d="m 132.2,279 a 12,12 0 0 1 -11.80837,11.99847 12,12 0 0 1 -12.18551,-11.61525 12,12 0 0 1 11.41917,-12.36945 12,12 0 0 1 12.55023,11.22019" /><path
        id="param_LengthCVAtten--hidden"
-       style="fill:#00ff00;stroke-width:0.430335;paint-order:stroke fill markers"
+       style="fill:#ff0000;stroke-width:0.430335;paint-order:stroke fill markers"
        d="m 156.19998,279 a 9,9 0 0 1 -8.85627,8.99885 9,9 0 0 1 -9.13914,-8.71144 9,9 0 0 1 8.56438,-9.27708 9,9 0 0 1 9.41267,8.41514" /><path
        id="param_Length--hidden"
        style="fill:#ff0000;stroke-width:0.57378;paint-order:stroke fill markers"
@@ -287,7 +287,7 @@
        style="fill:#ff0000;stroke-width:0.502057;paint-order:stroke fill markers"
        d="m 168.8,235 a 10.5,10.5 0 0 1 -10.33232,10.49866 10.5,10.5 0 0 1 -10.66232,-10.16335 10.5,10.5 0 0 1 9.99178,-10.82326 10.5,10.5 0 0 1 10.98145,9.81766" /><path
        id="param_RandomDensityCVAtten--hidden"
-       style="fill:#00ff00;stroke-width:0.430335;paint-order:stroke fill markers"
+       style="fill:#ff0000;stroke-width:0.430335;paint-order:stroke fill markers"
        d="m 213.60001,279 a 9,9 0 0 1 -8.85628,8.99885 9,9 0 0 1 -9.13913,-8.71144 9,9 0 0 1 8.56438,-9.27708 9,9 0 0 1 9.41267,8.41514" /><path
        id="input_RandomDensity--hidden"
        style="fill:#00ff00;stroke-width:0.57378;paint-order:stroke fill markers"
