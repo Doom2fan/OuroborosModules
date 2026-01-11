@@ -3,6 +3,7 @@
 ## v2.2.0 (Not released yet)
   * New modules:
     * Automata
+    * Warp
 
 ## v2.1.2 (2025-07-05)
   * Fixed a rare crash involving SVG rendering
