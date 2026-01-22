@@ -36,6 +36,21 @@
 		"default_line_ending": "windows",
 		"tab_size": 4,
 		"detect_indentation": false,
-		"translate_tabs_to_spaces": true
-	}
+		"translate_tabs_to_spaces": true,
+
+		"LSP": {
+			"LSP-json": {
+				"settings": {
+					"userSchemas": [
+						{
+							"fileMatch": [ "/plugin.json" ],
+							"uri": "https://gist.githubusercontent.com/Jklein64/739a7870eb252c1664b1cb27db49dbc5/raw/707b81118b5bf1eb46181d7783e09dd86faf0baf/plugin-manifest-schema.json"
+						}
+					],
+				},
+
+				"enabled": true,
+			},
+		},
+	},
 }
