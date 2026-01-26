@@ -25,8 +25,8 @@
 #include <limits>
 #include <cstdint>
 
-#define boolToGate(x) (x ? 10.0f : 0.0f)
-#define boolToLight(x) (x ? 1.0f : 0.0f)
+#define boolToGate(x) ((x) ? 10.0f : 0.0f)
+#define boolToLight(x) ((x) ? 1.0f : 0.0f)
 
 namespace OuroborosModules::Widgets {
     struct SimpleSlider : rack::ui::Slider {
