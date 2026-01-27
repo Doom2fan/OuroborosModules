@@ -91,7 +91,7 @@
             "description": "An utility to make it easier to reset sequencers from multiple sources. Converts gates to triggers, with a configurable \"merge\" time for incoming triggers.",
             "tags": [ "Utility" ],
             "keywords": "trigger-converter triggerconverter trigger-to-gate triggertogate reset helper",
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/ResetHelper"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Reset-Helper"
         }
     ]
 }
