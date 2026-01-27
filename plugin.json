@@ -84,6 +84,14 @@
             "tags": [ "Distortion", "Effect", "Polyphonic", "Waveshaper" ],
             "keywords": "drive phase distortion",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Warp"
+        },
+        {
+            "slug": "ResetHelper",
+            "name": "Reset Helper",
+            "description": "An utility to make it easier to reset sequencers from multiple sources. Converts gates to triggers, with a configurable \"merge\" time for incoming triggers.",
+            "tags": [ "Utility" ],
+            "keywords": "trigger-converter triggerconverter trigger-to-gate triggertogate reset helper",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/ResetHelper"
         }
     ]
 }

@@ -205,4 +205,13 @@ namespace OuroborosModules::Widgets {
         TrimmerKnob (const TrimmerKnob& x) = delete;
         void operator= (const TrimmerKnob& x) = delete;
     };
+
+    template<typename TBase = rack::componentlibrary::GrayModuleLightWidget>
+    struct TGreenBlueLight : TBase {
+        TGreenBlueLight () {
+            this->addBaseColor (rack::componentlibrary::SCHEME_GREEN);
+            this->addBaseColor (rack::componentlibrary::SCHEME_BLUE);
+        }
+    };
+    using GreenBlueLight = TGreenBlueLight<>;
 }
