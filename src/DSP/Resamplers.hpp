@@ -213,6 +213,9 @@ namespace OuroborosModules::DSP {
 
     template<typename T, template<typename> typename U>
     struct FilterCascade {
+      public:
+        static constexpr int MaxOversampleRate = 32;
+
       private:
         U<T>* filters = nullptr;
         int oversampleFactor = 0;
@@ -230,6 +233,7 @@ namespace OuroborosModules::DSP {
 
         void setParams (int factor) {
             assert (rack::math::isPow2 (factor));
+            assert (factor <= MaxOversampleRate);
             if (!rack::math::isPow2 (factor))
                 factor = 1;
 
@@ -263,8 +267,8 @@ namespace OuroborosModules::DSP {
                 return;
             }
 
-            T bufferA [oversampleFactor];
-            T bufferB [oversampleFactor];
+            T bufferA [MaxOversampleRate];
+            T bufferB [MaxOversampleRate];
 
             T* frontBuffer = bufferA;
             T* backBuffer = bufferB;
@@ -294,8 +298,8 @@ namespace OuroborosModules::DSP {
             if (numStages == 0)
                 return inputBuffer [0];
 
-            T bufferA [oversampleFactor];
-            T bufferB [oversampleFactor];
+            T bufferA [MaxOversampleRate];
+            T bufferB [MaxOversampleRate];
 
             T* frontBuffer = bufferA;
             T* backBuffer = bufferB;
