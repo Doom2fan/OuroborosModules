@@ -21,6 +21,7 @@
 #include "Constants.hpp"
 #include "PluginSettings.hpp"
 #include "Logging.hpp"
+#include "ModelDeclarations.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -31,18 +32,12 @@
 
 #include <rack.hpp>
 
+// Usings
 using rack::app::RACK_GRID_WIDTH;
 using rack::app::RACK_GRID_HEIGHT;
 
-extern rack::plugin::Plugin* pluginInstance;
+// Typedefs
+typedef int64_t RackModuleId;
 
-// Models
-namespace OuroborosModules {
-    extern rack::plugin::Model* modelMeta;
-    extern rack::plugin::Model* modelChroma;
-    extern rack::plugin::Model* modelSTVCA;
-    extern rack::plugin::Model* modelBernoulli;
-    extern rack::plugin::Model* modelMedian;
-    extern rack::plugin::Model* modelJunction;
-    extern rack::plugin::Model* modelBranch;
-}
+// Externs
+extern rack::plugin::Plugin* pluginInstance;

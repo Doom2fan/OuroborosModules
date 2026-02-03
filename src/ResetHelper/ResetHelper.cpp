@@ -46,7 +46,6 @@ namespace OuroborosModules::Modules::ResetHelper {
 
     void ResetHelperModule::process (const ProcessArgs& args) {
         // Fetch and calculate the parameters.
-        static constexpr auto lightPulseLength = 10.f / 1000.f;
         auto mergeTime = params [PARAM_MERGE_TIME].getValue () / 1000.f;
         auto triggerLength = params [PARAM_TRIGGER_LENGTH].getValue () / 1000.f;
 
@@ -100,11 +99,11 @@ namespace OuroborosModules::Modules::ResetHelper {
         // Pulse the lights, and store the pulse state.
         for (int inputIdx = 0; inputIdx < InputCount; inputIdx++) {
             if (inputTriggered [inputIdx])
-                inputLightPulses [inputIdx].trigger (lightPulseLength);
+                inputLightPulses [inputIdx].trigger (Constants::LightPulseMS);
             inputTriggered [inputIdx] = inputLightPulses [inputIdx].process (args.sampleTime);
         }
         if (outputTriggered)
-            outputLightPulse.trigger (lightPulseLength);
+            outputLightPulse.trigger (Constants::LightPulseMS);
         outputTriggered = outputLightPulse.process (args.sampleTime);
 
         // Handle the lights.

@@ -152,6 +152,8 @@ namespace OuroborosModules {
         static const std::string MetaSound_DefaultMarker = "<Default>";
 
         static constexpr float DefaultDCBlockerCutoff = 20.f;
+
+        static constexpr float LightPulseMS = 10.f / 1000.f;
     }
 
     namespace Colors {

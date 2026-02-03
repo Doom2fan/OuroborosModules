@@ -24,7 +24,6 @@
 
 namespace OuroborosModules {
     struct MetaHandler {
-        typedef int64_t RackModuleId;
         typedef int64_t TimeUnit;
 
     private:
