@@ -23,4 +23,9 @@
 namespace OuroborosModules::Math {
     void Sort3 (rack::simd::float_4 vecA, rack::simd::float_4 vecB, rack::simd::float_4 vecC,
                 rack::simd::float_4& vecMin, rack::simd::float_4& vecMid, rack::simd::float_4& vecMax);
+
+    /** Rescales `x` from the range `[0, 1]` to `[min, max]` */
+    inline float rescale1 (float x, float min, float max) {
+        return min + x * (max - min);
+    }
 }
