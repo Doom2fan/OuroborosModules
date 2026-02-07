@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 27.5.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   width="21"
+   height="21"
+   viewBox="0 0 21 21"
+   version="1.1"
+   id="svg15246"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   sodipodi:docname="LightButtonSquare.svg"
+   xml:space="preserve"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs18"><linearGradient
+     id="linearGradient6"
+     inkscape:collect="always"><stop
+       style="stop-color:#dbdbdb;stop-opacity:1;"
+       offset="0"
+       id="stop5" /><stop
+       style="stop-color:#bfbfbf;stop-opacity:1;"
+       offset="1"
+       id="stop6" /></linearGradient><linearGradient
+     id="linearGradient3"
+     inkscape:collect="always"><stop
+       style="stop-color:#cfcfcf;stop-opacity:1;"
+       offset="0"
+       id="stop3" /><stop
+       style="stop-color:#a6a6a6;stop-opacity:1;"
+       offset="1"
+       id="stop4" /></linearGradient><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient3"
+     id="linearGradient4"
+     x1="10.5"
+     y1="0.64999962"
+     x2="10.5"
+     y2="20.35"
+     gradientUnits="userSpaceOnUse" /><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient6"
+     id="linearGradient5"
+     gradientUnits="userSpaceOnUse"
+     x1="10.5"
+     y1="0.64999962"
+     x2="10.5"
+     y2="20.35"
+     gradientTransform="matrix(0.76142129,0,0,0.76142129,2.505077,2.5050765)" /></defs>
+<sodipodi:namedview
+   bordercolor="#666666"
+   borderopacity="1.0"
+   fit-margin-bottom="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-top="0"
+   id="base"
+   inkscape:current-layer="svg15246"
+   inkscape:cx="-1.4584077"
+   inkscape:cy="20.152543"
+   inkscape:document-rotation="0"
+   inkscape:document-units="px"
+   inkscape:pageopacity="0.0"
+   inkscape:pageshadow="2"
+   inkscape:window-height="1027"
+   inkscape:window-maximized="1"
+   inkscape:window-width="1920"
+   inkscape:window-x="-8"
+   inkscape:window-y="22"
+   inkscape:zoom="11.313709"
+   pagecolor="#ffffff"
+   showgrid="false"
+   units="mm"
+   inkscape:showpageshadow="2"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   showguides="false">
+	</sodipodi:namedview>
+
+<path
+   id="light-button-outline"
+   style="fill:#878787;stroke-width:20.48"
+   d="m 1,0 h 19 c 0.554,0 1,0.446 1,1 v 19 c 0,0.554 -0.446,1 -1,1 H 1 C 0.446,21 0,20.554 0,20 V 1 C 0,0.446 0.446,0 1,0 Z" /><path
+   id="light-button-outer"
+   style="fill:url(#linearGradient4);stroke-width:19.2122"
+   d="M 1.5880948,0.64999962 H 19.411905 c 0.519705,0 0.938095,0.41839048 0.938095,0.93809518 V 19.411905 C 20.35,19.93161 19.93161,20.35 19.411905,20.35 H 1.5880948 c -0.5197047,0 -0.93809518,-0.41839 -0.93809518,-0.938095 V 1.5880948 c 0,-0.5197047 0.41839048,-0.93809518 0.93809518,-0.93809518 z" /><path
+   id="light-button-inner"
+   style="display:inline;opacity:0.65;fill:url(#linearGradient5);stroke:#b8b8b8;stroke-width:0.381"
+   d="M 3.7142857,3 H 17.285714 C 17.681429,3 18,3.3185714 18,3.7142857 V 17.285714 C 18,17.681429 17.681429,18 17.285714,18 H 3.7142857 C 3.3185714,18 3,17.681429 3,17.285714 V 3.7142857 C 3,3.3185714 3.3185714,3 3.7142857,3 Z" /></svg>
