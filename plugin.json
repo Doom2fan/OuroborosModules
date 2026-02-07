@@ -92,6 +92,27 @@
             "tags": [ "Utility", "Polyphonic" ],
             "keywords": "trigger-converter triggerconverter trigger-to-gate triggertogate reset helper",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Reset-Helper"
+        },
+        {
+            "slug": "Conductor",
+            "name": "Conductor",
+            "description": "A performance controller for switching sequencer patterns automatically, on beat.",
+            "tags": [ "Controller" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor"
+        },
+        {
+            "slug": "ConductorExternal",
+            "name": "Conductor - External",
+            "description": "External MIDI controller expander for Conductor.",
+            "tags": [ "Controller", "Expander", "External" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor-‐-External"
+        },
+        {
+            "slug": "ConductorGrid",
+            "name": "Conductor - Grid",
+            "description": "Virtual pad grid expander for Conductor.",
+            "tags": [ "Controller", "Expander", "Visual" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor-‐-Grid"
         }
     ]
 }

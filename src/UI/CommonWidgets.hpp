@@ -244,4 +244,13 @@ namespace OuroborosModules::Widgets {
         }
     };
     using GreenBlueLight = TGreenBlueLight<>;
+
+    template<typename TBase = rack::componentlibrary::GrayModuleLightWidget>
+    struct TRedBlueLight : TBase {
+        TRedBlueLight () {
+            this->addBaseColor (rack::componentlibrary::SCHEME_RED);
+            this->addBaseColor (rack::componentlibrary::SCHEME_BLUE);
+        }
+    };
+    using RedBlueLight = TRedBlueLight<>;
 }
