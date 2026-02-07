@@ -88,9 +88,6 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorGridModule::process (const ProcessArgs& args) {
         ConductorExpander::processExpander ();
 
-        using Constants::TriggerThreshLow;
-        using Constants::TriggerThreshHigh;
-
         enabled = getCoreModule () != nullptr;
         if (enabled)
             processActive (args);
