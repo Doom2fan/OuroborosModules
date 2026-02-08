@@ -23,6 +23,7 @@
 #include "../PluginDef.hpp"
 
 #include <vector>
+#include <atomic>
 
 namespace OuroborosModules::Modules::Conductor {
     static constexpr int MaxPatterns = 128;
@@ -54,13 +55,11 @@ namespace OuroborosModules::Modules::Conductor {
 
         virtual void requestEnqueue (int newQueue) = 0;
         virtual void requestDequeue () = 0;
-
-        void onRemove (const RemoveEvent& e) override;
     };
 
     struct ConductorExpander : ModuleBase {
       private:
-        int heartbeatTimer = 0;
+        std::atomic<int> heartbeatTimer = 0;
         ConductorCore* coreModule = nullptr;
 
         bool tryFindCore = false;
@@ -74,7 +73,6 @@ namespace OuroborosModules::Modules::Conductor {
         virtual ~ConductorExpander () { }
 
         void heartbeat (ConductorCore* core);
-        void onCoreRemoved (ConductorCore* core);
 
         virtual void onDataUpdated (const ConductorDataUpdatedEvent& e) = 0;
 

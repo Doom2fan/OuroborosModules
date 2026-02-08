@@ -24,7 +24,7 @@
 
 namespace OuroborosModules::Modules::Conductor {
     static constexpr int HeartbeatTime = 256;
-    static constexpr int CoreHeartbeatTime = HeartbeatTime - 4;
+    static constexpr int CoreHeartbeatTime = HeartbeatTime - 16;
 
     int patternFloatToInt (float v) {
         return static_cast<int> (std::round (v));
@@ -78,20 +78,14 @@ namespace OuroborosModules::Modules::Conductor {
         expander->onDataUpdated (e);
     }
 
-    void ConductorCore::onRemove (const RemoveEvent& e) {
-        ModuleBase::onRemove (e);
-
-        iterateExpanders (this, [this] (ConductorExpander* expander) {
-            expander->onCoreRemoved (this);
-        });
-    }
-
     /*
      * ConductorExpander
      */
     void ConductorExpander::processExpander () {
-        if (heartbeatTimer > 0 && --heartbeatTimer < 1)
-            coreModule = nullptr;
+        if (coreModule != nullptr) {
+            if (--heartbeatTimer < 1)
+                coreModule = nullptr;
+        }
 
         if (tryFindCore) {
             tryFindCore = false;
@@ -110,16 +104,13 @@ namespace OuroborosModules::Modules::Conductor {
     }
 
     void ConductorExpander::heartbeat (ConductorCore* core) {
-        heartbeatTimer = HeartbeatTime;
+        auto justConnected = coreModule == nullptr;
+
+        heartbeatTimer.store (HeartbeatTime);
         coreModule = core;
-    }
 
-    void ConductorExpander::onCoreRemoved (ConductorCore* core) {
-        if (coreModule != core)
-            return;
-
-        heartbeatTimer = 0;
-        coreModule = nullptr;
+        if (justConnected)
+            core->expanderConnected (this);
     }
 
     void ConductorExpander::onExpanderChange (const ExpanderChangeEvent& e) {
