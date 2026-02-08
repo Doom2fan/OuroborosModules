@@ -45,6 +45,45 @@ namespace OuroborosModules::Modules::Conductor {
         }
     };
 
+
+    void ConductorModule::ClockHandler::setParams (bool ignoreFirstClock, uint32_t delay) {
+        assert (delay <= MaxDelay);
+        if (delay > MaxDelay)
+            delay = MaxDelay;
+
+        this->ignoreFirstClock = ignoreFirstClock;
+        delayTime = delay;
+    }
+
+    void ConductorModule::ClockHandler::resetPulse () {
+        if (ignoreFirstClock)
+            resetPhasor = 1.f / 1000.f; // 1ms
+    }
+
+    bool ConductorModule::ClockHandler::processClock (const ProcessArgs& args, float clockInput) {
+        using Constants::TriggerThreshLow;
+        using Constants::TriggerThreshHigh;
+        using rack::dsp::SchmittTrigger;
+
+        clockDelayLineIndex = (clockDelayLineIndex + 1) % (MaxDelay + 1);
+        clockDelayLine [clockDelayLineIndex] = clockInput;
+
+        auto clockLine = clockDelayLine [(clockDelayLineIndex - delayTime + (MaxDelay + 1)) % (MaxDelay + 1)];
+        auto clockEvent = clockTrigger.processEvent (clockLine, TriggerThreshLow, TriggerThreshHigh);
+
+        if (clockEvent == SchmittTrigger::TRIGGERED) {
+            if (resetPhasor < 1e-5)
+                clockHigh = true;
+            else
+                resetPhasor = 0;
+        } else if (clockEvent == SchmittTrigger::UNTRIGGERED)
+            clockHigh = false;
+
+        resetPhasor = std::max (resetPhasor - args.sampleTime, 0.f);
+
+        return clockHigh;
+    }
+
     ConductorModule::ConductorModule () {
         config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -65,11 +104,15 @@ namespace OuroborosModules::Modules::Conductor {
 
         configParam (PARAM_PATTERN_OFFSET_VOLTAGE, 0.f, 1.f, .5f, "Pattern output offset", "%", 0.f, 100.f);
 
+        configParam (PARAM_CLOCK_DELAY, 0.f, ClockHandler::MaxDelay, 2.f, "Clock delay", " samples", 0.f, 1.f);
+        getParamQuantity (PARAM_CLOCK_DELAY)->snapEnabled = true;
+
         // Disable randomization for relevant params.
         getParamQuantity (PARAM_SEQ_MAX_PATTERNS)->randomizeEnabled = false;
         getParamQuantity (PARAM_SEQ_MAX_CV)->randomizeEnabled = false;
         getParamQuantity (PARAM_MANUAL_SET)->randomizeEnabled = false;
         getParamQuantity (PARAM_PATTERN_OFFSET_VOLTAGE)->randomizeEnabled = false;
+        getParamQuantity (PARAM_CLOCK_DELAY)->randomizeEnabled = false;
 
         // Configure inputs.
         configInput (INPUT_CLOCK, "Clock");
@@ -96,6 +139,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         json_object_set_new_bool (rootJ, "resetQueuedOn", resetQueuedOn);
         json_object_set_new_bool (rootJ, "resetPatternOn", resetPatternOn);
+        json_object_set_new_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
         return rootJ;
     }
@@ -108,6 +152,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         json_object_try_get_bool (rootJ, "resetQueuedOn", resetQueuedOn);
         json_object_try_get_bool (rootJ, "resetPatternOn", resetPatternOn);
+        json_object_try_get_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
         calculatePatternInfo ();
     }
@@ -118,6 +163,7 @@ namespace OuroborosModules::Modules::Conductor {
         queuedPattern = QueueCleared;
         resetQueuedOn = false;
         resetPatternOn = false;
+        resetIgnoreFirstClock = true;
     }
 
     void ConductorModule::changePattern (int newPattern) {
@@ -148,6 +194,7 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorModule::handleReset () {
         resetPulse.trigger ();
         resetLightPulse.trigger (Constants::LightPulseMS);
+        clockHandler.resetPulse ();
 
         if (curResetPattern >= 0)
             changePattern (curResetPattern);
@@ -218,11 +265,12 @@ namespace OuroborosModules::Modules::Conductor {
         using Constants::TriggerThreshLow;
         using Constants::TriggerThreshHigh;
 
-        // Pass clock through.
-        outputs [OUTPUT_CLOCK].setVoltage (inputs [INPUT_CLOCK].getVoltage ());
+        clockHandler.setParams (resetIgnoreFirstClock, static_cast<uint32_t> (params [PARAM_CLOCK_DELAY].getValue ()));
+        outputs [OUTPUT_CLOCK].setVoltage (boolToGate (clockHandler.processClock (args, inputs [INPUT_CLOCK].getVoltage ())));
 
         calculatePatternInfo ();
 
+        // Process triggers and buttons.
         if (resetPatternToggleTrigger.process (params [PARAM_RESET_PATTERN_BUTTON].getValue ()))
             resetPatternOn = !resetPatternOn;
 

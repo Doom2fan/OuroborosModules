@@ -86,17 +86,26 @@ namespace OuroborosModules::Modules::Conductor {
 
     void ConductorWidget::appendContextMenu (rack::ui::Menu* menu) {
         using rack::createBoolPtrMenuItem;
-        using rack::createMenuItem;
         using rack::createMenuLabel;
-        using rack::createSubmenuItem;
         using rack::ui::Menu;
 
         _WidgetBase::appendContextMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
+
+        // Sequencer options.
+        menu->addChild (createMenuLabel ("Sequencer options"));
         auto voltageOffsetSlider = new rack::ui::Slider ();
         voltageOffsetSlider->quantity = moduleT->getParamQuantity (ConductorModule::PARAM_PATTERN_OFFSET_VOLTAGE);
         voltageOffsetSlider->box.size.x = 200.f;
         menu->addChild (voltageOffsetSlider);
+
+        // Clock options.
+        menu->addChild (createMenuLabel ("Clock options"));
+        auto clockDelaySlider = new rack::ui::Slider ();
+        clockDelaySlider->quantity = moduleT->getParamQuantity (ConductorModule::PARAM_CLOCK_DELAY);
+        clockDelaySlider->box.size.x = 200.f;
+        menu->addChild (clockDelaySlider);
+        menu->addChild (createBoolPtrMenuItem ("Ignore first clock within 1ms after reset", "", &moduleT->resetIgnoreFirstClock));
     }
 }

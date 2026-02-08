@@ -27,6 +27,28 @@
 
 namespace OuroborosModules::Modules::Conductor {
     struct ConductorModule : ConductorCore {
+        struct ClockHandler {
+            static constexpr uint32_t MaxDelay = 50;
+
+          private:
+            bool ignoreFirstClock = false;
+            uint32_t delayTime = 0;
+
+            float resetPhasor = 0.;
+
+            uint32_t clockDelayLineIndex = 0;
+            float clockDelayLine [MaxDelay + 1] = { };
+
+            bool clockHigh = false;
+            rack::dsp::SchmittTrigger clockTrigger;
+
+          public:
+            void setParams (bool ignoreFirstClock, uint32_t delay);
+
+            void resetPulse ();
+            bool processClock (const ProcessArgs& args, float clockInput);
+        };
+
         enum ParamIds {
             PARAM_SEQ_MAX_PATTERNS,
             PARAM_SEQ_MAX_CV,
@@ -43,6 +65,8 @@ namespace OuroborosModules::Modules::Conductor {
             PARAM_MANUAL_SET_BUTTON,
 
             PARAM_PATTERN_OFFSET_VOLTAGE,
+
+            PARAM_CLOCK_DELAY,
 
             NUM_PARAMS
         };
@@ -70,6 +94,8 @@ namespace OuroborosModules::Modules::Conductor {
         };
 
         // State
+        ClockHandler clockHandler;
+
         int curSequencerMax = 0;
         int curPatternCount = 0;
         int curResetPattern = 0;
@@ -79,6 +105,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         bool resetQueuedOn = false;
         bool resetPatternOn = false;
+        bool resetIgnoreFirstClock = true;
 
         float curPatternOffset = 0.f;
         float curMaxCV = 0.f;
@@ -95,6 +122,7 @@ namespace OuroborosModules::Modules::Conductor {
         rack::dsp::SchmittTrigger resetPatternToggleTrigger;
         rack::dsp::SchmittTrigger patternSetButtonTrigger;
 
+        // Pulses
         rack::dsp::PulseGenerator resetPulse;
         rack::dsp::PulseGenerator advanceLightPulse;
         rack::dsp::PulseGenerator resetLightPulse;
