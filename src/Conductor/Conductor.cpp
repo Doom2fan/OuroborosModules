@@ -145,13 +145,9 @@ namespace OuroborosModules::Modules::Conductor {
         dataUpdated = true;
     }
 
-    void ConductorModule::emitReset () {
+    void ConductorModule::handleReset () {
         resetPulse.trigger ();
         resetLightPulse.trigger (Constants::LightPulseMS);
-    }
-
-    void ConductorModule::handleReset () {
-        emitReset ();
 
         if (curResetPattern >= 0)
             changePattern (curResetPattern);
@@ -167,7 +163,7 @@ namespace OuroborosModules::Modules::Conductor {
             changePattern (queuedPattern);
             dequeuePattern ();
 
-            emitReset ();
+            resetPulse.trigger ();
         }
 
         advanceLightPulse.trigger (Constants::LightPulseMS);
@@ -246,7 +242,8 @@ namespace OuroborosModules::Modules::Conductor {
         }
 
         // Process pulses.
-        outputs [OUTPUT_RESET].setVoltage (resetPulse.process (args.sampleTime) * 10.f);
+        resetPulse.process (args.sampleTime);
+        outputs [OUTPUT_RESET].setVoltage (boolToGate (resetPulse.isHigh ()));
 
         // Output the pattern CV.
         outputs [OUTPUT_PATTERN].setVoltage (curPatternCV);

@@ -127,9 +127,7 @@ namespace OuroborosModules::Modules::Conductor {
         void calculatePatternInfo ();
         void calculatePatternCV ();
 
-        void emitReset ();
         void handleReset ();
-
         void handleAdvance ();
     };
 
