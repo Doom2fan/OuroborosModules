@@ -105,14 +105,14 @@
             "name": "Conductor - External",
             "description": "External MIDI controller expander for Conductor.",
             "tags": [ "Controller", "Expander", "External" ],
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor---External"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor-‐-External"
         },
         {
             "slug": "ConductorGrid",
             "name": "Conductor - Grid",
             "description": "Virtual pad grid expander for Conductor.",
             "tags": [ "Controller", "Expander", "Visual" ],
-            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor---Grid"
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor-‐-Grid"
         }
     ]
 }
