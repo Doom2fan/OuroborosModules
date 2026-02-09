@@ -41,27 +41,27 @@ namespace OuroborosModules::Modules::Conductor {
     json_t* ConductorGridModule::dataToJson () {
         auto rootJ = ConductorExpander::dataToJson ();
 
+        json_object_set_new_int (rootJ, "curPage", curPage);
+
         return rootJ;
     }
 
     void ConductorGridModule::dataFromJson (json_t* rootJ) {
         ConductorExpander::dataFromJson (rootJ);
+
+        json_object_try_get_int (rootJ, "curPage", curPage);
     }
 
     void ConductorGridModule::onDataUpdated (const ConductorDataUpdatedEvent& e) {
+        if (queuedPattern != e.queuedPattern)
+            queuedPadBlinkTimer.reset ();
+
         patternCount = e.patternCount;
         currentPattern = e.currentPattern;
         queuedPattern = e.queuedPattern;
 
         pageCount = static_cast<int> (std::ceil (static_cast<float> (patternCount) / PadCount));
-        curPage = std::clamp (curPage, 0, pageCount);
-    }
-
-    void ConductorGridModule::queueIndex (int index) {
-        if (index != queuedPattern)
-            getCoreModule ()->requestEnqueue (index);
-        else
-            getCoreModule ()->requestDequeue ();
+        curPage = std::clamp (curPage, 0, pageCount - 1);
     }
 
     void ConductorGridModule::processActive (const ProcessArgs& args) {
@@ -76,11 +76,19 @@ namespace OuroborosModules::Modules::Conductor {
 
         for (int i = 0; i < PadCount; i++) {
             if (padButtonTriggers [i].process (params [PARAM_PAD_BUTTON + i].getValue ())) {
-                padButtonLightPulses [i].trigger (Constants::LightPulseMS);
-
                 auto selectedPattern = curPage * PadCount + i;
-                if (selectedPattern < patternCount)
-                    queueIndex (selectedPattern);
+                if (selectedPattern < patternCount) {
+                    if (selectedPattern != queuedPattern) {
+                        getCoreModule ()->requestEnqueue (selectedPattern);
+                        padButtonLightPulses [i].trigger (QueuedPadBlinkInterval / 2.f);
+                    } else {
+                        getCoreModule ()->requestDequeue ();
+                        padButtonLightPulses [i].reset ();
+                        padButtonLightPulses [i].trigger (Constants::LightPulseMS);
+                    }
+
+                    queuedPadBlinkTimer.reset ();
+                }
             }
         }
     }
@@ -99,9 +107,20 @@ namespace OuroborosModules::Modules::Conductor {
             lights [LIGHT_PAGE_DOWN_BUTTON].setBrightnessSmooth (boolToLight (pageDownLightPulse.process (lightTime)), lightTime);
             lights [LIGHT_PAGE_UP_BUTTON].setBrightnessSmooth (boolToLight (pageUpLightPulse.process (lightTime)), lightTime);
 
+            if (queuedPadBlinkTimer.process (lightTime) >= QueuedPadBlinkInterval) {
+                queuedPadBlinkTimer.reset ();
+
+                auto padIndex = queuedPattern - curPage * PadCount;
+                if (enabled && queuedPattern > -1 && padIndex >= 0 && padIndex < PadCount)
+                    padButtonLightPulses [padIndex].trigger (QueuedPadBlinkInterval / 2.f);
+            }
+
             for (int i = 0; i < PadCount; i++) {
-                auto lightState = padButtonLightPulses [i].process (lightTime);
-                lights [LIGHT_PAD_BUTTON + i].setBrightnessSmooth (boolToLight (lightState), lightTime);
+                auto redLightState = enabled && (curPage * PadCount + i) == currentPattern;
+                auto blueLightState = padButtonLightPulses [i].process (lightTime);
+
+                lights [LIGHT_PAD_BUTTON + i * 2].setBrightnessSmooth (boolToLight (redLightState), lightTime);
+                lights [LIGHT_PAD_BUTTON + i * 2 + 1].setBrightnessSmooth (boolToLight (blueLightState), lightTime);
             }
         }
     }

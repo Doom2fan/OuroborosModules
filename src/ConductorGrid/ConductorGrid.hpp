@@ -30,6 +30,7 @@
 namespace OuroborosModules::Modules::Conductor {
     struct ConductorGridModule : ConductorExpander {
         static constexpr int PadCount = 8;
+        static constexpr float QueuedPadBlinkInterval = 1500.f / 1000.f;
 
         enum ParamIds {
             PARAM_PAGE_DOWN_BUTTON,
@@ -47,7 +48,7 @@ namespace OuroborosModules::Modules::Conductor {
         enum LightIds {
             LIGHT_PAGE_DOWN_BUTTON,
             LIGHT_PAGE_UP_BUTTON,
-            ENUMS (LIGHT_PAD_BUTTON, PadCount),
+            ENUMS (LIGHT_PAD_BUTTON, PadCount * 2),
 
             NUM_LIGHTS
         };
@@ -71,6 +72,9 @@ namespace OuroborosModules::Modules::Conductor {
         rack::dsp::PulseGenerator pageDownLightPulse;
         rack::dsp::PulseGenerator pageUpLightPulse;
         rack::dsp::PulseGenerator padButtonLightPulses [PadCount];
+
+        // Timers
+        rack::dsp::Timer queuedPadBlinkTimer;
 
         // Clock dividers
         DSP::ClockDivider clockLights;

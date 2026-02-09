@@ -26,7 +26,7 @@ namespace OuroborosModules::Modules::Conductor {
     ConductorGridWidget::ConductorGridWidget (ConductorGridModule* module) { constructor (module, "panels/ConductorGrid"); }
 
     struct ConductorGridPad : rack_themer::widgets::SvgSwitch {
-        using LightColor = rack::componentlibrary::BlueLight;
+        using LightColor = Widgets::RedBlueLight;
         struct ButtonLight : rack::componentlibrary::RectangleLight<LightColor> {
             ButtonLight () {
                 this->borderColor = rack::color::BLACK_TRANSPARENT;
@@ -112,7 +112,7 @@ namespace OuroborosModules::Modules::Conductor {
             if (i < 0 || i > GridModule::PadCount)
                 return LOG_WARN (FMT_STRING ("ConductorGrid panel has invalid pad #{}"), i);
 
-            auto padButton = createLightParamCentered<ConductorGridPad> (pos, moduleT, GridModule::PARAM_PAD_BUTTON + i, GridModule::LIGHT_PAD_BUTTON + i);
+            auto padButton = createLightParamCentered<ConductorGridPad> (pos, moduleT, GridModule::PARAM_PAD_BUTTON + i, GridModule::LIGHT_PAD_BUTTON + i * 2);
             addChild (padButton);
         });
 
