@@ -4,6 +4,11 @@
   * New modules:
     * Automata
     * Warp
+    * Reset Helper
+    * Conductor
+    * Conductor - External
+    * Conductor - Grid
+  * Add missing undo/redo history in some modules
 
 ## v2.1.2 (2025-07-05)
   * Fixed a rare crash involving SVG rendering
