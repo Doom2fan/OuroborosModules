@@ -1,5 +1,9 @@
 # Ouroboros Industries modules for VCV Rack 2
-![All Ouroboros Industries modules](https://github.com/Doom2fan/OuroborosModules/blob/master/docs/images/all_modules.png)
+![Main branch status](https://img.shields.io/github/actions/workflow/status/Doom2fan/OuroborosModules/build-plugin.yml?branch=master&style=plastic&label=main%20build)
+![Development branch status](https://img.shields.io/github/actions/workflow/status/Doom2fan/OuroborosModules/build-plugin.yml?branch=develop&style=plastic&label=development%20build)
+
+<img src="https://github.com/Doom2fan/OuroborosModules/blob/develop/docs/images/all_modules.png" alt="All Ouroboros Industries modules" width="800">
+
 Modules for [VCV Rack 2](https://vcvrack.com/).
 
 ## Download
