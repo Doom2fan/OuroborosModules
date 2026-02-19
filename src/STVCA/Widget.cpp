@@ -113,11 +113,15 @@ namespace OuroborosModules::Modules::STVCA {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackInput> (pos, moduleT, STVCAModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, STVCAModule::INPUT_LEFT + i))
+                ->setStereoCompanion (i == 0 ? STVCAModule::INPUT_RIGHT : STVCAModule::INPUT_LEFT)
+                ->enableConnectToMixmaster ();
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, STVCAModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, STVCAModule::OUTPUT_LEFT + i))
+                ->setStereoCompanion (i == 0 ? STVCAModule::OUTPUT_RIGHT : STVCAModule::OUTPUT_LEFT)
+                ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
         });
 
         auto displayBox = findNamedBox ("display", rack::math::Rect ());

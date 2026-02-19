@@ -51,7 +51,7 @@ namespace OuroborosModules::Modules::Meta {
         void onSampleRateChange (int sampleRate) { sampleChannel.onSampleRateChange (sampleRate); }
     };
 
-    struct MetaModule : ModuleBase {
+    struct MetaModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamId {
             PARAMS_LEN
         };
@@ -110,6 +110,14 @@ namespace OuroborosModules::Modules::Meta {
         void process (const ProcessArgs& args) override;
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onUnBypass (const UnBypassEvent& e) override;
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
+            return {{ std::make_pair ("Input", std::make_pair (INPUT_LEFT, INPUT_RIGHT)) }};
+        }
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{ std::make_pair ("Output", std::make_pair (OUTPUT_LEFT, OUTPUT_RIGHT)) }};
+        }
     };
 
     struct MetaWidget : Widgets::ModuleWidgetBase<MetaModule> {

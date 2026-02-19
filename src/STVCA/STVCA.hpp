@@ -26,7 +26,7 @@
 #include "../Utils.hpp"
 
 namespace OuroborosModules::Modules::STVCA {
-    struct STVCAModule : ModuleBase {
+    struct STVCAModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamId {
             PARAM_LEVEL,
             PARAM_EXP,
@@ -63,6 +63,14 @@ namespace OuroborosModules::Modules::STVCA {
 
         void process (const ProcessArgs& args) override;
         void onReset (const ResetEvent& e) override;
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
+            return {{ std::make_pair ("Input", std::make_pair (INPUT_LEFT, INPUT_RIGHT)) }};
+        }
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{ std::make_pair ("Output", std::make_pair (OUTPUT_LEFT, OUTPUT_RIGHT)) }};
+        }
     };
 
     struct STVCAWidget : Widgets::ModuleWidgetBase<STVCAModule> {

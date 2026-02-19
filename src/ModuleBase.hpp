@@ -20,7 +20,11 @@
 
 #include "PluginDef.hpp"
 
+#include <sst/rackhelpers/neighbor_connectable.h>
+
 namespace OuroborosModules {
+    using SST_NeighborConnectable_V1 = sst::rackhelpers::module_connector::NeighborConnectable_V1;
+
     struct ModuleBase : rack::engine::Module {
       public:
         ThemeId theme_Override = ThemeId::getUnknown ();

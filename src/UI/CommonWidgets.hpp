@@ -23,6 +23,7 @@
 #include "ImageWidget.hpp"
 
 #include <rack_themer.hpp>
+#include <sst/rackhelpers/module_connector.h>
 
 namespace OuroborosModules::Widgets {
     struct ScrewWidget : rack_themer::widgets::SvgScrew {
@@ -31,12 +32,21 @@ namespace OuroborosModules::Widgets {
         }
     };
 
-    struct CableJackInput : rack_themer::widgets::SvgPort {
+    struct CableJackBase : public sst::rackhelpers::module_connector::PortConnectionMixin<rack_themer::widgets::SvgPort> { };
+
+    struct CableJackInput : CableJackBase {
         CableJackInput () { setSvg (Theme::getThemedSvg ("components/CableJack_In", nullptr)); }
+
+        CableJackInput* setStereoCompanion (int idx) { mixMasterStereoCompanion = idx; return this; }
+        CableJackInput* enableConnectToMixmaster () { connectAsInputFromMixmaster = true; return this; }
     };
 
-    struct CableJackOutput : rack_themer::widgets::SvgPort {
+    struct CableJackOutput : CableJackBase {
         CableJackOutput () { setSvg (Theme::getThemedSvg ("components/CableJack_Out", nullptr)); }
+
+        CableJackOutput* setStereoCompanion (int idx) { mixMasterStereoCompanion = idx; return this; }
+        CableJackOutput* enableConnectToMixmaster () { connectAsOutputToMixmaster = true; return this; }
+        CableJackOutput* enableConnectToNeighbor () { connectOutputToNeighbor = true; return this; }
     };
 
     struct EmblemWidget : rack_themer::ThemedWidgetBase<rack::widget::TransparentWidget> {

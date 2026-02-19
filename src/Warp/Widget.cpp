@@ -46,14 +46,17 @@ namespace OuroborosModules::Modules::Warp {
         addChild (emblemWidget);
 
         // Inputs
-        addInput (createInputCentered<CableJackInput> (findNamed ("input_Signal", Vec ()), moduleT, WarpModule::INPUT_SIGNAL));
-        addInput (createInputCentered<CableJackInput> (findNamed ("input_Modulator", Vec ()), moduleT, WarpModule::INPUT_MODULATOR));
+        addInput (createInputCentered<CableJackInput> (findNamed ("input_Signal", Vec ()), moduleT, WarpModule::INPUT_SIGNAL))
+            ->enableConnectToMixmaster ();
+        addInput (createInputCentered<CableJackInput> (findNamed ("input_Modulator", Vec ()), moduleT, WarpModule::INPUT_MODULATOR))
+            ->enableConnectToMixmaster ();
 
         addInput (createInputCentered<CableJackInput> (findNamed ("input_AmountCV", Vec ()), moduleT, WarpModule::INPUT_AMOUNT_CV));
         addInput (createInputCentered<CableJackInput> (findNamed ("input_BiasCV", Vec ()), moduleT, WarpModule::INPUT_BIAS_CV));
 
         // Outputs
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Signal", Vec ()), moduleT, WarpModule::OUTPUT_SIGNAL));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Signal", Vec ()), moduleT, WarpModule::OUTPUT_SIGNAL))
+            ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
 
         // Params
         addChild (createParamCentered<MetalKnobSmall> (findNamed ("param_Amount", Vec ()), moduleT, WarpModule::PARAM_AMOUNT));

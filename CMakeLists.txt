@@ -19,6 +19,7 @@ include(cmake/utils.cmake)
 util_add_lib_subdirectory(fmt)
 target_compile_definitions(fmt INTERFACE FMT_ENFORCE_COMPILE_STRING=1)
 util_add_lib_subdirectory(vcv-rackthemer)
+util_add_lib_subdirectory(sst/sst-rackhelpers)
 
 source_group("Module Core" REGULAR_EXPRESSION "src/*")
 
@@ -31,6 +32,7 @@ target_sources(${RACK_PLUGIN_LIB} PRIVATE ${SOURCE_FILES})
 target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE
     fmt::fmt
     vcv-rackthemer
+    sst-rackhelpers
 )
 
 message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET: ${CMAKE_OSX_DEPLOYMENT_TARGET}")

@@ -72,11 +72,14 @@ namespace OuroborosModules::Modules::Meta {
 
         forEachMatched ("input_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addInput (createInputCentered<CableJackInput> (pos, moduleT, MetaModule::INPUT_LEFT + i));
+            addInput (createInputCentered<CableJackInput> (pos, moduleT, MetaModule::INPUT_LEFT + i))
+                ->setStereoCompanion (i == 0 ? MetaModule::INPUT_RIGHT : MetaModule::INPUT_LEFT);
         });
         forEachMatched ("output_(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             int i = stoi (captures [0]) - 1;
-            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, MetaModule::OUTPUT_LEFT + i));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, MetaModule::OUTPUT_LEFT + i))
+                ->setStereoCompanion (i == 0 ? MetaModule::OUTPUT_RIGHT : MetaModule::OUTPUT_LEFT)
+                ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
         });
     }
 

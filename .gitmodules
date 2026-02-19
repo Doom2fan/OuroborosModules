@@ -6,3 +6,6 @@
 	path = libs/vcv-rackthemer
 	url = https://github.com/Doom2fan/vcv-rackthemer.git
 	branch = master
+[submodule "libs/sst/sst-rackhelpers"]
+	path = libs/sst/sst-rackhelpers
+	url = https://github.com/surge-synthesizer/sst-rackhelpers.git

@@ -20,6 +20,7 @@
 
 #include "../PluginDef.hpp"
 #include "../Utils.hpp"
+#include "CommonWidgets.hpp"
 #include "ThemeUtils.hpp"
 
 #include <rack_themer.hpp>
@@ -250,6 +251,32 @@ namespace OuroborosModules::Widgets {
             menu->addChild (createMenuLabel ("Emblem"));
             menu->addChild (createEmblemOverrideItem ("Default", EmblemId::getUnknown ()));
             EmblemId::forEachValue ([=] (EmblemId id) { menu->addChild (createEmblemOverrideItem (id.getDisplayName (), id)); });
+        }
+
+        CableJackInput* addInput (CableJackInput* input) {
+            // Check that the port is an input
+            assert (input->type == rack::engine::Port::INPUT);
+
+            // Check that the port doesn't have a duplicate ID
+            assert (this->getInput (input->portId) == nullptr);
+
+            // Add port
+            this->addChild (input);
+
+            return input;
+        }
+
+        CableJackOutput* addOutput (CableJackOutput* output) {
+            // Check that the port is an output
+            assert (output->type == rack::engine::Port::OUTPUT);
+
+            // Check that the port doesn't have a duplicate ID
+            assert (this->getOutput (output->portId) == nullptr);
+
+            // Add port
+            this->addChild (output);
+
+            return output;
         }
 
         void step () override {

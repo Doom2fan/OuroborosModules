@@ -28,7 +28,7 @@
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Warp {
-    struct WarpModule : ModuleBase {
+    struct WarpModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamIds {
             PARAM_AMOUNT,
             PARAM_BIAS,
@@ -91,6 +91,14 @@ namespace OuroborosModules::Modules::Warp {
 
         void setOversampleRate (uint32_t newOversampleRate);
         void updateSampleRate (uint32_t newSampleRate);
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
+            return {{ std::make_pair ("Input", std::make_pair (INPUT_SIGNAL, -1)) }};
+        }
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{ std::make_pair ("Output", std::make_pair (OUTPUT_SIGNAL, -1)) }};
+        }
     };
 
     struct WarpWidget : Widgets::ModuleWidgetBase<WarpModule> {
