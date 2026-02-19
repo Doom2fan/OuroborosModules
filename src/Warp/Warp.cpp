@@ -27,7 +27,7 @@ namespace OuroborosModules {
 
 namespace OuroborosModules::Modules::Warp {
     WarpModule::WarpModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure parameters.
         configParam (PARAM_OVERSAMPLE, 1.f, MaxOversample, DefaultOversampleRate, "Oversample", "x", 0, 1);

@@ -37,20 +37,20 @@ namespace OuroborosModules::Modules::Conductor {
             PARAM_PAGE_UP_BUTTON,
             ENUMS (PARAM_PAD_BUTTON, PadCount),
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
             LIGHT_PAGE_DOWN_BUTTON,
             LIGHT_PAGE_UP_BUTTON,
             ENUMS (LIGHT_PAD_BUTTON, PadCount * 2),
 
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         // State

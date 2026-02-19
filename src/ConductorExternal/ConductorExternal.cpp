@@ -101,7 +101,7 @@ namespace OuroborosModules::Modules::Conductor {
      * ConductorExternalModule
      */
     ConductorExternalModule::ConductorExternalModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Params
         configSwitch (PARAM_MODE, 0.f, 2.f, 0.f, "Mode selector", { "Index", "Scroll", "Note Map" });

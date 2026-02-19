@@ -30,7 +30,7 @@ namespace OuroborosModules::DSP {
     template<typename T>
     struct Interpolator {
         Interpolator () { }
-        virtual ~Interpolator () { }
+        virtual ~Interpolator () = default;
 
         virtual void setParams (int factor) = 0;
         virtual void process (T* outputBuffer, T input) = 0;
@@ -39,7 +39,7 @@ namespace OuroborosModules::DSP {
     template<typename T>
     struct Decimator {
         Decimator () { }
-        virtual ~Decimator () { }
+        virtual ~Decimator () = default;
 
         virtual void setParams (int factor) = 0;
         virtual T process (const T* inputBuffer) = 0;

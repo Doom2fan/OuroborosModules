@@ -26,7 +26,7 @@ namespace OuroborosModules {
 
 namespace OuroborosModules::Modules::ResetHelper {
     ResetHelperModule::ResetHelperModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure params, I/O and lights.
         configParam (PARAM_MERGE_TIME, 0, 1000, 25, "Merge window", " ms");

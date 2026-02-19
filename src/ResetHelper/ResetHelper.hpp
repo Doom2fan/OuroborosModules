@@ -32,23 +32,23 @@ namespace OuroborosModules::Modules::ResetHelper {
             PARAM_MERGE_TIME,
             PARAM_TRIGGER_LENGTH,
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             ENUMS (INPUT_RESET, InputCount * 2),
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
             OUTPUT_RESET,
 
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
             ENUMS (LIGHT_INPUT, 2 * InputCount),
             ENUMS (LIGHT_OUTPUT, 2),
 
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         rack::dsp::SchmittTrigger inputTriggers [InputCount] [Constants::MaxPolyphony];

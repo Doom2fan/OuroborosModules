@@ -47,17 +47,17 @@ namespace OuroborosModules::Modules::Conductor {
             PARAM_MODE,
             PARAM_MAP_BUTTON,
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             INPUT_CV1,
             INPUT_CV2,
             INPUT_GATE,
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
             LIGHT_CV1_ENABLED,
@@ -65,7 +65,7 @@ namespace OuroborosModules::Modules::Conductor {
 
             ENUMS (LIGHT_MAP_BUTTON, 2),
 
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         //typedef int NoteMapKey;

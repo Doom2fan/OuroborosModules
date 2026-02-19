@@ -30,7 +30,7 @@ namespace OuroborosModules {
 
 namespace OuroborosModules::Modules::Conductor {
     ConductorGridModule::ConductorGridModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         for (int i = 0; i < PadCount; i++)
             configButton (PARAM_PAD_BUTTON + i, fmt::format (FMT_STRING ("Pad {}"), i + 1));

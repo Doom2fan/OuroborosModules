@@ -68,21 +68,21 @@ namespace OuroborosModules::Modules::Conductor {
 
             PARAM_CLOCK_DELAY,
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             INPUT_CLOCK,
             INPUT_ADVANCE,
             INPUT_RESET,
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
             OUTPUT_CLOCK,
             OUTPUT_RESET,
             OUTPUT_PATTERN,
 
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
             LIGHT_RESET_BUTTON,
@@ -90,7 +90,7 @@ namespace OuroborosModules::Modules::Conductor {
             LIGHT_RESET_PATTERN_BUTTON,
             LIGHT_MANUAL_SET_BUTTON,
 
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         // State

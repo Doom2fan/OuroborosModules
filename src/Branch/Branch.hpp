@@ -30,21 +30,21 @@ namespace OuroborosModules::Modules::Branch {
         enum ParamIds {
             ENUMS (PARAM_SWITCH, SwitchCount),
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             INPUT_A,
             INPUT_B,
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
             ENUMS (OUTPUT_DESTINATION, SwitchCount),
 
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         bool polyOnDemand = false;

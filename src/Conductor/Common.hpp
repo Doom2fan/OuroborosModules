@@ -70,7 +70,7 @@ namespace OuroborosModules::Modules::Conductor {
         void processExpander ();
 
       public:
-        virtual ~ConductorExpander () { }
+        virtual ~ConductorExpander () = default;
 
         void heartbeat (ConductorCore* core);
 

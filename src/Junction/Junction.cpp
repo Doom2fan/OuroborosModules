@@ -26,7 +26,7 @@ namespace OuroborosModules {
 
 namespace OuroborosModules::Modules::Junction {
     JunctionModule::JunctionModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         for (int i = 0; i < SwitchCount; i++) {
             auto switchText = fmt::format (FMT_STRING ("Signal #{} destination"), i + 1);

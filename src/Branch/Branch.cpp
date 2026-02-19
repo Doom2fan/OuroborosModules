@@ -26,7 +26,7 @@ namespace OuroborosModules {
 
 namespace OuroborosModules::Modules::Branch {
     BranchModule::BranchModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         for (int i = 0; i < SwitchCount; i++) {
             auto switchText = fmt::format (FMT_STRING ("Destination #{} source"), i + 1);

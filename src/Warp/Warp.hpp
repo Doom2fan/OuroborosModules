@@ -38,7 +38,7 @@ namespace OuroborosModules::Modules::Warp {
 
             PARAM_OVERSAMPLE,
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             INPUT_SIGNAL,
@@ -47,15 +47,15 @@ namespace OuroborosModules::Modules::Warp {
             INPUT_AMOUNT_CV,
             INPUT_BIAS_CV,
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
             OUTPUT_SIGNAL,
 
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         static constexpr int MaxOversample = 16;

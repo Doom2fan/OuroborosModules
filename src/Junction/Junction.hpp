@@ -45,20 +45,20 @@ namespace OuroborosModules::Modules::Junction {
         enum ParamIds {
             ENUMS (PARAM_SWITCH, SwitchCount),
 
-            NUM_PARAMS
+            PARAMS_LEN
         };
         enum InputIds {
             ENUMS (INPUT_SIGNAL, SwitchCount),
 
-            NUM_INPUTS
+            INPUTS_LEN
         };
         enum OutputIds {
             ENUMS (OUTPUT_SIGNAL, OutputCount),
 
-            NUM_OUTPUTS
+            OUTPUTS_LEN
         };
         enum LightIds {
-            NUM_LIGHTS
+            LIGHTS_LEN
         };
 
         bool polyOnDemand = false;

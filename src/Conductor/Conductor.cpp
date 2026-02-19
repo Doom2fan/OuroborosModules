@@ -85,7 +85,7 @@ namespace OuroborosModules::Modules::Conductor {
     }
 
     ConductorModule::ConductorModule () {
-        config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
         // Configure params.
         configParamSnap (PARAM_SEQ_MAX_PATTERNS, 2, MaxPatterns, 16, "Sequencer's pattern count");
