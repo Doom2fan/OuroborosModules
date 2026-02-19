@@ -8,7 +8,8 @@
     * Conductor
     * Conductor - External
     * Conductor - Grid
-  * Add missing undo/redo history in some modules
+  * Added missing undo/redo history in some modules
+  * Added sst-rackhelpers for automatic cable connection options
 
 ## v2.1.2 (2025-07-05)
   * Fixed a rare crash involving SVG rendering
@@ -21,7 +22,7 @@
     * Junction
     * Branch
   * Bernoulli
-    * Add randomization options
+    * Added randomization options
   * Median
     * Fixed the panel having some incorrectly-coloured text
   * Meta
