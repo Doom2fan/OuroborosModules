@@ -1,6 +1,6 @@
 # OuroborosModules Changelog
 
-## v2.2.0 (Not released yet)
+## v2.2.0 (2026-03-27)
   * New modules:
     * Automata
     * Warp
