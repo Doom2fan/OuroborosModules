@@ -70,6 +70,8 @@ namespace OuroborosModules::Widgets {
         }
         EmblemWidget (rack::math::Vec newPos, float newSize = Constants::StdEmblemSize);
 
+        void step () override;
+
         void update ();
 
         rack::math::Vec getEmblemPos () { return posCentered; }

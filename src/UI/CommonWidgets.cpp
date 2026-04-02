@@ -21,7 +21,6 @@
 namespace OuroborosModules::Widgets {
     EmblemWidget::EmblemWidget (rack::math::Vec newPos, float newSize) : posCentered (newPos) {
         framebuffer = new rack::widget::FramebufferWidget;
-        framebuffer->oversample = 2.0;
         addChild (framebuffer);
 
         imageWidget = rack::createWidget<ImageWidget> (rack::math::Vec ());
@@ -29,6 +28,12 @@ namespace OuroborosModules::Widgets {
 
         box.size = rack::math::Vec ();
         setEmblemSize (newSize);
+    }
+
+    void EmblemWidget::step () {
+        framebuffer->oversample = APP->window->pixelRatio < 2.0 ? 2.0 : 1.0;
+
+        _ThemedWidgetBase::step ();
     }
 
     void EmblemWidget::update () {
