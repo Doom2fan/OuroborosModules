@@ -43,9 +43,9 @@ namespace OuroborosModules::Modules::Chroma {
         CenterEmblem centerEmblem = CenterEmblem::Default;
         bool updateEmblem = false;
 
-        ChromaModule ();
+        bool isMaster = false;
 
-        bool checkMaster ();
+        ChromaModule ();
 
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
@@ -57,7 +57,6 @@ namespace OuroborosModules::Modules::Chroma {
       private:
         ColorDisplayWidget* colorDisplayWidget;
         Widgets::EmblemWidget* emblemWidget = nullptr;
-        KeyContainer* keyContainer = nullptr;
 
       public:
         ChromaWidget (ChromaModule* module);
@@ -65,6 +64,8 @@ namespace OuroborosModules::Modules::Chroma {
 
       protected:
         void initializeWidget () override;
+
+        bool checkMaster ();
 
         void step () override;
         void update ();
@@ -85,14 +86,13 @@ namespace OuroborosModules::Modules::Chroma {
         friend ChromaWidget;
 
       private:
-        ChromaWidget* moduleWidget = nullptr;
         OverlayWindow* overlayWindow;
 
         KeyContainer (const KeyContainer& x) = delete;
         void operator= (const KeyContainer& x) = delete;
 
       public:
-        KeyContainer (ChromaWidget* moduleWidget);
+        KeyContainer ();
         ~KeyContainer ();
 
         void step () override;

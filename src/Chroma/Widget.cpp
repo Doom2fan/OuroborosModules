@@ -54,30 +54,27 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     ChromaWidget::~ChromaWidget () {
-        if (masterModule == moduleT)
-            masterModule = nullptr;
+        if (masterWidget == this)
+            masterWidget = nullptr;
+    }
 
-        if (keyContainer != nullptr) {
-            keyContainer->moduleWidget = nullptr;
-            keyContainer->requestDelete ();
-            keyContainer = nullptr;
+    bool ChromaWidget::checkMaster () {
+        if (moduleT == nullptr) // Never true if we're in the browser.
+            return false;
+
+        if (masterWidget == nullptr) {
+            masterWidget = this;
+            moduleT->isMaster = true;
         }
+
+        return masterWidget == this;
     }
 
     void ChromaWidget::update () {
-        auto isMaster = moduleT->checkMaster ();
-
-        if (isMaster && keyContainer == nullptr) {
-            keyContainer = new KeyContainer (this);
-            APP->scene->addChild (keyContainer);
-        } else if (!isMaster && keyContainer != nullptr) {
-            keyContainer->requestDelete ();
-            keyContainer = nullptr;
-        }
-
-        if (!isMaster)
+        if (!checkMaster ())
             return;
 
+        getMasterKeyContainer (); // Ensure the key container exists.
         moduleT->colorManager->updateCurrentColor ();
     }
 

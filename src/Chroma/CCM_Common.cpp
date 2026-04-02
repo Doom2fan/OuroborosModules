@@ -18,7 +18,24 @@
 
 #include "CCM_Common.hpp"
 
+#include "Chroma.hpp"
+
 namespace OuroborosModules::Modules::Chroma {
-    ChromaModule* masterModule = nullptr;
+    ChromaWidget* masterWidget = nullptr;
     KeyContainer* masterKeyContainer = nullptr;
+
+    KeyContainer* getMasterKeyContainer () {
+        if (masterKeyContainer != nullptr)
+            return masterKeyContainer;
+
+        masterKeyContainer = new KeyContainer ();
+        APP->scene->rackScroll->addChild (masterKeyContainer);
+
+        return masterKeyContainer;
+    }
+
+    void keyContainerDestroyed (KeyContainer* keyContainer) {
+        if (masterKeyContainer == keyContainer)
+            masterKeyContainer = nullptr;
+    }
 }
