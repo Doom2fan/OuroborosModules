@@ -21,9 +21,10 @@
 #include "../PluginDef.hpp"
 
 namespace OuroborosModules::Modules::Chroma {
-    struct ChromaModule;
-    extern ChromaModule* masterModule;
+    struct ChromaWidget;
+    extern ChromaWidget* masterWidget;
 
     struct KeyContainer;
-    extern KeyContainer* masterKeyContainer;
+    KeyContainer* getMasterKeyContainer ();
+    void keyContainerDestroyed (KeyContainer* keyContainer);
 }

@@ -101,41 +101,30 @@ namespace OuroborosModules::Modules::Chroma {
         }
     };
 
-    KeyContainer::KeyContainer (ChromaWidget* moduleWidget) {
-        this->moduleWidget = moduleWidget;
-
+    KeyContainer::KeyContainer () {
         overlayWindow = new OverlayWindow ();
         addChild (overlayWindow);
-
-        if (masterKeyContainer == nullptr)
-            masterKeyContainer = this;
     }
 
     KeyContainer::~KeyContainer () {
-        if (moduleWidget != nullptr) {
-            moduleWidget->keyContainer = nullptr;
-            moduleWidget = nullptr;
-        }
-
-        if (masterKeyContainer == this)
-            masterKeyContainer = nullptr;
+        keyContainerDestroyed (this);
     }
 
     void KeyContainer::step () {
-        Widget::step ();
-
         if (parent != nullptr)
             box.size = parent->box.size;
+
+        Widget::step ();
     }
 
     void KeyContainer::displayMessage (std::string message) { overlayWindow->display (message); }
     void KeyContainer::closeMessage () { overlayWindow->close (); }
 
     bool KeyContainer::checkLearningMode (const rack::event::Base& e) {
-        if (moduleWidget == nullptr || moduleWidget->module == nullptr)
+        if (masterWidget == nullptr || masterWidget->moduleT == nullptr)
             return false;
 
-        if (!moduleWidget->moduleT->colorManager->isLearnMode ())
+        if (!masterWidget->moduleT->colorManager->isLearnMode ())
             return false;
 
         e.consume (this);
@@ -143,12 +132,15 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void KeyContainer::onButton (const rack::event::Button& e) {
+        if (masterWidget == nullptr)
+            return;
+
         checkLearningMode (e);
 
         if (e.action != GLFW_PRESS || e.button == GLFW_KEY_UNKNOWN)
             return;
 
-        if (moduleWidget == nullptr || moduleWidget->module == nullptr)
+        if (masterWidget == nullptr || masterWidget->moduleT == nullptr)
             return;
 
         // Disallow LMB, RMB and MMB.
@@ -158,17 +150,20 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto cableKey = CableColorKey (e.button, -1, e.mods & RACK_MOD_MASK);
-        if (moduleWidget->moduleT->colorManager->handleKey (cableKey))
+        if (masterWidget->moduleT->colorManager->handleKey (cableKey))
             e.consume (this);
     }
 
     void KeyContainer::onHoverKey (const rack::event::HoverKey& e) {
+        if (masterWidget == nullptr)
+            return;
+
         checkLearningMode (e);
 
         if (e.action != GLFW_PRESS)
             return;
 
-        if (moduleWidget == nullptr || moduleWidget->module == nullptr)
+        if (masterWidget == nullptr || masterWidget->moduleT == nullptr)
             return;
 
         switch (e.key) {
@@ -185,7 +180,7 @@ namespace OuroborosModules::Modules::Chroma {
         }
 
         auto cableKey = CableColorKey (-1, e.key, e.mods & RACK_MOD_MASK);
-        if (moduleWidget->moduleT->colorManager->handleKey (cableKey))
+        if (masterWidget->moduleT->colorManager->handleKey (cableKey))
             e.consume (this);
     }
 

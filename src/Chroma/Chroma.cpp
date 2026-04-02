@@ -28,20 +28,12 @@ namespace OuroborosModules {
 namespace OuroborosModules::Modules::Chroma {
     ChromaModule::ChromaModule () {
         colorManager = getColorManager ();
-        checkMaster ();
-    }
-
-    bool ChromaModule::checkMaster () {
-        if (masterModule == nullptr)
-            masterModule = this;
-
-        return masterModule == this;
     }
 
     json_t* ChromaModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_bool (rootJ, "wasMaster", checkMaster ());
+        json_object_set_new_bool (rootJ, "wasMaster", isMaster);
         json_object_set_new_enum (rootJ, "centerEmblem", centerEmblem);
 
         auto colorManagerJ = colorManager->dataToJson ();

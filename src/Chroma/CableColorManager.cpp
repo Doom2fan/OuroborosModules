@@ -481,17 +481,22 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     static void showLearnMessage (std::string keyName) {
-        if (masterKeyContainer != nullptr) {
-            masterKeyContainer->displayMessage (fmt::format (
-                FMT_STRING ("Mapping '{}' key.\n\nWaiting for a key press.\nPress Esc to cancel."),
-                keyName
-            ));
-        }
+        auto masterKeyContainer = getMasterKeyContainer ();
+        if (masterKeyContainer == nullptr)
+            return;
+
+        masterKeyContainer->displayMessage (fmt::format (
+            FMT_STRING ("Mapping '{}' key.\n\nWaiting for a key press.\nPress Esc to cancel."),
+            keyName
+        ));
     }
 
     void CableColorManager::unsetLearnMode () {
-        if (masterKeyContainer != nullptr)
-            masterKeyContainer->closeMessage ();
+        auto masterKeyContainer = getMasterKeyContainer ();
+        if (masterKeyContainer == nullptr)
+            return;
+
+        masterKeyContainer->closeMessage ();
 
         learnMode = LearnMode::Off;
         learnIndex = 0;
@@ -499,6 +504,9 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void CableColorManager::setLearnMode (std::string keyName, uint32_t colorIndex) {
+        if (getMasterKeyContainer () == nullptr)
+            return;
+
         unsetLearnMode ();
 
         learnMode = LearnMode::LearnColor;
@@ -507,6 +515,9 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void CableColorManager::setLearnMode (std::string keyName, CableColorKey* key) {
+        if (getMasterKeyContainer () == nullptr)
+            return;
+
         unsetLearnMode ();
 
         learnMode = LearnMode::LearnKeyPtr;
