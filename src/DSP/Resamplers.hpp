@@ -127,39 +127,6 @@ namespace OuroborosModules::DSP {
         static constexpr int BufferMask = BufferSize - 1;
         static constexpr int CenterTap = TInfo::CenterTap;
 
-      private:
-        alignas (16) T delayLine [BufferSize];
-        int writeIndex;
-
-        void feedDelay (T input) {
-            delayLine [writeIndex] = input;
-            writeIndex = (writeIndex + 1) & BufferMask;
-        }
-
-        /**
-         * Compute polyphase
-         */
-        T computeEvenPhase () {
-            int readIndex = writeIndex;
-            auto sum = T (0.f);
-
-            // Symmetric pairs
-            for (int i = 0; i < CoefficientsCount - 1; i++) {
-                int left = (readIndex - TInfo::TapOffsets [i]) & BufferMask;
-                int right = (readIndex - (FilterLength - 1 - TInfo::TapOffsets [i])) & BufferMask;
-                sum += T (TInfo::Coefficients [i]) * (delayLine [left] + delayLine [right]);
-            }
-
-            return sum;
-        }
-
-        T computeOddPhase () {
-            int readIndex = writeIndex;
-
-            // Center tap
-            return T (TInfo::Coefficients [CoefficientsCount - 1]) * delayLine [(readIndex - 1 - CenterTap) & BufferMask];
-        }
-
       public:
         HalfBandFilter () {
             reset ();
@@ -193,8 +160,8 @@ namespace OuroborosModules::DSP {
         void downsampleBlock (const T* input, T* output, size_t inputLength) {
             for (size_t i = 0, outputIdx = 0; i < inputLength; i += 2, outputIdx++) {
                 feedDelay (input [i]);
-                T result = computeEvenPhase ();
                 feedDelay (input [i + 1]);
+                T result = computeEvenPhase ();
                 result += computeOddPhase ();
 
                 output [outputIdx] = result;
@@ -209,6 +176,39 @@ namespace OuroborosModules::DSP {
         // Filter specifications
         static constexpr int getFilterLength () { return FilterLength; }
         static constexpr int getLatencySamples () { return (FilterLength - 1) / 2; }
+
+      private:
+        alignas (16) T delayLine [BufferSize];
+        int writeIndex;
+
+        void feedDelay (T input) {
+            writeIndex = (writeIndex + 1) & BufferMask;
+            delayLine [writeIndex] = input;
+        }
+
+        /**
+         * Compute polyphase
+         */
+        T computeEvenPhase () {
+            int readIndex = writeIndex;
+            auto sum = T (0.f);
+
+            // Symmetric pairs
+            for (int i = 0; i < CoefficientsCount - 1; i++) {
+                int left = (readIndex - TInfo::TapOffsets [i]) & BufferMask;
+                int right = (readIndex - (FilterLength - 1 - TInfo::TapOffsets [i])) & BufferMask;
+                sum += T (TInfo::Coefficients [i]) * (delayLine [left] + delayLine [right]);
+            }
+
+            return sum;
+        }
+
+        T computeOddPhase () {
+            int readIndex = writeIndex;
+
+            // Center tap
+            return T (TInfo::Coefficients [CoefficientsCount - 1]) * delayLine [(readIndex - CenterTap) & BufferMask];
+        }
     };
 
     template<typename T, template<typename> typename U>
@@ -495,7 +495,7 @@ namespace OuroborosModules::DSP {
         };
 
         struct HalfBandInfo4 {
-            // Parameters: length: 27, transition band: 0.26
+            // Parameters: length: 27, transition band: 0.3
             static constexpr int FilterLength = 27;
             static constexpr int BufferSize = 32;
             static constexpr int CenterTap = 13;
