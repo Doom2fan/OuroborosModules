@@ -11,6 +11,19 @@ on:
       - develop
     tags:
       - 'v**'
+    paths:
+        - '.github/workflows/**'
+        - 'cmake/**'
+        - 'libs/**'
+        - 'license/**'
+        - 'res/**'
+        - 'src/**'
+        - '*.cmake'
+        - '.gitmodules'
+        - 'CMakeLists.txt'
+        - 'LICENSE.md'
+        - 'Makefile'
+        - 'plugin.json'
 
 env:
   rack-sdk-version: 2.6.3
