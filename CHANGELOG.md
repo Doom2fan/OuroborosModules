@@ -1,7 +1,10 @@
 # OuroborosModules Changelog
 
+## v2.2.3 (2026-05-02)
+  * Fixed an oversampling bug affecting Warp
+
 ## v2.2.2 (2026-04-03)
-  * Made Conductor - Grid's title look a bit nicer.
+  * Made Conductor - Grid's title look a bit nicer
 
 ## v2.2.1 (2026-04-02)
   * Fixed the emblems breaking with UI scales higher than 150%
