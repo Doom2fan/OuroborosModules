@@ -9,6 +9,23 @@ on:
     branches:
       - master
       - develop
+      paths-ignore:
+        - 'README.md'
+        - 'CHANGELOG.md'
+        - 'COMPILING.md'
+
+        - '.clang-format'
+        - '.gitignore'
+        - '__build.sh'
+        - '__build_shell.py'
+        - '*.sublime-project'
+        - 'CppCheckSuppresions.txt'
+        - 'Mkfile_PlainMake'
+
+        - 'docs/**'
+        - 'scripts/**'
+        - 'res_src/**'
+        - '.github/ISSUE_TEMPLATE/**'
     tags:
       - 'v**'
 

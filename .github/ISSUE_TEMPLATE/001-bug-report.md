@@ -1,34 +1,33 @@
 ---
 name: Bug report
-about: File a bug report
+about: Report an issue with the modules or the plugin
 title: "[BUG] "
 labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Description
+A clear and concise description of the bug. If the issue is related to a module, please specify which one.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-[Example:]
+### To Reproduce
+[Example] Steps to reproduce the problem:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+### Expected behavior
 If applicable, a clear and concise description of what you expected to happen.
 
-**Screenshots**
+### Screenshots
 If applicable, add screenshots to help explain your problem.
 
-**Software/Hardware info:**
+### Software/Hardware info
  - Device: [PC, Mac Intel, or Mac ARM]
  - OS: [Windows, Linux, or Mac]
  - VCV Rack version: [Can be found on the top right corner of VCV Rack]
  - Plugin version: [Can be found by right clicking one of the modules and opening the "Info" submenu]
 
-**Additional context**
+### Additional context
 Add any other context about the problem here.
