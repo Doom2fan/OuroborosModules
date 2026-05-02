@@ -9,7 +9,9 @@ on:
     branches:
       - master
       - develop
-      paths-ignore:
+    tags:
+      - 'v**'
+    paths-ignore:
         - 'README.md'
         - 'CHANGELOG.md'
         - 'COMPILING.md'
@@ -26,8 +28,6 @@ on:
         - 'scripts/**'
         - 'res_src/**'
         - '.github/ISSUE_TEMPLATE/**'
-    tags:
-      - 'v**'
 
 env:
   rack-sdk-version: 2.6.3
