@@ -11,23 +11,19 @@ on:
       - develop
     tags:
       - 'v**'
-    paths-ignore:
-        - 'README.md'
-        - 'CHANGELOG.md'
-        - 'COMPILING.md'
-
-        - '.clang-format'
-        - '.gitignore'
-        - '__build.sh'
-        - '__build_shell.py'
-        - '*.sublime-project'
-        - 'CppCheckSuppresions.txt'
-        - 'Mkfile_PlainMake'
-
-        - 'docs/**'
-        - 'scripts/**'
-        - 'res_src/**'
-        - '.github/ISSUE_TEMPLATE/**'
+    paths:
+        - '.github/workflows/**'
+        - 'cmake/**'
+        - 'libs/**'
+        - 'license/**'
+        - 'res/**'
+        - 'src/**'
+        - '*.cmake'
+        - '.gitmodules'
+        - 'CMakeLists.txt'
+        - 'LICENSE.md'
+        - 'Makefile'
+        - 'plugin.json'
 
 env:
   rack-sdk-version: 2.6.3
