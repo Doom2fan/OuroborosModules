@@ -28,4 +28,24 @@ namespace OuroborosModules::Math {
     inline float rescale1 (float x, float min, float max) {
         return min + x * (max - min);
     }
+
+    using rack::simd::rsqrt;
+    inline float rsqrt (const float x) {
+        return _mm_cvtss_f32 (_mm_rsqrt_ss (_mm_set_ss (x)));
+    }
+
+    inline bool isNan (const float x) { return std::isnan (x); }
+    inline rack::simd::float_4 isNan (const rack::simd::float_4 x) { return x != x; }
+
+    inline bool isInfinity (const float x) { return std::isinf (x); }
+    inline rack::simd::float_4 isInfinity (const rack::simd::float_4 x) {
+        using rack::simd::float_4;
+        using rack::simd::int32_4;
+
+        const auto infMask = float_4::cast (int32_4 (0x7F800000)); // +Inf bit pattern
+        return rack::simd::abs (x) == infMask;
+    }
+
+    inline float fpClean (const float x) { return std::isfinite (x) ? x : 0; }
+    inline rack::simd::float_4 fpClean (const rack::simd::float_4 x) { return x & ~(isNan (x) | isInfinity (x)); }
 }
