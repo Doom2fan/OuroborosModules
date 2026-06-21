@@ -118,7 +118,7 @@
             "slug": "Crush",
             "name": "Crush",
             "description": "Envelope and dynamics remover with envelope output. \"Flattens\" audio signals to a specified volume level",
-            "tags": [ "Compressor", "Limiter", "Envelope follower", "Polyphonic" ],
+            "tags": [ "Limiter", "Envelope follower", "Polyphonic" ],
             "keywords": "leveler press normalize normalise normalization normalisation limiter",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Crush"
         }
