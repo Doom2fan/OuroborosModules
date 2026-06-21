@@ -113,6 +113,14 @@
             "description": "Virtual pad grid expander for Conductor",
             "tags": [ "Controller", "Expander", "Visual" ],
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Conductor-‐-Grid"
+        },
+        {
+            "slug": "Crush",
+            "name": "Crush",
+            "description": "Envelope and dynamics remover with envelope output. \"Flattens\" audio signals to a specified volume level",
+            "tags": [ "Compressor", "Limiter", "Envelope follower", "Polyphonic" ],
+            "keywords": "leveler press normalize normalise normalization normalisation limiter",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Crush"
         }
     ]
 }
