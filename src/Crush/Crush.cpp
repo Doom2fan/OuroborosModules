@@ -93,7 +93,10 @@ namespace OuroborosModules::Modules::Crush {
         // Process the audio.
         for (int bank = 0, channel = 0; bank < bankCount; bank++, channel += SIMDBankSize) {
             // Get the per-channel params.
-            auto targetLevel = inputs [INPUT_TARGET_LEVEL].getNormalPolyVoltageSimd (targetLevelKnob, channel);
+            auto targetLevel = Math::fpClean (rack::simd::fmax (
+                inputs [INPUT_TARGET_LEVEL].getNormalPolyVoltageSimd (targetLevelKnob, channel),
+                1.f
+            ));
             auto amount = rack::simd::clamp (amountKnob
                         + inputs [INPUT_AMOUNT_CV].getPolyVoltageSimd<float_4> (channel) / 10.f
                         * params [PARAM_AMOUNT_CV_ATTEN].getValue (), float_4::zero (), 1.f);
