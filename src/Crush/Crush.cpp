@@ -97,9 +97,9 @@ namespace OuroborosModules::Modules::Crush {
                 inputs [INPUT_TARGET_LEVEL].getNormalPolyVoltageSimd (targetLevelKnob, channel),
                 1.f
             ));
-            auto amount = rack::simd::clamp (amountKnob
-                        + inputs [INPUT_AMOUNT_CV].getPolyVoltageSimd<float_4> (channel) / 10.f
-                        * params [PARAM_AMOUNT_CV_ATTEN].getValue (), float_4::zero (), 1.f);
+            auto amount = rack::simd::clamp (amountKnob + Math::fpClean (
+                          inputs [INPUT_AMOUNT_CV].getPolyVoltageSimd<float_4> (channel) / 10.f *
+                          params [PARAM_AMOUNT_CV_ATTEN].getValue ()), float_4::zero (), 1.f);
 
             // Get and clean the input signal.
             auto inputSignal = Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltageSimd<float_4> (channel));

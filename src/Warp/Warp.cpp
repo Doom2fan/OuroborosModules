@@ -91,20 +91,20 @@ namespace OuroborosModules::Modules::Warp {
     void WarpModule::processChannel (int channel) {
         using rack::simd::float_4;
 
-        auto amount = params [PARAM_AMOUNT].getValue ()
-                    + inputs [INPUT_AMOUNT_CV].getNormalPolyVoltage (0.f, channel) / 10.f
-                    * params [PARAM_AMOUNT_CV_ATTEN].getValue ();
-        auto bias = params [PARAM_BIAS].getValue ()
-                  + inputs [INPUT_BIAS_CV].getNormalPolyVoltage (0.f, channel)
-                  * params [PARAM_BIAS_CV_ATTEN].getValue ();
+        auto amount = params [PARAM_AMOUNT].getValue () + Math::fpClean (
+                      inputs [INPUT_AMOUNT_CV].getNormalPolyVoltage (0.f, channel) / 10.f *
+                      params [PARAM_AMOUNT_CV_ATTEN].getValue ());
+        auto bias = params [PARAM_BIAS].getValue () + Math::fpClean (
+                    inputs [INPUT_BIAS_CV].getNormalPolyVoltage (0.f, channel) *
+                    params [PARAM_BIAS_CV_ATTEN].getValue ());
 
         amount = std::clamp (amount, 0.f, 1.f);
         bias = std::clamp (bias / MaxBias, -1.f, 1.f) * M_PI;
 
-        // Get signals.
-        auto signal = inputs [INPUT_SIGNAL].getPolyVoltage (channel);
+        // Get the signals.
+        auto signal = rack::simd::clamp (Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltage (channel)), -100, 100);
         auto modulator = inputs [INPUT_MODULATOR].getNormalPolyVoltage (signal, channel) * amount / MaxBias;
-        modulator = bias + modulator * M_PI * 4.f;
+        modulator = Math::fpClean (bias + modulator * M_PI * 4.f);
 
         // Oversample.
         float signalBuffer [MaxOversample];
@@ -129,7 +129,7 @@ namespace OuroborosModules::Modules::Warp {
             // Rotate the real part of the signal.
             auto signal = c.real () * rack::simd::cos (phi) - c.imag () * rack::simd::sin (phi);
 
-            signal.store (signalBuffer + i);
+            Math::fpClean (signal).store (signalBuffer + i);
         }
 
         auto output = downsamplerFilter [channel].process (signalBuffer);
