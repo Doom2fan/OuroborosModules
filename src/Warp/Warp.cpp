@@ -102,7 +102,7 @@ namespace OuroborosModules::Modules::Warp {
         bias = std::clamp (bias / MaxBias, -1.f, 1.f) * M_PI;
 
         // Get the signals.
-        auto signal = rack::simd::clamp (Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltage (channel)), -100, 100);
+        auto signal = rack::simd::clamp (Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltage (channel)), -100.f, 100.f);
         auto modulator = inputs [INPUT_MODULATOR].getNormalPolyVoltage (signal, channel) * amount / MaxBias;
         modulator = Math::fpClean (bias + modulator * M_PI * 4.f);
 
