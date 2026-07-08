@@ -56,11 +56,19 @@ namespace OuroborosModules::DSP {
 
       public:
         void setParams (int factor) override {
+            assert (factor > 0);
+            factor = std::max (factor, 1);
+
             oversampleFactor = factor;
             filter.setCutoffFreq (1.f / (factor * 4));
         }
 
         void process (T* outputBuffer, T input) override {
+            if (oversampleFactor == 1) {
+                outputBuffer [0] = input;
+                return;
+            }
+
             outputBuffer [0] = filter.process (input * oversampleFactor);
 
             auto zero = T (0);
@@ -77,11 +85,17 @@ namespace OuroborosModules::DSP {
 
       public:
         void setParams (int factor) override {
+            assert (factor > 0);
+            factor = std::max (factor, 1);
+
             oversampleFactor = factor;
             filter.setCutoffFreq (1.f / (factor * 4));
         }
 
         T process (const T* inputBuffer) override {
+            if (oversampleFactor == 1)
+                return inputBuffer [0];
+
             for (int i = 0; i < oversampleFactor - 1; ++i)
                 filter.process (inputBuffer [i]);
             return filter.process (inputBuffer [oversampleFactor - 1]);
