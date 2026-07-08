@@ -103,6 +103,7 @@ namespace OuroborosModules::Modules::Crush {
 
             // Get and clean the input signal.
             auto inputSignal = Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltageSimd<float_4> (channel));
+            inputSignal = rack::simd::clamp (inputSignal, -100, 100);
 
             // Calculate amplitude using the peak filter.
             auto amplitude = Math::fpClean (peakFilter [bank].process (args.sampleTime, rack::simd::abs (inputSignal)));
