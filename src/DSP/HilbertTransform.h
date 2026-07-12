@@ -159,5 +159,16 @@ namespace OuroborosModules::DSP {
             auto [r, i] = stepPair (in);
             return {r, i};
         }
+
+        /*
+         * Only use if you're only ever gonna take the real signal.
+         */
+        float stepReal (float in) {
+            float re = in;
+            for (int i = 0; i < 3; ++i)
+                re = allpass [0] [i].step (re);
+
+            return re;
+        }
     };
 }
