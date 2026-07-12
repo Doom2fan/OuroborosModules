@@ -68,75 +68,82 @@ namespace OuroborosModules::Modules::Warp {
     }
 
     void WarpModule::process (const ProcessArgs& args) {
+        using Math::fpClean;
+        using rack::simd::float_4;
+
         // Check for oversample updates.
         if (clockOversample.process ()) {
-            const auto newOversampleRate = static_cast<int> (params [PARAM_OVERSAMPLE].getValue ());
+            const auto newOversampleRate = static_cast<int> (getParam (PARAM_OVERSAMPLE));
             setOversampleRate (newOversampleRate);
         }
 
         // Don't waste CPU if there's no input signal or output connected.
-        if (!inputs [INPUT_SIGNAL].isConnected () || !outputs [OUTPUT_SIGNAL].isConnected ()) {
-            outputs [OUTPUT_SIGNAL].setChannels (1);
-            outputs [OUTPUT_SIGNAL].setVoltage (0);
+        if (!isInputConnected (INPUT_SIGNAL) || !isOutputConnected (OUTPUT_SIGNAL)) {
+            setOutputChannels (OUTPUT_SIGNAL, 1);
+            setOutput (OUTPUT_SIGNAL, 0);
 
             return;
         }
 
-        auto channelCount = std::min (inputs [INPUT_SIGNAL].getChannels (), Constants::MaxPolyphony);
-        outputs [OUTPUT_SIGNAL].setChannels (channelCount);
-        for (int channel = 0; channel < channelCount; channel++)
-            processChannel (channel);
-    }
+        // Get the channel count and set the output's.
+        auto channelCount = std::min (getInputChannels (INPUT_SIGNAL), Constants::MaxPolyphony);
+        setOutputChannels (OUTPUT_SIGNAL, channelCount);
 
-    void WarpModule::processChannel (int channel) {
-        using rack::simd::float_4;
+        // Calculate. the bank count.
+        int bankCount = channelCount / SIMDBankSize;
+        if (bankCount * SIMDBankSize < channelCount)
+            bankCount++;
 
-        // Get the parameters, with CV.
-        auto amount = params [PARAM_AMOUNT].getValue () + Math::fpClean (
-                      inputs [INPUT_AMOUNT_CV].getNormalPolyVoltage (0.f, channel) / 10.f *
-                      params [PARAM_AMOUNT_CV_ATTEN].getValue ());
-        auto bias = params [PARAM_BIAS].getValue () + Math::fpClean (
-                    inputs [INPUT_BIAS_CV].getNormalPolyVoltage (0.f, channel) *
-                    params [PARAM_BIAS_CV_ATTEN].getValue ());
+        // Get the parameters.
+        auto amountKnob = float_4 (getParam (PARAM_AMOUNT));
+        auto biasKnob = float_4 (getParam (PARAM_BIAS));
+        auto amountCVAtten = float_4 (getParam (PARAM_AMOUNT_CV_ATTEN));
+        auto biasCVAtten = float_4 (getParam (PARAM_AMOUNT_CV_ATTEN));
 
-        amount = std::clamp (amount, 0.f, 1.f);
-        bias = std::clamp (bias / MaxBias, -1.f, 1.f) * M_PI;
+        for (int bank = 0, channel = 0; channel < channelCount; bank++, channel += SIMDBankSize) {
+            // Get the CV and apply it to the parameters.
+            auto amount = fpClean (getInputNormalPolySimd<float_4> (INPUT_AMOUNT_CV, 0.f, channel) / 10.f * amountCVAtten);
+            auto bias = fpClean (getInputNormalPolySimd<float_4> (INPUT_BIAS_CV, 0.f, channel) * biasCVAtten);
 
-        // Get the signals.
-        auto signal = rack::simd::clamp (Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltage (channel)), -100.f, 100.f);
-        auto modulator = inputs [INPUT_MODULATOR].getNormalPolyVoltage (signal, channel) * amount / MaxBias;
-        modulator = Math::fpClean (bias + modulator * M_PI * 4.f);
+            amount = rack::simd::clamp (amountKnob + amount, 0.f, 1.f);
+            bias = rack::simd::clamp ((biasKnob + bias) / MaxBias, -1.f, 1.f) * M_PI;
 
-        // Perform the hilbert transform.
-        float signalRe, signalIm;
-        hilbertTransformSignal [channel].step (signal, signalRe, signalIm);
-        auto modulatorRe = hilbertTransformModulator [channel].stepReal (modulator);
+            // Get the signals.
+            auto signal = rack::simd::clamp (fpClean (getInputPolySimd<float_4> (INPUT_SIGNAL, channel)), -100.f, 100.f);
 
-        // Upsample.
-        float signalBufferRe [MaxOversample];
-        float signalBufferIm [MaxOversample];
-        float modulatorBuffer [MaxOversample];
+            auto modulator = getInputNormalPolySimd<float_4> (INPUT_MODULATOR, signal, channel);
+            modulator = rack::simd::clamp (fpClean (modulator), -100.f, 100.f);
+            modulator = bias + (modulator * amount / MaxBias) * M_PI * 4.f;
 
-        signalReUpsampler [channel].process (signalBufferRe, signalRe);
-        signalImUpsampler [channel].process (signalBufferIm, signalIm);
-        modulatorUpsampler [channel].process (modulatorBuffer, modulatorRe);
+            // Perform the hilbert transform.
+            float_4 signalRe, signalIm;
+            hilbertTransformSignal [bank].step (signal, signalRe, signalIm);
+            auto modulatorRe = hilbertTransformModulator [bank].stepReal (modulator);
 
-        // Process the audio.
-        for (uint32_t i = 0; i < oversampleRate; i += 4) {
-            // Fetch the signal and modulator.
-            auto phi = float_4::load (modulatorBuffer + i);
-            std::complex<float_4> c (float_4::load (signalBufferRe + i), float_4::load (signalBufferIm + i));
+            // Upsample.
+            float_4 signalBufferRe [MaxOversample];
+            float_4 signalBufferIm [MaxOversample];
+            float_4 modulatorBuffer [MaxOversample];
 
-            // Rotate the real part of the signal.
-            auto signal = c.real () * rack::simd::cos (phi) - c.imag () * rack::simd::sin (phi);
+            signalReUpsampler [bank].process (signalBufferRe, signalRe);
+            signalImUpsampler [bank].process (signalBufferIm, signalIm);
+            modulatorUpsampler [bank].process (modulatorBuffer, modulatorRe);
 
-            Math::fpClean (signal).store (signalBufferRe + i);
+            // Process the audio.
+            for (uint32_t i = 0; i < oversampleRate; i += 4) {
+                // Fetch the signal and modulator.
+                auto phi = modulatorBuffer [i];
+
+                // Rotate the real part of the signal.
+                auto signal = signalBufferRe [i] * rack::simd::cos (phi) - signalBufferIm [i] * rack::simd::sin (phi);
+                signalBufferRe [i] = fpClean (signal);
+            }
+
+            // Downsample, perform DC blocking and output.
+            auto output = downsamplerFilter [bank].process (signalBufferRe);
+            output = dcBlocker [bank].process (output);
+            setOutputSimd (OUTPUT_SIGNAL, output, channel);
         }
-
-        // Downsample, perform DC blocking and output.
-        auto output = downsamplerFilter [channel].process (signalBufferRe);
-        output = dcBlocker [channel].process (output);
-        outputs [OUTPUT_SIGNAL].setVoltage (output, channel);
     }
 
     void WarpModule::setOversampleRate (uint32_t newOversampleRate) {
@@ -148,11 +155,11 @@ namespace OuroborosModules::Modules::Warp {
 
         oversampleRate = newOversampleRate;
 
-        for (int channel = 0; channel < Constants::MaxPolyphony; channel++) {
-            signalReUpsampler [channel].setParams (newOversampleRate);
-            signalImUpsampler [channel].setParams (newOversampleRate);
-            modulatorUpsampler [channel].setParams (newOversampleRate);
-            downsamplerFilter [channel].setParams (newOversampleRate);
+        for (int bank = 0; bank < SIMDBankCount; bank++) {
+            signalReUpsampler [bank].setParams (newOversampleRate);
+            signalImUpsampler [bank].setParams (newOversampleRate);
+            modulatorUpsampler [bank].setParams (newOversampleRate);
+            downsamplerFilter [bank].setParams (newOversampleRate);
         }
     }
 
@@ -161,11 +168,11 @@ namespace OuroborosModules::Modules::Warp {
             return;
 
         curSampleRate = newSampleRate;
-        for (int channel = 0; channel < Constants::MaxPolyphony; channel++) {
-            hilbertTransformSignal [channel].setSampleRate (newSampleRate);
-            hilbertTransformModulator [channel].setSampleRate (newSampleRate);
+        for (int bank = 0; bank < SIMDBankCount; bank++) {
+            hilbertTransformSignal [bank].setSampleRate (newSampleRate);
+            hilbertTransformModulator [bank].setSampleRate (newSampleRate);
 
-            dcBlocker [channel].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
+            dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
         }
     }
 }

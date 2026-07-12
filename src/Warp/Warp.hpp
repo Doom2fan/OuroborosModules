@@ -29,6 +29,9 @@
 
 namespace OuroborosModules::Modules::Warp {
     struct WarpModule : ModuleBase, SST_NeighborConnectable_V1 {
+        static constexpr int SIMDBankSize = 4;
+        static constexpr int SIMDBankCount = static_cast<int> (static_cast<float> (Constants::MaxPolyphony) / SIMDBankSize + .5f);
+
         enum ParamIds {
             PARAM_AMOUNT,
             PARAM_BIAS,
@@ -68,15 +71,15 @@ namespace OuroborosModules::Modules::Warp {
         uint32_t oversampleRate;
 
         // Oversampling
-        DSP::OptimizedHalfBandInterpolator<float> signalReUpsampler [Constants::MaxPolyphony];
-        DSP::OptimizedHalfBandInterpolator<float> signalImUpsampler [Constants::MaxPolyphony];
-        DSP::OptimizedHalfBandInterpolator<float> modulatorUpsampler [Constants::MaxPolyphony];
-        DSP::OptimizedHalfBandDecimator<float> downsamplerFilter [Constants::MaxPolyphony];
+        DSP::OptimizedHalfBandInterpolator<rack::simd::float_4> signalReUpsampler [SIMDBankCount];
+        DSP::OptimizedHalfBandInterpolator<rack::simd::float_4> signalImUpsampler [SIMDBankCount];
+        DSP::OptimizedHalfBandInterpolator<rack::simd::float_4> modulatorUpsampler [SIMDBankCount];
+        DSP::OptimizedHalfBandDecimator<rack::simd::float_4> downsamplerFilter [SIMDBankCount];
 
         // Filters
-        DSP::HilbertTransform hilbertTransformSignal [Constants::MaxPolyphony];
-        DSP::HilbertTransform hilbertTransformModulator [Constants::MaxPolyphony];
-        DSP::DCBlocker<float> dcBlocker [Constants::MaxPolyphony];
+        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformSignal [SIMDBankCount];
+        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformModulator [SIMDBankCount];
+        DSP::DCBlocker<rack::simd::float_4> dcBlocker [SIMDBankCount];
 
         // Clock dividers
         DSP::ClockDivider clockOversample;
@@ -88,8 +91,6 @@ namespace OuroborosModules::Modules::Warp {
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
 
       private:
-        void processChannel (int channel);
-
         void setOversampleRate (uint32_t newOversampleRate);
         void updateSampleRate (uint32_t newSampleRate);
 
