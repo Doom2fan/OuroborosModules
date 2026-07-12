@@ -145,6 +145,16 @@ namespace OuroborosModules::DSP {
             }
         }
 
+        void step (float in, float& re, float& im) {
+            re = in;
+            im = in;
+
+            for (int i = 0; i < 3; ++i) {
+                re = allpass [0] [i].step (re);
+                im = allpass [1] [i].step (im);
+            }
+        }
+
         std::pair<float, float> stepPair (float in) {
             float im {in}, re {in};
 
