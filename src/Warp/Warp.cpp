@@ -130,7 +130,7 @@ namespace OuroborosModules::Modules::Warp {
             modulatorUpsampler [bank].process (modulatorBuffer, modulatorRe);
 
             // Process the audio.
-            for (uint32_t i = 0; i < oversampleRate; i += 4) {
+            for (uint32_t i = 0; i < oversampleRate; i++) {
                 // Fetch the signal and modulator.
                 auto phi = modulatorBuffer [i];
 
