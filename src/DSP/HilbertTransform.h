@@ -67,9 +67,11 @@ namespace OuroborosModules::DSP {
      * in float form, and which is presented here both in
      * mono-float form and in stereo-SSE form).
      */
+    template<typename T = float>
     struct HilbertTransform {
         struct BQ {
-            float a1 {1}, a2 {0}, b0 {1}, b1 {0}, b2 {0}, reg0 {0}, reg1 {0};
+            float a1 {1}, a2 {0}, b0 {1}, b1 {0}, b2 {0};
+            T reg0 {0}, reg1 {0};
 
             inline void reset () {
                 reg0 = 0;
@@ -84,14 +86,22 @@ namespace OuroborosModules::DSP {
                 b2 = _b2;
             }
 
-            inline float step (float input) {
-                double op;
+            inline T step (T input) {
+                if constexpr (std::is_same_v<T, float>) {
+                    double op;
 
-                op = input * b0 + reg0;
-                reg0 = input * b1 - a1 * op + reg1;
-                reg1 = input * b2 - a2 * op;
+                    op = input * b0 + reg0;
+                    reg0 = input * b1 - a1 * op + reg1;
+                    reg1 = input * b2 - a2 * op;
 
-                return (float) op;
+                    return (float) op;
+                } else {
+                    T op = input * T (b0) + reg0;
+                    reg0 = input * T (b1) - T (a1) * op + reg1;
+                    reg1 = input * T (b2) - T (a2) * op;
+
+                    return op;
+                }
             }
         } allpass [2] [3];
 
@@ -145,7 +155,22 @@ namespace OuroborosModules::DSP {
             }
         }
 
-        void step (float in, float& re, float& im) {
+        std::pair<T, T> stepPair (T in) {
+            T im {in}, re {in};
+
+            for (int i = 0; i < 3; ++i) {
+                re = allpass [0] [i].step (re);
+                im = allpass [1] [i].step (im);
+            }
+            return {re, im};
+        }
+
+        T stepComplex (T in) {
+            auto [r, i] = stepPair (in);
+            return {r, i};
+        }
+
+        void step (T in, T& re, T& im) {
             re = in;
             im = in;
 
@@ -155,26 +180,11 @@ namespace OuroborosModules::DSP {
             }
         }
 
-        std::pair<float, float> stepPair (float in) {
-            float im {in}, re {in};
-
-            for (int i = 0; i < 3; ++i) {
-                re = allpass [0] [i].step (re);
-                im = allpass [1] [i].step (im);
-            }
-            return {re, im};
-        }
-
-        std::complex<float> stepComplex (float in) {
-            auto [r, i] = stepPair (in);
-            return {r, i};
-        }
-
         /*
          * Only use if you're only ever gonna take the real signal.
          */
-        float stepReal (float in) {
-            float re = in;
+        T stepReal (T in) {
+            T re = in;
             for (int i = 0; i < 3; ++i)
                 re = allpass [0] [i].step (re);
 
