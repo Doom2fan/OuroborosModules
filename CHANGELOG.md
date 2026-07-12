@@ -3,6 +3,7 @@
 ## v2.3.0 (Not released yet)
   * New modules:
     * Crush
+  * Optimizations to Warp
 
 ## v2.2.3 (2026-05-02)
   * Fixed an oversampling bug affecting Warp
