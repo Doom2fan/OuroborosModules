@@ -72,6 +72,9 @@ namespace OuroborosModules {
         bool isInputMonophonic (int idx) { return getInputChannels (idx) == 1; }
         bool isOutputMonophonic (int idx) { return getOutputChannels (idx) == 1; }
 
+        bool isInputPolyphonic (int idx) { return getInputChannels (idx) > 1; }
+        bool isOutputPolyphonic (int idx) { return getOutputChannels (idx) > 1; }
+
         /*
          * Input getters
          */
@@ -120,6 +123,14 @@ namespace OuroborosModules {
         template<typename T>
         void setOutputSimd (int idx, T voltage, uint8_t firstChannel) {
             outputs [idx].setVoltageSimd (voltage, firstChannel);
+        }
+
+        /*
+         * Light setters
+         */
+        void setLight (int idx, float brightness) { lights [idx].setBrightness (brightness); }
+        void setLightSmooth (int idx, float brightness, float deltaTime, float lambda = 30.f) {
+            lights [idx].setBrightnessSmooth (brightness, deltaTime, lambda);
         }
     };
 }

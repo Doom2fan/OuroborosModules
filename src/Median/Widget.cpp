@@ -111,7 +111,7 @@ namespace OuroborosModules::Modules::Median {
         // Oversampling options
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createSubmenuItem ("Oversampling", "", [=] (Menu* menu) {
-            auto curOversample = static_cast<int> (moduleT->params [MedianModule::PARAM_OVERSAMPLE].getValue ());
+            auto curOversample = static_cast<int> (moduleT->getParam (MedianModule::PARAM_OVERSAMPLE));
             for (int accum = 1; accum <= MedianModule::MaxOversample; accum *= 2) {
                 auto label = accum > 1 ? fmt::format (FMT_STRING ("{}x"), accum) : "Off";
                 auto isCurrent = accum == curOversample;

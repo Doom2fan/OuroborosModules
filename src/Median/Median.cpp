@@ -57,9 +57,9 @@ namespace OuroborosModules::Modules::Median {
 
     rack::simd::float_4 MedianModule::getBank (int inputNum, int currentChannel) {
         using rack::simd::float_4;
-        auto vec = inputs [INPUT_VALUES + inputNum].getPolyVoltageSimd<float_4> (currentChannel);
-        vec *= float_4 (params [PARAM_VAL_SCALE + inputNum].getValue ());
-        vec += float_4 (params [PARAM_VAL_OFFSET + inputNum].getValue () * 10.f);
+        auto vec = getInputPolySimd<float_4> (INPUT_VALUES + inputNum, currentChannel);
+        vec *= float_4 (getParam (PARAM_VAL_SCALE + inputNum));
+        vec += float_4 (getParam (PARAM_VAL_OFFSET + inputNum) * 10.f);
         return vec;
     }
 
@@ -85,28 +85,28 @@ namespace OuroborosModules::Modules::Median {
 
         // Check for oversample updates.
         if (clockOversample.process ()) {
-            const auto newOversampleRate = static_cast<int> (params [PARAM_OVERSAMPLE].getValue ());
+            const auto newOversampleRate = static_cast<int> (getParam (PARAM_OVERSAMPLE));
             setOversampleRate (newOversampleRate);
         }
 
         // Don't waste CPU if there's nothing connected to the outputs.
-        const auto outConnectedMin = outputs [OUTPUT_MIN].isConnected ();
-        const auto outConnectedMid = outputs [OUTPUT_MID].isConnected ();
-        const auto outConnectedMax = outputs [OUTPUT_MAX].isConnected ();
+        const auto outConnectedMin = isOutputConnected (OUTPUT_MIN);
+        const auto outConnectedMid = isOutputConnected (OUTPUT_MID);
+        const auto outConnectedMax = isOutputConnected (OUTPUT_MAX);
         if (!outConnectedMin && !outConnectedMid && !outConnectedMax) {
             if (clockLights.process ()) {
                 auto lightTime = args.sampleTime * clockLights.getDivision ();
                 for (int i = 0; i < 3 * 3; i++)
-                    lights [LIGHT_OUTPUT + i].setBrightnessSmooth (0.f, lightTime);
+                    setLightSmooth (LIGHT_OUTPUT + i, 0.f, lightTime);
             }
 
             return;
         }
 
         const bool inputConnected [3] = {
-            inputs [INPUT_VALUES + 0].isConnected (),
-            inputs [INPUT_VALUES + 1].isConnected (),
-            inputs [INPUT_VALUES + 2].isConnected (),
+            isInputConnected (INPUT_VALUES + 0),
+            isInputConnected (INPUT_VALUES + 1),
+            isInputConnected (INPUT_VALUES + 2),
         };
         const auto oversampleOutMin = (oversampleRate > 1 && outConnectedMin);
         const auto oversampleOutMid = (oversampleRate > 1 && outConnectedMid);
@@ -114,17 +114,17 @@ namespace OuroborosModules::Modules::Median {
 
         // Calculate polyphony and SIMD counts.
         const int channelCount = std::max (1, std::max (
-            inputs [INPUT_VALUES + 0].getChannels (),
-            std::max (inputs [INPUT_VALUES + 1].getChannels (), inputs [INPUT_VALUES + 2].getChannels ())
+            getInputChannels (INPUT_VALUES + 0),
+            std::max (getInputChannels (INPUT_VALUES + 1), getInputChannels (INPUT_VALUES + 2))
         ));
         int bankCount = channelCount / SIMDBankSize;
         if (bankCount * SIMDBankSize < channelCount)
             bankCount++;
 
         // Set the output polyphony count.
-        outputs [OUTPUT_MIN].setChannels (channelCount);
-        outputs [OUTPUT_MID].setChannels (channelCount);
-        outputs [OUTPUT_MAX].setChannels (channelCount);
+        setOutputChannels (OUTPUT_MIN, channelCount);
+        setOutputChannels (OUTPUT_MID, channelCount);
+        setOutputChannels (OUTPUT_MAX, channelCount);
 
         // Generate samples.
         float_4 buffer [3] [MaxOversample];
@@ -159,9 +159,9 @@ namespace OuroborosModules::Modules::Median {
             auto vecMid = oversampleOutMid ? downsamplerFilter [bank] [1].process (buffer [1]) : buffer [1] [0];
             auto vecMax = oversampleOutMax ? downsamplerFilter [bank] [2].process (buffer [2]) : buffer [2] [0];
 
-            outputs [OUTPUT_MIN].setVoltageSimd (vecMin, currentChannel);
-            outputs [OUTPUT_MID].setVoltageSimd (vecMid, currentChannel);
-            outputs [OUTPUT_MAX].setVoltageSimd (vecMax, currentChannel);
+            setOutputSimd (OUTPUT_MIN, vecMin, currentChannel);
+            setOutputSimd (OUTPUT_MID, vecMid, currentChannel);
+            setOutputSimd (OUTPUT_MAX, vecMax, currentChannel);
         }
 
         if (clockLights.process ()) {
@@ -169,9 +169,9 @@ namespace OuroborosModules::Modules::Median {
             if (channelCount > 1) {
                 // Polyphonic mode. Show blue output lights.
                 for (int i = 0; i < 3; i++) {
-                    lights [LIGHT_OUTPUT + i * 3 + 0].setBrightnessSmooth (0.f, lightTime);
-                    lights [LIGHT_OUTPUT + i * 3 + 1].setBrightnessSmooth (0.f, lightTime);
-                    lights [LIGHT_OUTPUT + i * 3 + 2].setBrightnessSmooth (1.f, lightTime);
+                    setLightSmooth (LIGHT_OUTPUT + i * 3 + 0, 0.f, lightTime);
+                    setLightSmooth (LIGHT_OUTPUT + i * 3 + 1, 0.f, lightTime);
+                    setLightSmooth (LIGHT_OUTPUT + i * 3 + 2, 1.f, lightTime);
                 }
             } else for (int i = 0; i < 3; i++) {
                 // Monophonic mode. Show red (neg) and green (pos) lights.
@@ -182,9 +182,9 @@ namespace OuroborosModules::Modules::Median {
                     case 1: output = outputs [OUTPUT_MID].getVoltage (); lightsIdx = OUTLIGHT_Mid; break;
                     case 2: output = outputs [OUTPUT_MAX].getVoltage (); lightsIdx = OUTLIGHT_Max; break;
                 }
-                lights [LIGHT_OUTPUT + lightsIdx + 0].setBrightnessSmooth (std::max (-output, 0.f), lightTime);
-                lights [LIGHT_OUTPUT + lightsIdx + 1].setBrightnessSmooth (std::max ( output, 0.f), lightTime);
-                lights [LIGHT_OUTPUT + lightsIdx + 2].setBrightnessSmooth (0.f, lightTime);
+                setLightSmooth (LIGHT_OUTPUT + lightsIdx + 0, std::max (-output, 0.f), lightTime);
+                setLightSmooth (LIGHT_OUTPUT + lightsIdx + 1, std::max ( output, 0.f), lightTime);
+                setLightSmooth (LIGHT_OUTPUT + lightsIdx + 2, 0.f, lightTime);
             }
         }
     }

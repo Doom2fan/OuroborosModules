@@ -217,10 +217,10 @@ namespace OuroborosModules::Modules::Conductor {
     }
 
     void ConductorModule::calculatePatternInfo () {
-        auto sequencerMax = static_cast<int> (params [PARAM_SEQ_MAX_PATTERNS].getValue ());
-        auto newPatternCount = patternFloatToInt (Math::rescale1 (params [PARAM_PATTERN_COUNT].getValue (), 2, sequencerMax));
-        auto newPatternOffset = params [PARAM_PATTERN_OFFSET_VOLTAGE].getValue ();
-        auto newMaxCV = params [PARAM_SEQ_MAX_CV].getValue ();
+        auto sequencerMax = static_cast<int> (getParam (PARAM_SEQ_MAX_PATTERNS));
+        auto newPatternCount = patternFloatToInt (Math::rescale1 (getParam (PARAM_PATTERN_COUNT), 2, sequencerMax));
+        auto newPatternOffset = getParam (PARAM_PATTERN_OFFSET_VOLTAGE);
+        auto newMaxCV = getParam (PARAM_SEQ_MAX_CV);
 
         auto patternCountChanged = newPatternCount != curPatternCount;
         auto seqPatternCountChanged = sequencerMax != curSequencerMax;
@@ -234,7 +234,7 @@ namespace OuroborosModules::Modules::Conductor {
         curMaxCV = newMaxCV;
 
         if (resetPatternOn)
-            curResetPattern = patternFloatToInt (Math::rescale1 (params [PARAM_RESET_PATTERN].getValue (), 0, curPatternCount - 1));
+            curResetPattern = patternFloatToInt (Math::rescale1 (getParam (PARAM_RESET_PATTERN), 0, curPatternCount - 1));
         else
             curResetPattern = -1;
 
@@ -265,25 +265,25 @@ namespace OuroborosModules::Modules::Conductor {
         using Constants::TriggerThreshLow;
         using Constants::TriggerThreshHigh;
 
-        clockHandler.setParams (resetIgnoreFirstClock, static_cast<uint32_t> (params [PARAM_CLOCK_DELAY].getValue ()));
-        outputs [OUTPUT_CLOCK].setVoltage (boolToGate (clockHandler.processClock (args, inputs [INPUT_CLOCK].getVoltage ())));
+        clockHandler.setParams (resetIgnoreFirstClock, static_cast<uint32_t> (getParam (PARAM_CLOCK_DELAY)));
+        setOutput (OUTPUT_CLOCK, boolToGate (clockHandler.processClock (args, getInput (INPUT_CLOCK))));
 
         calculatePatternInfo ();
 
         // Process triggers and buttons.
-        if (resetPatternToggleTrigger.process (params [PARAM_RESET_PATTERN_BUTTON].getValue ()))
+        if (resetPatternToggleTrigger.process (getParam (PARAM_RESET_PATTERN_BUTTON)))
             resetPatternOn = !resetPatternOn;
 
-        if (resetButtonTrigger.process (params [PARAM_MANUAL_RESET_BUTTON].getValue ()) |
-            resetTrigger.process (inputs [INPUT_RESET].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (resetButtonTrigger.process (getParam (PARAM_MANUAL_RESET_BUTTON)) |
+            resetTrigger.process (getInput (INPUT_RESET), TriggerThreshLow, TriggerThreshHigh))
             handleReset ();
 
-        if (advanceButtonTrigger.process (params [PARAM_MANUAL_ADVANCE_BUTTON].getValue ()) |
-            advanceTrigger.process (inputs [INPUT_ADVANCE].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (advanceButtonTrigger.process (getParam (PARAM_MANUAL_ADVANCE_BUTTON)) |
+            advanceTrigger.process (getInput (INPUT_ADVANCE), TriggerThreshLow, TriggerThreshHigh))
             handleAdvance ();
 
-        if (patternSetButtonTrigger.process (params [PARAM_MANUAL_SET_BUTTON].getValue ())) {
-            auto patternIndexNorm = params [PARAM_MANUAL_SET].getValue ();
+        if (patternSetButtonTrigger.process (getParam (PARAM_MANUAL_SET_BUTTON))) {
+            auto patternIndexNorm = getParam (PARAM_MANUAL_SET);
             auto patternIndex = patternFloatToInt (Math::rescale1 (patternIndexNorm, 0, curPatternCount - 1));
             changePattern (patternIndex);
             manualSetLightPulse.trigger (Constants::LightPulseMS);
@@ -291,10 +291,10 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Process pulses.
         resetPulse.process (args.sampleTime);
-        outputs [OUTPUT_RESET].setVoltage (boolToGate (resetPulse.isHigh ()));
+        setOutput (OUTPUT_RESET, boolToGate (resetPulse.isHigh ()));
 
         // Output the pattern CV.
-        outputs [OUTPUT_PATTERN].setVoltage (curPatternCV);
+        setOutput (OUTPUT_PATTERN, curPatternCV);
 
         // Calculate pattern CV and emit data updates.
         if (dataUpdated) {
@@ -312,10 +312,10 @@ namespace OuroborosModules::Modules::Conductor {
             resetLightPulse.process (lightTime);
             manualSetLightPulse.process (lightTime);
 
-            lights [LIGHT_ADVANCE_BUTTON].setBrightnessSmooth (boolToLight (advanceLightPulse.isHigh ()), lightTime);
-            lights [LIGHT_RESET_BUTTON].setBrightnessSmooth (boolToLight (resetLightPulse.isHigh ()), lightTime);
-            lights [LIGHT_RESET_PATTERN_BUTTON].setBrightnessSmooth (boolToLight (resetPatternOn), lightTime);
-            lights [LIGHT_MANUAL_SET_BUTTON].setBrightnessSmooth (boolToLight (manualSetLightPulse.isHigh ()), lightTime);
+            setLightSmooth (LIGHT_ADVANCE_BUTTON, boolToLight (advanceLightPulse.isHigh ()), lightTime);
+            setLightSmooth (LIGHT_RESET_BUTTON, boolToLight (resetLightPulse.isHigh ()), lightTime);
+            setLightSmooth (LIGHT_RESET_PATTERN_BUTTON, boolToLight (resetPatternOn), lightTime);
+            setLightSmooth (LIGHT_MANUAL_SET_BUTTON, boolToLight (manualSetLightPulse.isHigh ()), lightTime);
         }
     }
 }

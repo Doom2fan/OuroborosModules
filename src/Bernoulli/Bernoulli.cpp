@@ -52,9 +52,9 @@ namespace OuroborosModules::Modules::Bernoulli {
             configLight (LIGHT_STATE_B + i, fmt::format (FMT_STRING ("Channel {} B state"), i + 1));
 
             bernoulliGates [i] = BernoulliGate ([=] {
-                auto cv = inputs [INPUT_PROBABILITY_CV + i].getVoltage () / 10.f
-                        * params [PARAM_PROBABILITY_CV + i].getValue ();
-                return params [PARAM_PROBABILITY + i].getValue () + cv;
+                return getParam (PARAM_PROBABILITY + i)
+                     + getInput (INPUT_PROBABILITY_CV + i) / 10.f
+                     * getParam (PARAM_PROBABILITY_CV + i);
             });
         }
 
@@ -160,25 +160,25 @@ namespace OuroborosModules::Modules::Bernoulli {
         for (int i = 0; i < GatesCount; i++) {
             auto& gate = bernoulliGates [i];
 
-            auto modeValue = static_cast<int> (params [PARAM_MODE + i].getValue ());
+            auto modeValue = static_cast<int> (getParam (PARAM_MODE + i));
             gate.modeLatch = modeValue >= 2;
             gate.modeToggle = (modeValue % 2) == 1;
 
             float gateInput;
-            if (!inputs [INPUT_TRIGGER + i].isConnected ())
-                gateInput = inputs [INPUT_TRIGGER + (lastConnected >= 0 ? lastConnected : i)].getVoltage ();
+            if (!isInputConnected (INPUT_TRIGGER + i))
+                gateInput = getInput (INPUT_TRIGGER + (lastConnected >= 0 ? lastConnected : i));
             else {
-                gateInput = inputs [INPUT_TRIGGER + i].getVoltage ();
+                gateInput = getInput (INPUT_TRIGGER + i);
                 lastConnected = i;
             }
 
             auto result = gate.process (gateInput);
-            outputs [OUTPUT_A + i].setVoltage (result.x);
-            outputs [OUTPUT_B + i].setVoltage (result.y);
+            setOutput (OUTPUT_A + i, result.x);
+            setOutput (OUTPUT_B + i, result.y);
 
             if (lightClocked) {
-                lights [LIGHT_STATE_A + i].setBrightnessSmooth (result.x, lightTime);
-                lights [LIGHT_STATE_B + i].setBrightnessSmooth (result.y, lightTime);
+                setLightSmooth (LIGHT_STATE_A + i, result.x, lightTime);
+                setLightSmooth (LIGHT_STATE_B + i, result.y, lightTime);
             }
         }
     }

@@ -46,8 +46,8 @@ namespace OuroborosModules::Modules::ResetHelper {
 
     void ResetHelperModule::process (const ProcessArgs& args) {
         // Fetch and calculate the parameters.
-        auto mergeTime = params [PARAM_MERGE_TIME].getValue () / 1000.f;
-        auto triggerLength = params [PARAM_TRIGGER_LENGTH].getValue () / 1000.f;
+        auto mergeTime = getParam (PARAM_MERGE_TIME) / 1000.f;
+        auto triggerLength = getParam (PARAM_TRIGGER_LENGTH) / 1000.f;
 
         mergeTime = std::max (mergeTime, triggerLength); // This ensures more consistent behaviour from the module.
 
@@ -56,11 +56,11 @@ namespace OuroborosModules::Modules::ResetHelper {
         auto lightsClocked = clockLights.process ();
 
         // Determine and set the channel counts.
-        auto outputChannels = std::max (1, inputs [INPUT_RESET].getChannels ());
-        for (int i = 1; i < InputCount; i++)
-            outputChannels = std::max (outputChannels, inputs [INPUT_RESET + i].getChannels ());
+        auto outputChannels = 1;
+        for (int i = 0; i < InputCount; i++)
+            outputChannels = std::max (outputChannels, getInputChannels (INPUT_RESET + i));
 
-        outputs [OUTPUT_RESET].setChannels (outputChannels);
+        setOutputChannels (OUTPUT_RESET, outputChannels);
 
         // Light data.
         bool inputTriggered [InputCount] = { };
@@ -72,7 +72,7 @@ namespace OuroborosModules::Modules::ResetHelper {
             auto triggered = false;
 
             for (int inputIdx = 0; inputIdx < InputCount; inputIdx++) {
-                auto inputSignal = inputs [INPUT_RESET + inputIdx].getPolyVoltage (channel);
+                auto inputSignal = getInputPoly (INPUT_RESET + inputIdx, channel);
                 auto inputHigh = inputTriggers [inputIdx] [channel].process (inputSignal, Constants::TriggerThreshLow, Constants::TriggerThreshHigh);
 
                 triggered |= inputHigh;
@@ -93,7 +93,7 @@ namespace OuroborosModules::Modules::ResetHelper {
 
             // Update the reset output.
             auto outputHigh = outputPulse [channel].process (args.sampleTime);
-            outputs [OUTPUT_RESET].setVoltage (boolToGate (outputHigh), channel);
+            setOutput (OUTPUT_RESET, boolToGate (outputHigh), channel);
         }
 
         // Pulse the lights, and store the pulse state.
@@ -109,17 +109,17 @@ namespace OuroborosModules::Modules::ResetHelper {
         // Handle the lights.
         if (lightsClocked) {
             for (int inputIdx = 0, lightIdx = LIGHT_INPUT; inputIdx < InputCount; inputIdx++, lightIdx += 2) {
-                auto polyIn = inputs [INPUT_RESET + inputIdx].getChannels () > 1;
+                auto polyIn = isInputPolyphonic (INPUT_RESET + inputIdx);
                 auto inputLightState = inputTriggered [inputIdx];
 
-                lights [lightIdx    ].setBrightnessSmooth (boolToLight (!polyIn & inputLightState), lightTime);
-                lights [lightIdx + 1].setBrightnessSmooth (boolToLight ( polyIn & inputLightState), lightTime);
+                setLightSmooth (lightIdx    , boolToLight (!polyIn & inputLightState), lightTime);
+                setLightSmooth (lightIdx + 1, boolToLight ( polyIn & inputLightState), lightTime);
             }
 
             auto polyOut = outputChannels > 1;
             auto outputLightState = outputTriggered;
-            lights [LIGHT_OUTPUT    ].setBrightnessSmooth (boolToLight (!polyOut & outputLightState), lightTime);
-            lights [LIGHT_OUTPUT + 1].setBrightnessSmooth (boolToLight ( polyOut & outputLightState), lightTime);
+            setLightSmooth (LIGHT_OUTPUT    , boolToLight (!polyOut & outputLightState), lightTime);
+            setLightSmooth (LIGHT_OUTPUT + 1, boolToLight ( polyOut & outputLightState), lightTime);
         }
     }
 }

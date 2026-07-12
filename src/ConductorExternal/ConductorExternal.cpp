@@ -181,7 +181,7 @@ namespace OuroborosModules::Modules::Conductor {
     }
 
     void ConductorExternalModule::checkMode () {
-        auto modeInt = static_cast<int> (params [PARAM_MODE].getValue ());
+        auto modeInt = static_cast<int> (getParam (PARAM_MODE));
         auto newMode = mode;
         switch (modeInt) {
             default:
@@ -252,11 +252,11 @@ namespace OuroborosModules::Modules::Conductor {
         using Constants::TriggerThreshLow;
         using Constants::TriggerThreshHigh;
 
-        auto indexFloat = std::clamp (inputs [INPUT_CV1].getVoltage () / 10.f, 0.f, 1.f);
+        auto indexFloat = std::clamp (getInput (INPUT_CV1) / 10.f, 0.f, 1.f);
         selectedPattern = patternFloatToInt (Math::rescale1 (indexFloat, 0, patternCount - 1));
 
         // Confirm
-        if (gateTrigger.process (inputs [INPUT_GATE].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (gateTrigger.process (getInput (INPUT_GATE), TriggerThreshLow, TriggerThreshHigh))
             confirmQueue ();
     }
 
@@ -265,15 +265,15 @@ namespace OuroborosModules::Modules::Conductor {
         using Constants::TriggerThreshHigh;
 
         // Scroll up
-        if (cv1Trigger.process (inputs [INPUT_CV1].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (cv1Trigger.process (getInput (INPUT_CV1), TriggerThreshLow, TriggerThreshHigh))
             selectedPattern = std::min (selectedPattern + 1, patternCount - 1);
 
         // Scroll down
-        if (cv2Trigger.process (inputs [INPUT_CV2].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (cv2Trigger.process (getInput (INPUT_CV2), TriggerThreshLow, TriggerThreshHigh))
             selectedPattern = std::max (selectedPattern - 1, 0);
 
         // Confirm
-        if (gateTrigger.process (inputs [INPUT_GATE].getVoltage (), TriggerThreshLow, TriggerThreshHigh))
+        if (gateTrigger.process (getInput (INPUT_GATE), TriggerThreshLow, TriggerThreshHigh))
             confirmQueue ();
     }
 
@@ -283,11 +283,11 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Calculate the selected index.
         auto prevNoteKey = noteMapState.currentNoteKey;
-        noteMapState.currentNoteKey = static_cast<int> (std::round (inputs [INPUT_CV1].getVoltage () * NoteMapSteps));
+        noteMapState.currentNoteKey = static_cast<int> (std::round (getInput (INPUT_CV1) * NoteMapSteps));
         auto noteKeyChanged = noteMapState.currentNoteKey != prevNoteKey;
 
         // Handle mapping.
-        if (mapButtonTrigger.process (params [PARAM_MAP_BUTTON].getValue ())) {
+        if (mapButtonTrigger.process (getParam (PARAM_MAP_BUTTON))) {
             switch (noteMapState.mappingState) {
                 default:
                 case MappingState::None: noteMapState.mappingState = MappingState::Mapping; break;
@@ -325,7 +325,7 @@ namespace OuroborosModules::Modules::Conductor {
         }
 
         // Confirm
-        if (gateTrigger.process (inputs [INPUT_GATE].getVoltage (), TriggerThreshLow, TriggerThreshHigh)) {
+        if (gateTrigger.process (getInput (INPUT_GATE), TriggerThreshLow, TriggerThreshHigh)) {
             switch (noteMapState.mappingState) {
                 default:
                 case MappingState::None: {
@@ -369,11 +369,11 @@ namespace OuroborosModules::Modules::Conductor {
         if (clockLights.process ()) {
             auto lightTime = args.sampleTime * clockLights.division;
 
-            lights [LIGHT_CV1_ENABLED].setBrightness (boolToLight (cv1Enabled & enabled));
-            lights [LIGHT_CV2_ENABLED].setBrightness (boolToLight (cv2Enabled & enabled));
+            setLight (LIGHT_CV1_ENABLED, boolToLight (cv1Enabled & enabled));
+            setLight (LIGHT_CV2_ENABLED, boolToLight (cv2Enabled & enabled));
 
             for (int idx = LIGHT_MAP_BUTTON; idx < LIGHT_MAP_BUTTON_LAST + 1; idx++)
-                lights [idx].setBrightnessSmooth (boolToLight (mapButtonLightState [idx - LIGHT_MAP_BUTTON]), lightTime);
+                setLightSmooth (idx, boolToLight (mapButtonLightState [idx - LIGHT_MAP_BUTTON]), lightTime);
         }
     }
 }

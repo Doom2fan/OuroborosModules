@@ -57,27 +57,27 @@ namespace OuroborosModules::Modules::Branch {
     void BranchModule::process (const ProcessArgs& args) {
         using Branchless::ConditionalSet;
 
-        auto maxPolyphony = std::max (std::max (inputs [INPUT_A].getChannels (), inputs [INPUT_B].getChannels ()), 1);
+        auto maxPolyphony = std::max (std::max (getInputChannels (INPUT_A), getInputChannels (INPUT_B)), 1);
 
         float voltages [Constants::MaxPolyphony];
         for (int destI = 0; destI < SwitchCount; destI++) {
-            auto& curDest = outputs [OUTPUT_DESTINATION + destI];
-            auto curSwitchState = std::clamp (static_cast<int> (params [PARAM_SWITCH + destI].getValue ()), -1, 1);
-            if (!curDest.isConnected ())
+            auto outDestI = OUTPUT_DESTINATION + destI;
+            auto curSwitchState = std::clamp (static_cast<int> (getParam (PARAM_SWITCH + destI)), -1, 1);
+            if (!isOutputConnected (outDestI))
                 continue;
 
             auto realChannelCount = 0;
             if (curSwitchState != 0) {
                 auto sourceInputId = curSwitchState == -1 ? INPUT_A : INPUT_B;
-                inputs [sourceInputId].readVoltages (voltages);
-                realChannelCount = inputs [sourceInputId].getChannels ();
+                readInput (sourceInputId, voltages);
+                realChannelCount = getInputChannels (sourceInputId);
             }
 
             for (int i = realChannelCount; i < Constants::MaxPolyphony; i++)
                 voltages [i] = 0;
 
-            curDest.setChannels (!polyOnDemand ? maxPolyphony : realChannelCount);
-            curDest.writeVoltages (voltages);
+            setOutputChannels (outDestI, !polyOnDemand ? maxPolyphony : realChannelCount);
+            writeOutput (outDestI, voltages);
         }
     }
 }

@@ -26,8 +26,8 @@ namespace OuroborosModules::Modules::Meta {
 
     void MetaModule::audio_Process (const ProcessArgs& args) {
         // Check if anything's connected.
-        bool outputLeft = outputs [OUTPUT_LEFT].isConnected ();
-        bool outputRight = outputs [OUTPUT_RIGHT].isConnected ();
+        bool outputLeft = isOutputConnected (OUTPUT_LEFT);
+        bool outputRight = isOutputConnected (OUTPUT_RIGHT);
 
         if (!outputLeft && !outputRight) {
             if (outputtingAudio) {
@@ -39,14 +39,14 @@ namespace OuroborosModules::Modules::Meta {
         } else
             outputtingAudio = true;
 
-        float audioLeft = inputs [INPUT_LEFT].isConnected () ? inputs [INPUT_LEFT].getVoltage () : 0.f;
-        float audioRight = inputs [INPUT_RIGHT].isConnected () ? inputs [INPUT_RIGHT].getVoltage () : audioLeft;
+        float audioLeft = getInputNormal (INPUT_LEFT, 0.f);
+        float audioRight = getInputNormal (INPUT_RIGHT, audioLeft);
 
         (this->*premuter_Func) (args.sampleTime, audioLeft, audioRight);
         metaSounds_Process (args);
         metaSounds_ProcessAudio (args, audioLeft, audioRight);
 
-        if (outputLeft ) outputs [OUTPUT_LEFT].setVoltage (audioLeft);
-        if (outputRight) outputs [OUTPUT_RIGHT].setVoltage (audioRight);
+        if (outputLeft ) setOutput (OUTPUT_LEFT, audioLeft);
+        if (outputRight) setOutput (OUTPUT_RIGHT, audioRight);
     }
 }

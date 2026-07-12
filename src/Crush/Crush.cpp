@@ -64,7 +64,7 @@ namespace OuroborosModules::Modules::Crush {
     }
 
     void CrushModule::setPeakFilter () {
-        auto filterTime = rack::simd::float_4 (params [PARAM_FILTER_TIME].getValue () / 10.f);
+        auto filterTime = rack::simd::float_4 (getParam (PARAM_FILTER_TIME) / 10.f);
         for (int bank = 0; bank < SIMDBankCount; bank++)
             peakFilter [bank].setTau (filterTime);
     }
@@ -74,17 +74,17 @@ namespace OuroborosModules::Modules::Crush {
 
         // Get the mono params.
         auto minimumLevelRcp = float_4 (1.f / (rack::dsp::dbToAmplitude (-96.f) * 5.f));
-        auto targetLevelKnob = float_4 (params [PARAM_TARGET_LEVEL].getValue () * 5.f);
-        auto amountKnob = float_4 (params [PARAM_AMOUNT].getValue ());
+        auto targetLevelKnob = float_4 (getParam (PARAM_TARGET_LEVEL) * 5.f);
+        auto amountKnob = float_4 (getParam (PARAM_AMOUNT));
 
         // Calculate polyphony and SIMD counts, and set output polyphony counts.
-        const int channelCount = std::max (1, inputs [INPUT_SIGNAL].getChannels ());
+        const int channelCount = std::max (1, getInputChannels (INPUT_SIGNAL));
         int bankCount = channelCount / SIMDBankSize;
         if (bankCount * SIMDBankSize < channelCount)
             bankCount++;
 
-        outputs [OUTPUT_SIGNAL].setChannels (channelCount);
-        outputs [OUTPUT_ENVELOPE].setChannels (channelCount);
+        setOutputChannels (OUTPUT_SIGNAL, channelCount);
+        setOutputChannels (OUTPUT_ENVELOPE, channelCount);
 
         // Update params.
         if (clockParams.process ())
@@ -94,20 +94,20 @@ namespace OuroborosModules::Modules::Crush {
         for (int bank = 0, channel = 0; bank < bankCount; bank++, channel += SIMDBankSize) {
             // Get the per-channel params.
             auto targetLevel = Math::fpClean (rack::simd::fmax (
-                inputs [INPUT_TARGET_LEVEL].getNormalPolyVoltageSimd (targetLevelKnob, channel),
+                getInputNormalPolySimd<float_4> (INPUT_TARGET_LEVEL, targetLevelKnob, channel),
                 1.f
             ));
             auto amount = rack::simd::clamp (amountKnob + Math::fpClean (
-                          inputs [INPUT_AMOUNT_CV].getPolyVoltageSimd<float_4> (channel) / 10.f *
-                          params [PARAM_AMOUNT_CV_ATTEN].getValue ()), float_4::zero (), 1.f);
+                          getInputPolySimd<float_4> (INPUT_AMOUNT_CV, channel) / 10.f *
+                          getParam (PARAM_AMOUNT_CV_ATTEN)), float_4::zero (), 1.f);
 
             // Get and clean the input signal.
-            auto inputSignal = Math::fpClean (inputs [INPUT_SIGNAL].getPolyVoltageSimd<float_4> (channel));
+            auto inputSignal = Math::fpClean (getInputPolySimd<float_4> (INPUT_SIGNAL, channel));
             inputSignal = rack::simd::clamp (inputSignal, -100, 100);
 
             // Calculate amplitude using the peak filter.
             auto amplitude = Math::fpClean (peakFilter [bank].process (args.sampleTime, rack::simd::abs (inputSignal)));
-            outputs [OUTPUT_ENVELOPE].setVoltageSimd (amplitude, channel);
+            setOutputSimd (OUTPUT_ENVELOPE, amplitude, channel);
 
             // Calculate gain while ensuring amplitude is above a certain level.
             auto gain = 1.f + (rack::simd::fmin (1.f / amplitude, minimumLevelRcp) * targetLevel - 1.f) * amount;
@@ -116,7 +116,7 @@ namespace OuroborosModules::Modules::Crush {
             auto output = inputSignal * gain;
             output = dcBlocker [bank].process (output);
 
-            outputs [OUTPUT_SIGNAL].setVoltageSimd (output, channel);
+            setOutputSimd (OUTPUT_SIGNAL, output, channel);
         }
     }
 

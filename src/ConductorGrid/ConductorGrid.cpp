@@ -65,17 +65,17 @@ namespace OuroborosModules::Modules::Conductor {
     }
 
     void ConductorGridModule::processActive (const ProcessArgs& args) {
-        if (pageDownButtonTrigger.process (params [PARAM_PAGE_DOWN_BUTTON].getValue ())) {
+        if (pageDownButtonTrigger.process (getParam (PARAM_PAGE_DOWN_BUTTON))) {
             curPage = std::max (curPage - 1, 0);
             pageDownLightPulse.trigger (Constants::LightPulseMS);
         }
-        if (pageUpButtonTrigger.process (params [PARAM_PAGE_UP_BUTTON].getValue ())) {
+        if (pageUpButtonTrigger.process (getParam (PARAM_PAGE_UP_BUTTON))) {
             curPage = std::min (curPage + 1, pageCount - 1);
             pageUpLightPulse.trigger (Constants::LightPulseMS);
         }
 
         for (int i = 0; i < PadCount; i++) {
-            if (padButtonTriggers [i].process (params [PARAM_PAD_BUTTON + i].getValue ())) {
+            if (padButtonTriggers [i].process (getParam (PARAM_PAD_BUTTON + i))) {
                 auto selectedPattern = curPage * PadCount + i;
                 if (selectedPattern < patternCount) {
                     if (selectedPattern != queuedPattern) {
@@ -104,8 +104,8 @@ namespace OuroborosModules::Modules::Conductor {
         if (clockLights.process ()) {
             auto lightTime = args.sampleTime * clockLights.division;
 
-            lights [LIGHT_PAGE_DOWN_BUTTON].setBrightnessSmooth (boolToLight (pageDownLightPulse.process (lightTime)), lightTime);
-            lights [LIGHT_PAGE_UP_BUTTON].setBrightnessSmooth (boolToLight (pageUpLightPulse.process (lightTime)), lightTime);
+            setLightSmooth (LIGHT_PAGE_DOWN_BUTTON, boolToLight (pageDownLightPulse.process (lightTime)), lightTime);
+            setLightSmooth (LIGHT_PAGE_UP_BUTTON, boolToLight (pageUpLightPulse.process (lightTime)), lightTime);
 
             if (queuedPadBlinkTimer.process (lightTime) >= QueuedPadBlinkInterval) {
                 queuedPadBlinkTimer.reset ();
@@ -119,8 +119,8 @@ namespace OuroborosModules::Modules::Conductor {
                 auto redLightState = enabled && (curPage * PadCount + i) == currentPattern;
                 auto blueLightState = padButtonLightPulses [i].process (lightTime);
 
-                lights [LIGHT_PAD_BUTTON + i * 2].setBrightnessSmooth (boolToLight (redLightState), lightTime);
-                lights [LIGHT_PAD_BUTTON + i * 2 + 1].setBrightnessSmooth (boolToLight (blueLightState), lightTime);
+                setLightSmooth (LIGHT_PAD_BUTTON + i * 2, boolToLight (redLightState), lightTime);
+                setLightSmooth (LIGHT_PAD_BUTTON + i * 2 + 1, boolToLight (blueLightState), lightTime);
             }
         }
     }

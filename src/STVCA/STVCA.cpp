@@ -65,27 +65,27 @@ namespace OuroborosModules::Modules::STVCA {
     void STVCAModule::process (const ProcessArgs& args) {
         auto channels = std::max ({
             1,
-            inputs [INPUT_LEFT].getChannels (),
-            inputs [INPUT_RIGHT].getChannels (),
-            inputs [INPUT_CV].getChannels (),
+            getInputChannels (INPUT_LEFT),
+            getInputChannels (INPUT_RIGHT),
+            getInputChannels (INPUT_CV),
         });
-        auto level = params [PARAM_LEVEL].getValue ();
+        auto level = getParam (PARAM_LEVEL);
 
         for (int c = 0; c < channels; c++) {
             // Calculate gain.
             auto gain = level;
-            if (inputs [INPUT_CV].isConnected ()) {
-                float cv = std::clamp (inputs [INPUT_CV].getPolyVoltage (c) / 10.f, 0.f, 1.f);
+            if (isInputConnected (INPUT_CV)) {
+                float cv = std::clamp (getInputPoly (INPUT_CV, c) / 10.f, 0.f, 1.f);
 
-                if (int (params [PARAM_EXP].getValue ()) == 0)
+                if (int (getParam (PARAM_EXP)) == 0)
                     cv = std::pow (cv, 4.f);
 
                 gain *= cv;
             }
 
             // Get inputs.
-            auto inL = inputs [INPUT_LEFT].getPolyVoltage (c);
-            auto inR = inputs [INPUT_RIGHT].getPolyVoltage (c);
+            auto inL = getInputPoly (INPUT_LEFT, c);
+            auto inR = getInputPoly (INPUT_RIGHT, c);
 
             // Apply gain.
             inL *= gain;
@@ -93,12 +93,12 @@ namespace OuroborosModules::Modules::STVCA {
             lastGains [c] = gain;
 
             // Set outputs.
-            outputs [OUTPUT_LEFT].setVoltage (inL, c);
-            outputs [OUTPUT_RIGHT].setVoltage (inR, c);
+            setOutput (OUTPUT_LEFT, inL, c);
+            setOutput (OUTPUT_RIGHT, inR, c);
         }
 
-        outputs [OUTPUT_LEFT].setChannels (channels);
-        outputs [OUTPUT_RIGHT].setChannels (channels);
+        setOutputChannels (OUTPUT_LEFT, channels);
+        setOutputChannels (OUTPUT_RIGHT, channels);
         lastChannels = channels;
     }
 

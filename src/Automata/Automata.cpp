@@ -126,49 +126,49 @@ namespace OuroborosModules::Modules::Automata {
 
         // Handle params.
         if (paramsClocked)
-            currentMode = modeFromSelectorParam (params [PARAM_MODE_SELECT].getValue ());
+            currentMode = modeFromSelectorParam (getParam (PARAM_MODE_SELECT));
 
         // Handle reset.
         auto resetPulseHigh = resetPulse.process (args.sampleTime);
-        if (resetButtonTrigger.process (params [PARAM_RESET_BUTTON].getValue ()) |
-            resetTrigger.process (inputs [INPUT_RESET].getVoltage (), TriggerThreshLow, TriggerThreshHigh)) {
+        if (resetButtonTrigger.process (getParam (PARAM_RESET_BUTTON)) |
+            resetTrigger.process (getInput (INPUT_RESET), TriggerThreshLow, TriggerThreshHigh)) {
             processReset (false);
 
-            lights [LIGHT_RESET_BUTTON].setBrightness (1);
+            setLight (LIGHT_RESET_BUTTON, 1);
         } else if (lightsClocked)
-            lights [LIGHT_RESET_BUTTON].setBrightnessSmooth (0.f, lightTime);
+            setLightSmooth (LIGHT_RESET_BUTTON, 0.f, lightTime);
 
         // Handle randomize.
-        if (randomizeButtonTrigger.process (params [PARAM_RANDOMIZE_BUTTON].getValue ()) |
-            randomizeTrigger.process (inputs [INPUT_RANDOMIZE].getVoltage (), TriggerThreshLow, TriggerThreshHigh)) {
+        if (randomizeButtonTrigger.process (getParam (PARAM_RANDOMIZE_BUTTON)) |
+            randomizeTrigger.process (getInput (INPUT_RANDOMIZE), TriggerThreshLow, TriggerThreshHigh)) {
             processRandomize ();
 
-            lights [LIGHT_RANDOMIZE_BUTTON].setBrightness (1);
+            setLight (LIGHT_RANDOMIZE_BUTTON, 1);
         } else if (lightsClocked)
-            lights [LIGHT_RANDOMIZE_BUTTON].setBrightnessSmooth (0.f, lightTime);
+            setLightSmooth (LIGHT_RANDOMIZE_BUTTON, 0.f, lightTime);
 
         // Handle length toggle.
-        auto lengthButtonPressed = lengthButtonTrigger.process (params [PARAM_LENGTH_BUTTON].getValue ());
-        auto lengthEnableRise = lengthEnableTrigger.process (inputs [INPUT_LENGTH_ENABLE].getVoltage (), TriggerThreshLow, TriggerThreshHigh);
-        if (momentaryLengthEnable && inputs [INPUT_LENGTH_ENABLE].isConnected ())
-            lengthEnabled = inputs [INPUT_LENGTH_ENABLE].getVoltage () >= TriggerThreshHigh;
+        auto lengthButtonPressed = lengthButtonTrigger.process (getParam (PARAM_LENGTH_BUTTON));
+        auto lengthEnableRise = lengthEnableTrigger.process (getInput (INPUT_LENGTH_ENABLE), TriggerThreshLow, TriggerThreshHigh);
+        if (momentaryLengthEnable && isInputConnected (INPUT_LENGTH_ENABLE))
+            lengthEnabled = getInput (INPUT_LENGTH_ENABLE) >= TriggerThreshHigh;
         else if (lengthButtonPressed || lengthEnableRise)
             lengthEnabled = !lengthEnabled;
         stepCount = lengthEnabled ? stepCount : 0;
 
         if (lightsClocked)
-            lights [LIGHT_LENGTH_BUTTON].setBrightnessSmooth (boolToLight (lengthEnabled), lightTime);
+            setLightSmooth (LIGHT_LENGTH_BUTTON, boolToLight (lengthEnabled), lightTime);
 
         // Handle step/clock.
-        auto doStep = stepButtonTrigger.process (params [PARAM_STEP_BUTTON].getValue ())
-                    | clockTrigger.process (inputs [INPUT_CLOCK].getVoltage (), TriggerThreshLow, TriggerThreshHigh);
+        auto doStep = stepButtonTrigger.process (getParam (PARAM_STEP_BUTTON))
+                    | clockTrigger.process (getInput (INPUT_CLOCK), TriggerThreshLow, TriggerThreshHigh);
         auto didStep = false;
         auto eocReset = false;
         if (doStep && !resetPulseHigh) {
             if (lengthEnabled) {
-                auto seqLength = params [PARAM_LENGTH].getValue ();
-                seqLength += inputs [INPUT_LENGTH_CV].getVoltage () / 10.f
-                           * params [PARAM_LENGTH_CV_ATTENUVERTER].getValue ()
+                auto seqLength = getParam (PARAM_LENGTH);
+                seqLength += getInput (INPUT_LENGTH_CV) / 10.f
+                           * getParam (PARAM_LENGTH_CV_ATTENUVERTER)
                            * MaxSequenceLength;
                 seqLength = std::clamp (seqLength, 1.f, static_cast<float> (MaxSequenceLength));
                 eocReset = ++stepCount >= static_cast<int> (seqLength);
@@ -177,9 +177,9 @@ namespace OuroborosModules::Modules::Automata {
             processStep (args);
             didStep = true;
 
-            lights [LIGHT_STEP_BUTTON].setBrightness (1);
+            setLight (LIGHT_STEP_BUTTON, 1);
         } else if (lightsClocked)
-            lights [LIGHT_STEP_BUTTON].setBrightnessSmooth (0.f, lightTime);
+            setLightSmooth (LIGHT_STEP_BUTTON, 0.f, lightTime);
 
         // Process outputs.
         if (didStep)
@@ -198,10 +198,10 @@ namespace OuroborosModules::Modules::Automata {
                 case AutomataTriggerOutputMode::Percentage: outputValue = outputValues [i]; break;
             }
 
-            outputs [OUTPUT_TRIGGER + i].setVoltage (outputValue);
+            setOutput (OUTPUT_TRIGGER + i, outputValue);
         }
 
-        outputs [OUTPUT_EOC].setVoltage (boolToGate (eocPulse.process (args.sampleTime)));
+        setOutput (OUTPUT_EOC, boolToGate (eocPulse.process (args.sampleTime)));
 
         lifeBoard.handleUpdated ();
     }
@@ -219,9 +219,9 @@ namespace OuroborosModules::Modules::Automata {
     }
 
     void AutomataModule::processRandomize () {
-        auto density = params [PARAM_RANDOM_DENSITY].getValue ();
-        density += inputs [INPUT_RANDOM_DENSITY_CV].getVoltage () / 10.f
-                 * params [PARAM_RANDOM_DENSITY_CV_ATTENUVERTER].getValue ();
+        auto density = getParam (PARAM_RANDOM_DENSITY);
+        density += getInput (INPUT_RANDOM_DENSITY_CV) / 10.f
+                 * getParam (PARAM_RANDOM_DENSITY_CV_ATTENUVERTER);
         density = std::clamp (density, 0.f, 1.f);
 
         lifeBoard.randomize (density);
