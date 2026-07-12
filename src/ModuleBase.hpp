@@ -53,5 +53,73 @@ namespace OuroborosModules {
 
             return quantity;
         }
+
+        /*
+         * Param getters and setters
+         */
+        float getParam (int idx) { return params [idx].getValue (); }
+        void setParam (int idx, float value) { params [idx].setValue (value); }
+
+        /*
+         * Common input and output getters and setters
+         */
+        int getInputChannels (int idx) { return inputs [idx].getChannels (); }
+        int getOutputChannels (int idx) { return outputs [idx].getChannels (); }
+
+        bool isInputConnected (int idx) { return getInputChannels (idx) > 0; }
+        bool isOutputConnected (int idx) { return getOutputChannels (idx) > 0; }
+
+        bool isInputMonophonic (int idx) { return getInputChannels (idx) == 1; }
+        bool isOutputMonophonic (int idx) { return getOutputChannels (idx) == 1; }
+
+        /*
+         * Input getters
+         */
+        float getInput (int idx, uint8_t channel = 0) { return inputs [idx].getVoltage (channel); }
+        float getInputPoly (int idx, uint8_t channel) { return inputs [idx].getPolyVoltage (channel); }
+        float getInputNormal (int idx, float normalVoltage, uint8_t channel = 0) {
+            return inputs [idx].getNormalVoltage (normalVoltage, channel);
+        }
+        float getInputNormalPoly (int idx, float normalVoltage, uint8_t channel) {
+            return inputs [idx].getNormalPolyVoltage (normalVoltage, channel);
+        }
+
+        void readInput (int idx, float* v) { inputs [idx].readVoltages (v); }
+        float getInputSum (int idx) { return inputs [idx].getVoltageSum (); }
+        float getInputRMS (int idx) { return inputs [idx].getVoltageRMS (); }
+
+        template<typename T>
+        T getInputSimd (int idx, uint8_t firstChannel) {
+            return inputs [idx].getVoltageSimd<T> (firstChannel);
+        }
+
+        template<typename T>
+        T getInputPolySimd (int idx, uint8_t firstChannel) {
+            return inputs [idx].getPolyVoltageSimd<T> (firstChannel);
+        }
+
+        template<typename T>
+        T getInputNormalSimd (int idx, T normalVoltage, uint8_t firstChannel) {
+            return inputs [idx].getNormalVoltageSimd<T> (firstChannel);
+        }
+
+        template<typename T>
+        T getInputNormalPolySimd (int idx, T normalVoltage, uint8_t firstChannel) {
+            return inputs [idx].getNormalPolyVoltageSimd (normalVoltage, firstChannel);
+        }
+
+        /*
+         * Output setters
+         */
+        void setOutputChannels (int idx, uint8_t channels) { getOutput (idx).setChannels (channels); }
+
+        void clearOutput (int idx) { outputs [idx].clearVoltages (); }
+        void setOutput (int idx, float voltage, uint8_t channel = 0) { outputs [idx].setVoltage (voltage, channel); }
+        void writeOutput (int idx, const float* v) { outputs [idx].writeVoltages (v); }
+
+        template<typename T>
+        void setOutputSimd (int idx, T voltage, uint8_t firstChannel) {
+            outputs [idx].setVoltageSimd (voltage, firstChannel);
+        }
     };
 }
