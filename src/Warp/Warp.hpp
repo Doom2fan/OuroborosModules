@@ -68,8 +68,9 @@ namespace OuroborosModules::Modules::Warp {
         uint32_t oversampleRate;
 
         // Oversampling
-        DSP::OptimizedHalfBandInterpolator<float> signalUpsampler [Constants::MaxPolyphony];
-        DSP::OptimizedHalfBandInterpolator<float> upsamplerFilter [Constants::MaxPolyphony];
+        DSP::OptimizedHalfBandInterpolator<float> signalReUpsampler [Constants::MaxPolyphony];
+        DSP::OptimizedHalfBandInterpolator<float> signalImUpsampler [Constants::MaxPolyphony];
+        DSP::OptimizedHalfBandInterpolator<float> modulatorUpsampler [Constants::MaxPolyphony];
         DSP::OptimizedHalfBandDecimator<float> downsamplerFilter [Constants::MaxPolyphony];
 
         // Filters

@@ -91,6 +91,7 @@ namespace OuroborosModules::Modules::Warp {
     void WarpModule::processChannel (int channel) {
         using rack::simd::float_4;
 
+        // Get the parameters, with CV.
         auto amount = params [PARAM_AMOUNT].getValue () + Math::fpClean (
                       inputs [INPUT_AMOUNT_CV].getNormalPolyVoltage (0.f, channel) / 10.f *
                       params [PARAM_AMOUNT_CV_ATTEN].getValue ());
@@ -106,33 +107,34 @@ namespace OuroborosModules::Modules::Warp {
         auto modulator = inputs [INPUT_MODULATOR].getNormalPolyVoltage (signal, channel) * amount / MaxBias;
         modulator = Math::fpClean (bias + modulator * M_PI * 4.f);
 
-        // Oversample.
-        float signalBuffer [MaxOversample];
-        float modulatorBuffer [MaxOversample];
-        float signalBufferIm [MaxOversample];
-
-        signalUpsampler [channel].process (signalBuffer, signal);
-        upsamplerFilter [channel].process (modulatorBuffer, modulator);
-
         // Perform the hilbert transform.
-        for (uint32_t i = 0; i < oversampleRate; i++) {
-            std::tie (signalBuffer [i], signalBufferIm [i]) = hilbertTransformSignal [channel].stepPair (signalBuffer [i]);
-            modulatorBuffer [i] = hilbertTransformModulator [channel].stepPair (modulatorBuffer [i]).first;
-        }
+        float signalRe, signalIm;
+        hilbertTransformSignal [channel].step (signal, signalRe, signalIm);
+        auto modulatorRe = hilbertTransformModulator [channel].stepReal (modulator);
+
+        // Upsample.
+        float signalBufferRe [MaxOversample];
+        float signalBufferIm [MaxOversample];
+        float modulatorBuffer [MaxOversample];
+
+        signalReUpsampler [channel].process (signalBufferRe, signalRe);
+        signalImUpsampler [channel].process (signalBufferIm, signalIm);
+        modulatorUpsampler [channel].process (modulatorBuffer, modulatorRe);
 
         // Process the audio.
         for (uint32_t i = 0; i < oversampleRate; i += 4) {
             // Fetch the signal and modulator.
             auto phi = float_4::load (modulatorBuffer + i);
-            std::complex<float_4> c (float_4::load (signalBuffer + i), float_4::load (signalBufferIm + i));
+            std::complex<float_4> c (float_4::load (signalBufferRe + i), float_4::load (signalBufferIm + i));
 
             // Rotate the real part of the signal.
             auto signal = c.real () * rack::simd::cos (phi) - c.imag () * rack::simd::sin (phi);
 
-            Math::fpClean (signal).store (signalBuffer + i);
+            Math::fpClean (signal).store (signalBufferRe + i);
         }
 
-        auto output = downsamplerFilter [channel].process (signalBuffer);
+        // Downsample, perform DC blocking and output.
+        auto output = downsamplerFilter [channel].process (signalBufferRe);
         output = dcBlocker [channel].process (output);
         outputs [OUTPUT_SIGNAL].setVoltage (output, channel);
     }
@@ -147,8 +149,9 @@ namespace OuroborosModules::Modules::Warp {
         oversampleRate = newOversampleRate;
 
         for (int channel = 0; channel < Constants::MaxPolyphony; channel++) {
-            signalUpsampler [channel].setParams (newOversampleRate);
-            upsamplerFilter [channel].setParams (newOversampleRate);
+            signalReUpsampler [channel].setParams (newOversampleRate);
+            signalImUpsampler [channel].setParams (newOversampleRate);
+            modulatorUpsampler [channel].setParams (newOversampleRate);
             downsamplerFilter [channel].setParams (newOversampleRate);
         }
     }
@@ -159,8 +162,8 @@ namespace OuroborosModules::Modules::Warp {
 
         curSampleRate = newSampleRate;
         for (int channel = 0; channel < Constants::MaxPolyphony; channel++) {
-            hilbertTransformSignal [channel].setSampleRate (newSampleRate * oversampleRate);
-            hilbertTransformModulator [channel].setSampleRate (newSampleRate * oversampleRate);
+            hilbertTransformSignal [channel].setSampleRate (newSampleRate);
+            hilbertTransformModulator [channel].setSampleRate (newSampleRate);
 
             dcBlocker [channel].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
         }
