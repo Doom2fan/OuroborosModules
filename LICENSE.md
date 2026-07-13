@@ -1,4 +1,4 @@
-The OuroborosModules plugin is licensed under the GNU GPL 3.0 or later. The license information can be found [here](https://github.com/Doom2fan/OuroborosModules/blob/develop/LICENSE.md).
+The OuroborosModules plugin is licensed under the GNU GPL 3.0 or later. The license information can be found in this file.
 
 All license info, credits and copyright notices can be found in the license folder ([here](https://github.com/Doom2fan/OuroborosModules/tree/develop/license)), and in distributions of the plugin.
 
