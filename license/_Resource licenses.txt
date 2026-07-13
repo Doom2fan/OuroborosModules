@@ -1,11 +1,20 @@
-res/sounds/Jack_Connect.wav [CC-BY-SA 4.0] - Edited from "plugging_audioJack_into_mixer.wav" (CC-BY 4.0) by elvish_paisley at freesound.org by Chronos "phantombeta" Ouroboros
-res/sounds/Jack_Disconnect.wav [CC-BY-SA 4.0] - Edited from "plug in jack 6.3mm plug in and pull out sound effect" (CC-BY 4.0) by Garuda1982 at freesound.org by Chronos "phantombeta" Ouroboros
+### Graphics
+Module panels, components and themes by Chronos "phantombeta" Ouroboros. They are contained in the following folders:
+* res/panels/
+* res/components/
+* res/themes/
+* res_src/panels/
+* res_src/components/
 
-res/icons/BleedingEye.svg [CC-BY 3.0] - Made by lorc (@ http://lorcblog.blogspot.com), from game-icons.net
-res/icons/Dragon.svg [CC-BY 3.0] - Made by lorc (@ http://lorcblog.blogspot.com), from game-icons.net
-res/icons/InfoCircle.svg [CC-BY 3.0] - Made by Delapouite (@ https://delapouite.com), from game-icons.net
+res/icons/BleedingEye.svg [CC-BY 3.0] - By lorc (@ http://lorcblog.blogspot.com), from game-icons.net  
+res/icons/Dragon.svg [CC-BY 3.0] - By lorc (@ http://lorcblog.blogspot.com), from game-icons.net  
+res/icons/InfoCircle.svg [CC-BY 3.0] - By Delapouite (@ https://delapouite.com), from game-icons.net  
 
-By Chronos "phantombeta" Ouroboros [CC-BY-SA 4.0]:
-    res/panels/*
-    res/components/*
-    res/themes/*
+### Sounds
+res/sounds/Jack_Connect.wav [CC-BY-SA 4.0] - Edited from "plugging_audioJack_into_mixer.wav" (CC-BY 4.0) by elvish_paisley at freesound.org by Chronos "phantombeta" Ouroboros  
+res/sounds/Jack_Disconnect.wav [CC-BY-SA 4.0] - Edited from "plug in jack 6.3mm plug in and pull out sound effect" (CC-BY 4.0) by Garuda1982 at freesound.org by Chronos "phantombeta" Ouroboros  
+
+### Fonts
+Doto [SIL Open Font License] - (c) 2024 The Doto Project Authors (https://github.com/oliverlalan/Doto)  
+Inconsolata [SIL Open Font License] - (c) 2006 The Inconsolata Project Authors  
+Roboto [SIL Open Font License] - (c) 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)  
