@@ -4,6 +4,8 @@
   * New modules:
     * Crush
   * Optimizations to Warp
+  * Added cable glow option to Meta
+  * Added cable lights option to Meta
 
 ## v2.2.3 (2026-05-02)
   * Fixed an oversampling bug affecting Warp
