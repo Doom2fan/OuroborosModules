@@ -18,10 +18,25 @@
 
 #pragma once
 
-#include "CommonTypes.hpp"
 #include "Constants.hpp"
-#include "Chroma/CableColorManager.hpp"
-#include "Settings_Structs.hpp"
 
 #include <rack.hpp>
 #include <jansson.h>
+
+namespace OuroborosModules {
+    struct CableGlowSettings {
+        // Cable glow settings
+        bool glow_Enabled = false;
+        float glow_Intensity = .5f;
+        bool glow_FollowSignal = true;
+
+        // Cable light settings
+        bool lights_Enabled = false;
+        float lights_Intensity = .75f;
+
+        bool needHandler () { return glow_Enabled | lights_Enabled; }
+
+        json_t* dataToJson () const;
+        bool dataFromJson (json_t* rootJ);
+    };
+}

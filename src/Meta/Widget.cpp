@@ -54,6 +54,13 @@ namespace OuroborosModules::Modules::Meta {
 
     MetaWidget::MetaWidget (MetaModule* module) { constructor (module, "panels/Meta"); }
 
+    MetaWidget::~MetaWidget () {
+        if (metaHandler != nullptr) {
+            metaHandler->removeMetaModule ();
+            metaHandler = nullptr;
+        }
+    }
+
     void MetaWidget::initializeWidget () {
         using rack::createInputCentered;
         using rack::createOutputCentered;
@@ -87,11 +94,15 @@ namespace OuroborosModules::Modules::Meta {
         auto isEnabled = false;
 
         isEnabled |= pluginSettings.metaSounds_Enable;
+        isEnabled |= pluginSettings.metaCables_Lights.needHandler ();
 
-        if (isEnabled && metaHandler == nullptr)
+        if (isEnabled && metaHandler == nullptr) {
             metaHandler = MetaHandler::getHandler ();
-        else if (!isEnabled && metaHandler != nullptr)
+            metaHandler->addMetaModule ();
+        } else if (!isEnabled && metaHandler != nullptr) {
+            metaHandler->removeMetaModule ();
             metaHandler = nullptr;
+        }
 
         if (metaHandler == nullptr)
             return;
@@ -130,69 +141,90 @@ namespace OuroborosModules::Modules::Meta {
     }
 
     void MetaWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+        using rack::createBoolPtrMenuItem;
         using rack::createMenuItem;
         using rack::createMenuLabel;
+        using rack::createSubmenuItem;
+        using Widgets::FloatQuantity;
+        using Widgets::SimpleSlider;
 
         _WidgetBase::createPluginSettingsMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
 
-        // Cable
-        menu->addChild (createMenuLabel ("Cable settings"));
-
         // Meta sounds
-        menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (createMenuLabel ("Meta sounds settings"));
-        menu->addChild (rack::createBoolPtrMenuItem ("Enabled", "", &pluginSettings.metaSounds_Enable));
+        menu->addChild (createSubmenuItem ("Meta sounds settings", "", [=] (rack::ui::Menu* menu) {
+            menu->addChild (createBoolPtrMenuItem ("Enabled", "", &pluginSettings.metaSounds_Enable));
 
-        auto metaSoundsVolumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
-            "Volume",
-            &pluginSettings.metaSounds_Volume,
-            0.f, 1.f,
-            4,
-            nullptr
-        ));
-        metaSoundsVolumeSlider->box.size.x = 200.f;
-        menu->addChild (metaSoundsVolumeSlider);
+            auto metaSoundsVolumeSlider = new SimpleSlider (new FloatQuantity (
+                "Volume",
+                &pluginSettings.metaSounds_Volume,
+                0.f, 1.f,
+                4,
+                nullptr
+            ));
+            metaSoundsVolumeSlider->box.size.x = 200.f;
+            menu->addChild (metaSoundsVolumeSlider);
 
-        for (int i = 0; i < MetaModule::METASOUNDS_LENGTH; i++) {
-            auto channelIdx = (MetaModule::MetaSounds_Channels) i;
-            auto data = metaSounds_GetData (channelIdx);
-            if (data == nullptr)
-                continue;
+            for (int i = 0; i < MetaModule::METASOUNDS_LENGTH; i++) {
+                auto channelIdx = (MetaModule::MetaSounds_Channels) i;
+                auto data = metaSounds_GetData (channelIdx);
+                if (data == nullptr)
+                    continue;
 
-            menu->addChild (rack::createSubmenuItem (data->getName (), "", [=] (rack::ui::Menu* menu) {
-                // Enable
-                menu->addChild (rack::createBoolMenuItem ("Enabled", "",
-                    [=] () { return data->isEnabled (); },
-                    [=] (bool enable) { data->setEnabled (enable); }
-                ));
+                menu->addChild (createSubmenuItem (data->getName (), "", [=] (rack::ui::Menu* menu) {
+                    // Enable
+                    menu->addChild (rack::createBoolMenuItem ("Enabled", "",
+                        [=] () { return data->isEnabled (); },
+                        [=] (bool enable) { data->setEnabled (enable); }
+                    ));
 
-                // Volume
-                auto volumeSlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
-                    "Volume",
-                    data->getVolumePtr (),
-                    0.f, 1.f,
-                    4,
-                    nullptr
-                ));
-                volumeSlider->box.size.x = 200.f;
-                menu->addChild (volumeSlider);
+                    // Volume
+                    auto volumeSlider = new SimpleSlider (new FloatQuantity (
+                        "Volume",
+                        data->getVolumePtr (),
+                        0.f, 1.f,
+                        4,
+                        nullptr
+                    ));
+                    volumeSlider->box.size.x = 200.f;
+                    menu->addChild (volumeSlider);
 
-                // Load
-                menu->addChild (createMenuItem ("Load sound", "", [&] () {
-                    auto path = selectSoundFile ();
-                    if (path == nullptr)
-                        return;
+                    // Load
+                    menu->addChild (createMenuItem ("Load sound", "", [&] () {
+                        auto path = selectSoundFile ();
+                        if (path == nullptr)
+                            return;
 
-                    data->tryChangePath (path, true, true);
+                        data->tryChangePath (path, true, true);
+                    }));
+
+                    // Restore default
+                    menu->addChild (createMenuItem ("Restore default sound", "", [&] () {
+                        data->tryChangePath (Constants::MetaSound_DefaultMarker, true, true);
+                    }));
                 }));
+            }
+        }));
 
-                // Restore default
-                menu->addChild (createMenuItem ("Restore default sound", "", [&] () {
-                    data->tryChangePath (Constants::MetaSound_DefaultMarker, true, true);
-                }));
-            }));
-        }
+        // Cable
+        menu->addChild (createSubmenuItem ("Cable settings", "", [=] (rack::ui::Menu* menu) {
+            menu->addChild (rack::createMenuLabel ("Cable glow"));
+            menu->addChild (createBoolPtrMenuItem ("Enabled", "", &pluginSettings.metaCables_Lights.glow_Enabled));
+            auto glowIntensitySlider = new Widgets::SimpleSlider (new Widgets::FloatQuantity (
+                "Glow intensity",
+                &pluginSettings.metaCables_Lights.glow_Intensity,
+                0.f, 1.f,
+                4,
+                nullptr
+            ));
+            glowIntensitySlider->box.size.x = 200.f;
+            menu->addChild (glowIntensitySlider);
+            menu->addChild (createBoolPtrMenuItem ("Glow follows signal", "", &pluginSettings.metaCables_Lights.glow_FollowSignal));
+
+            menu->addChild (new rack::ui::MenuSeparator);
+            menu->addChild (rack::createMenuLabel ("Cable lights"));
+            menu->addChild (createBoolPtrMenuItem ("Enabled", "", &pluginSettings.metaCables_Lights.lights_Enabled));
+        }));
     }
 }

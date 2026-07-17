@@ -128,6 +128,7 @@ namespace OuroborosModules::Modules::Meta {
 
       public:
         MetaWidget (MetaModule* module);
+        ~MetaWidget ();
 
       protected:
         void initializeWidget () override;

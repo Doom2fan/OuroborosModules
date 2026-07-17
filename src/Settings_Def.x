@@ -27,6 +27,8 @@ DEFINE_FLOAT (float, metaSounds_Volume, "metaSounds::Volume", 1.f)
 DEFINE_STRUCT (SoundSettings, metaSounds_CablePlugged, "metaSounds::CablePlugged", SoundSettings (Constants::MetaSound_DefaultMarker, true, 1.f))
 DEFINE_STRUCT (SoundSettings, metaSounds_CableUnplugged, "metaSounds::CableUnplugged", SoundSettings (Constants::MetaSound_DefaultMarker, true, 1.f))
 
+DEFINE_STRUCT (CableGlowSettings, metaCables_Lights, "metaCables::Lights", CableGlowSettings ())
+
 DEFINE_BOOL (chroma_Latch, "cableColorManager::Latch", true)
 DEFINE_BOOL (chroma_GlobalKeys, "cableColorManager::GlobalKeys", false)
 DEFINE_BOOL (chroma_DisplayKeys, "cableColorManager::DisplayKeyMappings", true)

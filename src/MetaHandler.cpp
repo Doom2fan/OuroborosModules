@@ -40,6 +40,21 @@ namespace OuroborosModules {
         UISystemUpdater::tryCreate ();
     }
 
+    MetaHandler::~MetaHandler () {
+        if (metaCableWidget != nullptr) {
+            if (metaCableWidget->parent != nullptr)
+                metaCableWidget->parent->removeChild (metaCableWidget);
+
+            delete metaCableWidget;
+        }
+
+        if (APP != nullptr &&
+            APP->scene != nullptr &&
+            APP->scene->rack != nullptr &&
+            APP->scene->rack->getCableContainer () != nullptr)
+            APP->scene->rack->getCableContainer ()->show ();
+    }
+
     std::shared_ptr<MetaHandler> MetaHandler::getHandler () {
         struct MetaHandler_Concrete : public MetaHandler { };
 
@@ -56,47 +71,6 @@ namespace OuroborosModules {
         updateCables ();
 
         curTime++;
-    }
-
-    void MetaHandler::updateCables () {
-        auto cableContainer = APP->scene->rack->getCableContainer ();
-        auto incompleteCable = Utils::getIncompleteCable ();
-
-        if (cableContainer == nullptr)
-            return;
-
-        auto hasIncompleteCable = incompleteCable != nullptr;
-        int cableCount = 0;
-
-        for (auto it = cableContainer->children.begin (), it_end = cableContainer->children.end (); it != it_end; ++it) {
-            auto cable = dynamic_cast<rack::app::CableWidget*> (*it);
-            if (cable == nullptr || !cable->isComplete ())
-                continue;
-
-            cableCount++;
-        }
-
-        cables_Connected = cables_Disconnected = false;
-
-        if (hasIncompleteCable && !cables_hadIncomplete) {
-            if (cableCount == cables_prevCount)
-                cables_Connected = true;
-            else if (cableCount < cables_prevCount)
-                cables_Disconnected = true;
-        } else if (!hasIncompleteCable && cables_hadIncomplete) {
-            if (cableCount > cables_prevCount)
-                cables_Connected = true;
-            else
-                cables_Disconnected = true;
-        } else if (hasIncompleteCable == cables_hadIncomplete && !modules_AnyAdded && !modules_AnyRemoved && curTime > 0) {
-            if (cableCount > cables_prevCount)
-                cables_Connected = true;
-            else if (cableCount < cables_prevCount)
-                cables_Disconnected = true;
-        }
-
-        cables_prevCount = cableCount;
-        cables_hadIncomplete = hasIncompleteCable;
     }
 
     void MetaHandler::updateModules () {

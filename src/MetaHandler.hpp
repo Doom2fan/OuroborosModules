@@ -23,18 +23,28 @@
 #include <memory>
 
 namespace OuroborosModules {
+    struct MetaCableWidget : rack::widget::TransparentWidget {
+        void draw (const DrawArgs& args) override;
+        void drawLayer (const DrawArgs& args, int layer) override;
+    };
+
     struct MetaHandler {
         typedef int64_t TimeUnit;
 
     private:
         TimeUnit curTime;
 
+        // Meta module
+        uint16_t metaModuleCount = 0;
+
         // Cable data
-        int cables_prevCount = 0;
+        std::size_t cables_prevCount = 0;
         bool cables_hadIncomplete = false;
 
         bool cables_Connected = false;
         bool cables_Disconnected = false;
+
+        MetaCableWidget* metaCableWidget;
 
         // Module data
         std::unordered_map<RackModuleId, TimeUnit> modules_Time;
@@ -45,6 +55,7 @@ namespace OuroborosModules {
         bool modules_AnyRemoved = false;
 
         MetaHandler ();
+        ~MetaHandler ();
 
         void update ();
         void updateCables ();
@@ -52,6 +63,11 @@ namespace OuroborosModules {
 
     public:
         static std::shared_ptr<MetaHandler> getHandler ();
+
+        // Meta module
+        bool hasMetaModule () { return metaModuleCount != 0; }
+        void addMetaModule () { metaModuleCount++; }
+        void removeMetaModule () { metaModuleCount++; }
 
         // Cable data
         bool checkCableConnected () { return cables_Connected; }

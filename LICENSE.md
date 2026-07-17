@@ -52,7 +52,8 @@ Roboto [SIL Open Font License] - (c) 2011 The Roboto Project Authors (https://gi
   * vcv-svghelper [MIT] - (c) 2023 Dustin Lacewell
 
 # Code
+ChowDSP's IIR and Biquad filter code [GNU GPL 3.0] - (c) ChowDSP/Jatin Chowdhury  
 Surge XT's Hilbert Transform from sst-basic-blocks (src/DSP/HilbertTransform.h) [GNU GPL 3.0 or later -OR- MIT] - (c) Various authors, Surge Synth Team  
 VCV Fundamental VCA, used in ST-VCA [GNU GPL 3.0] - (c) 2016-2023 VCV  
 VCV Rack text field (src/UI/MenuItems/TextField.hpp/cpp) [GNU GPL 3.0] - (c) 2016-2023 VCV  
-ChowDSP's IIR and Biquad filter code [GNU GPL 3.0] - (c) ChowDSP/Jatin Chowdhury  
+VCV Rack's cable drawing code (src/MetaHandler_Cables.cpp) [GNU GPL 3.0] - (c) 2016-2023 VCV  
