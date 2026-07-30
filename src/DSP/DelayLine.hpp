@@ -1,0 +1,156 @@
+/*
+ *  OuroborosModules
+ *  Copyright (C) 2024-2025 Chronos "phantombeta" Ouroboros
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#pragma once
+
+#include "../PluginDef.hpp"
+#include "DelayLineInterpolators.hpp"
+
+#include <cstdint>
+#include <algorithm>
+
+namespace OuroborosModules::DSP {
+    template<typename TSampleType>
+    struct DelayLine {
+      private:
+        int32_t maxSamples = 0;
+        TSampleType* samples = nullptr;
+
+        int32_t delayTime = 0;
+        int32_t posIndex = 0;
+
+        int32_t getBufferLength () { return maxSamples + DelayLineInterpolators::MaxSampleCount; }
+
+      public:
+        DelayLine () {
+            setMaxSamples (256);
+            delayTime = maxSamples;
+        }
+
+        DelayLine (int32_t maxSamples) {
+            setMaxSamples (maxSamples);
+            delayTime = maxSamples;
+        }
+
+        ~DelayLine () {
+            if (samples != nullptr)
+                delete [] samples;
+        }
+
+        int32_t getMaxSamples () const { return maxSamples; }
+
+        void setMaxSamples (int32_t newMaxSamples) {
+            assert (newMaxSamples > 0);
+            if (newMaxSamples < 1)
+                return;
+
+            if (samples != nullptr)
+                delete [] samples;
+
+            maxSamples = newMaxSamples;
+            samples = new TSampleType [getBufferLength ()];
+
+            delayTime = std::clamp (delayTime, 1, maxSamples);
+
+            std::fill_n (samples, getBufferLength (), TSampleType (0));
+        }
+
+        void setDelayTime (int32_t newDelayTime) {
+            assert (newDelayTime > 0);
+            assert (newDelayTime <= maxSamples);
+
+            delayTime = std::clamp (newDelayTime, 1, maxSamples);
+        }
+
+        void resetFull () {
+            std::fill_n (samples, getBufferLength (), TSampleType (0));
+        }
+
+        void reset () {
+            auto delaySamples = delayTime + DelayLineInterpolators::MaxSampleCount;
+            if (posIndex + 1 >= delaySamples)
+                std::fill_n (samples + (posIndex + 1 - delaySamples), delaySamples, TSampleType (0));
+            else {
+                std::fill_n (samples, posIndex + 1, TSampleType (0));
+                auto remainder = delaySamples - (posIndex + 1);
+                std::fill_n (samples + (getBufferLength () - remainder), remainder, TSampleType (0));
+            }
+        }
+
+        TSampleType getSample (int32_t index) {
+            assert (index >= 0);
+
+            auto bufferLen = getBufferLength ();
+
+            index = (posIndex - delayTime + std::clamp (index, 0, delayTime)) % bufferLen;
+            index = index < 0 ? bufferLen + index : index;
+
+            return samples [index];
+        }
+
+        template<typename TInterpolator>
+        TSampleType getSample (float index) {
+            assert (index >= 0);
+
+            auto bufferLen = getBufferLength ();
+
+            index = std::fmod (posIndex - delayTime + std::clamp (index, 0.f, static_cast<float> (delayTime)), bufferLen);
+            index = index < 0 ? bufferLen + index : index;
+
+            auto delayInt = std::floor (index);
+            return TInterpolator::interpolate (samples, delayInt, index - delayInt, bufferLen);
+        }
+
+        template<typename TInterpolator>
+        TSampleType getSampleFrac (float delayFrac) {
+            assert (delayFrac >= 0.f && delayFrac <= 1.f);
+            delayFrac = std::clamp (delayFrac, 0.f, 1.f);
+
+            auto bufferLen = getBufferLength ();
+
+            auto index = posIndex - delayTime;
+            index = index < 0 ? bufferLen + index : index;
+
+            return TInterpolator::interpolate (samples, index, delayFrac, bufferLen);
+        }
+
+        void pushSample (TSampleType newSample) {
+            if (++posIndex >= getBufferLength ())
+                posIndex = 0;
+
+            samples [posIndex] = newSample;
+        }
+
+        TSampleType process (TSampleType newSample) {
+            auto ret = samples [posIndex];
+            pushSample (newSample);
+
+            return ret;
+        }
+
+        template<typename TInterpolator>
+        TSampleType process (TSampleType newSample, float delayFrac) {
+            assert (delayFrac >= 0.f && delayFrac <= 1.f);
+
+            auto ret = getSampleFrac<TInterpolator> (delayFrac);
+            pushSample (newSample);
+
+            return ret;
+        }
+    };
+}
