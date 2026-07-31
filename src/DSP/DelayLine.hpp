@@ -66,6 +66,8 @@ namespace OuroborosModules::DSP {
             samples = new TSampleType [getBufferLength ()];
 
             delayTime = std::clamp (delayTime, 1, maxSamples);
+            posIndex = 0;
+            resetFull ();
 
             std::fill_n (samples, getBufferLength (), TSampleType (0));
         }
@@ -79,21 +81,24 @@ namespace OuroborosModules::DSP {
 
         void resetFull () {
             std::fill_n (samples, getBufferLength (), TSampleType (0));
+            posIndex = 0;
         }
 
         void reset () {
-            auto delaySamples = delayTime + DelayLineInterpolators::MaxSampleCount;
-            if (posIndex + 1 >= delaySamples)
+            auto bufferLen = getBufferLength ();
+            auto delaySamples = std::max (delayTime + DelayLineInterpolators::MaxSampleCount, 0, bufferLen);
+            if (posIndex - delaySamples >= 0)
                 std::fill_n (samples + (posIndex + 1 - delaySamples), delaySamples, TSampleType (0));
             else {
                 std::fill_n (samples, posIndex + 1, TSampleType (0));
                 auto remainder = delaySamples - (posIndex + 1);
-                std::fill_n (samples + (getBufferLength () - remainder), remainder, TSampleType (0));
+                std::fill_n (samples + (bufferLen - remainder), remainder, TSampleType (0));
             }
         }
 
         TSampleType getSample (int32_t index) {
             assert (index >= 0);
+            assert (index <= delayTime);
 
             auto bufferLen = getBufferLength ();
 
@@ -106,6 +111,7 @@ namespace OuroborosModules::DSP {
         template<typename TInterpolator>
         TSampleType getSample (float index) {
             assert (index >= 0);
+            assert (index <= delayTime);
 
             auto bufferLen = getBufferLength ();
 
