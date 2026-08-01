@@ -20,7 +20,6 @@
 
 #include "../Math.hpp"
 #include "../PluginDef.hpp"
-
 #include "DelayLine.hpp"
 
 namespace OuroborosModules::DSP {
@@ -82,7 +81,7 @@ namespace OuroborosModules::DSP {
 
             x = fpClean (x);
 
-            auto delay = delayLine.template getSampleFrac<DSP::DelayLineInterpolators::Linear> (1.f - delayTimeFrac);
+            auto delay = delayLine.template getSampleFrac<DSP::DelayLineInterpolators::Lagrange<5>> (1.f - delayTimeFrac);
             auto node1 = fpClean (x * tGain - delay * gain);
             auto node2 = fpClean (delay * tGain + x * gain);
             delayLine.pushSample (node1);
