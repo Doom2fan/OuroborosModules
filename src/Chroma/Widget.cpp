@@ -98,8 +98,8 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto centerEmblem = pluginSettings.chroma_CenterEmblem;
-        if (moduleT != nullptr && moduleT->centerEmblem != CenterEmblem::Default)
-            centerEmblem = moduleT->centerEmblem == CenterEmblem::True;
+        if (moduleT != nullptr && moduleT->centerEmblem != BoolSettingOverride::Default)
+            centerEmblem = moduleT->centerEmblem == BoolSettingOverride::True;
 
         if (centerEmblem) {
             emblemWidget->setEmblemPos (box.size.div (2));
@@ -117,12 +117,12 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void ChromaWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
-        auto createEmblemLocationItem = [&] (std::string name, CenterEmblem centerEmblem) {
+        auto createEmblemLocationItem = [&] (std::string name, BoolSettingOverride centerEmblem) {
             struct HistoryEmblemLocation : rack::history::ModuleAction {
-                CenterEmblem oldLocation;
-                CenterEmblem newLocation;
+                BoolSettingOverride oldLocation;
+                BoolSettingOverride newLocation;
 
-                HistoryEmblemLocation (rack::engine::Module* module, CenterEmblem oldLocation, CenterEmblem newLocation)
+                HistoryEmblemLocation (rack::engine::Module* module, BoolSettingOverride oldLocation, BoolSettingOverride newLocation)
                     : oldLocation (oldLocation), newLocation (newLocation) {
                     moduleId = module->id;
                     name = "change emblem location";
@@ -156,15 +156,58 @@ namespace OuroborosModules::Modules::Chroma {
                 }
             );
         };
+        auto createGlowItem = [&] (std::string name, BoolSettingOverride glowInTheDark) {
+            struct HistoryGlow : rack::history::ModuleAction {
+                BoolSettingOverride oldGlow;
+                BoolSettingOverride newGlow;
+
+                HistoryGlow (rack::engine::Module* module, BoolSettingOverride oldGlow, BoolSettingOverride newGlow)
+                    : oldGlow (oldGlow), newGlow (newGlow) {
+                    moduleId = module->id;
+                    name = "change color list glows in the dark";
+                }
+
+                void undo () override {
+                    auto module = dynamic_cast<ChromaModule*> (APP->engine->getModule (moduleId));
+                    if (module == nullptr)
+                        return;
+
+                    module->glowInTheDark = oldGlow;
+                }
+
+                void redo () override {
+                    auto module = dynamic_cast<ChromaModule*> (APP->engine->getModule (moduleId));
+                    if (module == nullptr)
+                        return;
+
+                    module->glowInTheDark = newGlow;
+                }
+            };
+
+            return rack::createCheckMenuItem (name, "",
+                [=] { return moduleT->glowInTheDark == glowInTheDark; },
+                [=] {
+                    APP->history->push (new HistoryGlow (moduleT, moduleT->glowInTheDark, glowInTheDark));
+                    moduleT->glowInTheDark = glowInTheDark;
+                }
+            );
+        };
 
         _WidgetBase::createLocalStyleMenu (menu);
 
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createMenuLabel ("Emblem location"));
 
-        menu->addChild (createEmblemLocationItem ("Default", CenterEmblem::Default));
-        menu->addChild (createEmblemLocationItem ("Bottom", CenterEmblem::False));
-        menu->addChild (createEmblemLocationItem ("Center", CenterEmblem::True));
+        menu->addChild (createEmblemLocationItem ("Default", BoolSettingOverride::Default));
+        menu->addChild (createEmblemLocationItem ("Bottom", BoolSettingOverride::False));
+        menu->addChild (createEmblemLocationItem ("Center", BoolSettingOverride::True));
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Color list glows in the dark"));
+
+        menu->addChild (createGlowItem ("Default", BoolSettingOverride::Default));
+        menu->addChild (createGlowItem ("No", BoolSettingOverride::False));
+        menu->addChild (createGlowItem ("Yes", BoolSettingOverride::True));
     }
 
     void ChromaWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
@@ -183,6 +226,13 @@ namespace OuroborosModules::Modules::Chroma {
             [] () { return pluginSettings.chroma_CenterEmblem; },
             [&] (bool enable) {
                 pluginSettings.chroma_CenterEmblem = enable;
+                moduleT->updateEmblem = true;
+            }
+        ));
+        menu->addChild (createBoolMenuItem ("Color list glows in the dark", "",
+            [] () { return pluginSettings.chroma_Glow; },
+            [&] (bool enable) {
+                pluginSettings.chroma_Glow = enable;
                 moduleT->updateEmblem = true;
             }
         ));

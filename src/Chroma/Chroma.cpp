@@ -35,6 +35,7 @@ namespace OuroborosModules::Modules::Chroma {
 
         json_object_set_new_bool (rootJ, "wasMaster", isMaster);
         json_object_set_new_enum (rootJ, "centerEmblem", centerEmblem);
+        json_object_set_new_enum (rootJ, "glowInTheDark", glowInTheDark);
 
         auto colorManagerJ = colorManager->dataToJson ();
         json_object_set_new (rootJ, "colorManager", colorManagerJ);
@@ -49,6 +50,7 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         json_object_try_get_enum (rootJ, "centerEmblem", centerEmblem);
+        json_object_try_get_enum (rootJ, "glowInTheDark", glowInTheDark);
 
         if (!json_is_true (json_object_get (rootJ, "wasMaster")))
             return;

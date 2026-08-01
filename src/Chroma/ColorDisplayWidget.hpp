@@ -45,6 +45,7 @@ namespace OuroborosModules::Modules::Chroma {
         void setColor (int index, const CableColor& color);
 
         void draw (const DrawArgs& args) override;
+        void drawLayer (const DrawArgs& args, int layer) override;
         void onButton (const rack::event::Button& e) override;
         void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override {
             _ThemedWidgetBase::onThemeChanged (theme);
@@ -63,6 +64,7 @@ namespace OuroborosModules::Modules::Chroma {
         rack::ui::SequentialLayout* colorContainer;
         ChromaModule* module;
         uint32_t currentSelectedIndex;
+        bool glowInTheDark;
 
         ColorDisplayWidget (const ColorDisplayWidget& x) = delete;
         void operator= (const ColorDisplayWidget& x) = delete;

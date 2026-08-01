@@ -31,7 +31,7 @@
 namespace OuroborosModules::Modules::Chroma {
     struct KeyContainer;
 
-    enum class CenterEmblem {
+    enum class BoolSettingOverride {
         Default = -1,
 
         False = 0,
@@ -40,7 +40,8 @@ namespace OuroborosModules::Modules::Chroma {
 
     struct ChromaModule : ModuleBase {
         std::shared_ptr<CableColorManager> colorManager = nullptr;
-        CenterEmblem centerEmblem = CenterEmblem::Default;
+        BoolSettingOverride centerEmblem = BoolSettingOverride::Default;
+        BoolSettingOverride glowInTheDark = BoolSettingOverride::Default;
         bool updateEmblem = false;
 
         bool isMaster = false;

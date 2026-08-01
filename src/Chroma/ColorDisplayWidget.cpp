@@ -48,11 +48,16 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void ColorDisplayWidget::step () {
+        glowInTheDark = pluginSettings.chroma_Glow;
+
         CableColorCollection colorCollection;
         uint32_t currentColor;
         if (module != nullptr) {
             colorCollection = module->colorManager->getCollection ();
             currentColor = module->colorManager->getCurrentColor ();
+
+            if (module->glowInTheDark != BoolSettingOverride::Default)
+                glowInTheDark = module->glowInTheDark == BoolSettingOverride::True;
         } else {
             if (!pluginSettings.chroma_Collections.tryGetDefaultCollection (colorCollection))
                 return;
@@ -132,9 +137,18 @@ namespace OuroborosModules::Modules::Chroma {
     }
 
     void CableColorWidget::draw (const DrawArgs& args) {
+        Widget::draw (args);
+        drawLayer (args, 0);
+    }
+
+    void CableColorWidget::drawLayer (const DrawArgs& args, int layer) {
         using rack::math::Vec;
 
-        Widget::draw (args);
+        Widget::drawLayer (args, layer);
+
+        auto glowInTheDark = colorDisplayWidget->glowInTheDark;
+        if ((glowInTheDark && layer != 1) || (!glowInTheDark && layer != 0))
+            return;
 
         auto font = APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata_Condensed-Medium.ttf"));
         if (font == nullptr)
