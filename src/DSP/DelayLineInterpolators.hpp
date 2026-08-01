@@ -24,7 +24,7 @@
 
 namespace OuroborosModules::DSP::DelayLineInterpolators {
     // The highest number of samples needed by any interpolator
-    static constexpr int32_t MaxSampleCount = 2;
+    static constexpr int32_t MaxSampleCount = 32;
 
     /* Interface:
     struct IInterpolator {
@@ -32,7 +32,7 @@ namespace OuroborosModules::DSP::DelayLineInterpolators {
         // delayInt: 0 <= delayIndex + delayFrac < delayLength
         // delayFrac: 0 <= delayFrac < 1
         // delayLength: 0 < delayLength < buffer length
-        TSampleType interpolate (TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength);
+        TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength);
     };
     */
 
@@ -41,7 +41,7 @@ namespace OuroborosModules::DSP::DelayLineInterpolators {
      */
     struct None {
         template<typename TSampleType>
-        inline static TSampleType interpolate (TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
+        inline static TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
             return buffer [delayInt];
         }
     };
@@ -52,11 +52,52 @@ namespace OuroborosModules::DSP::DelayLineInterpolators {
      */
     struct Linear {
         template<typename TSampleType>
-        inline static TSampleType interpolate (TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
+        inline static TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
             auto z0 = buffer [delayInt > 0 ? delayInt - 1 : delayLength - 1];
             auto z1 = buffer [delayInt];
 
             return z0 + TSampleType (delayFrac) * (z1 - z0);
+        }
+    };
+
+    /*
+     * Lagrange interpolation.
+     * Slower than linear, but less lowpass filtering.
+     */
+    template<int ORDER>
+    struct Lagrange {
+        inline static constexpr float lagrangeDenom (int n) {
+            float accum = 1.f;
+            for (int k = 0; k <= ORDER; k++) {
+                if (k != n)
+                    accum *= (n - k);
+            }
+
+            return accum;
+        }
+
+        template<typename TSampleType>
+        inline static TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
+            delayInt -= ORDER;
+            delayFrac += static_cast<int> (std::floor (ORDER / 2.f));
+            if (delayInt < 0)
+                delayInt = delayLength + delayInt;
+
+            TSampleType accum = TSampleType (0);
+            for (int i = ORDER; i >= 0; i--) {
+                auto num = 1.f;
+                for (int j = 1; j <= ORDER; j++) {
+                    if (j != i)
+                        num *= delayFrac - j;
+                }
+
+                if (i == 0)
+                    accum *= delayFrac;
+
+                accum += buffer [(delayInt + i) % delayLength] * (num / lagrangeDenom (i));
+            }
+
+            return accum;
         }
     };
 }

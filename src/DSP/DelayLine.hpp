@@ -21,8 +21,8 @@
 #include "../PluginDef.hpp"
 #include "DelayLineInterpolators.hpp"
 
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 
 namespace OuroborosModules::DSP {
     template<typename TSampleType>
