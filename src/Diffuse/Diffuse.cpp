@@ -37,7 +37,7 @@ namespace OuroborosModules::Modules::Diffuse {
         configParam (PARAM_GAIN, -1.f, 1.f, 0.f, "Gain", "%", 0, 100);
         configParam (PARAM_MIX, 0.f, 1.f, .5f, "Mix", "%", 0, 100);
 
-        configParam (PARAM_FREQ_CV_ATTEN, -1.f, 1.f, 0.f, "Linear frequency CV attenuverter", "%", 0, 100);
+        configParam (PARAM_FREQ_CV_ATTEN, -1.f, 1.f, 0.f, "Linear FM CV attenuverter", "%", 0, 100);
         configParam (PARAM_GAIN_CV_ATTEN, -1.f, 1.f, 0.f, "Gain CV attenuverter", "%", 0, 100);
         configParam (PARAM_MIX_CV_ATTEN, -1.f, 1.f, 0.f, "Dry/Wet mix CV attenuverter", "%", 0, 100);
 
@@ -45,7 +45,7 @@ namespace OuroborosModules::Modules::Diffuse {
         configInput (INPUT_SIGNAL, "Signal");
         configInput (INPUT_VOCT, "1V/Oct");
 
-        configInput (INPUT_FREQ_CV, "Linear frequency CV");
+        configInput (INPUT_FREQ_CV, "Linear FM CV");
         configInput (INPUT_GAIN_CV, "Gain CV");
         configInput (INPUT_MIX_CV, "Dry/Wet mix CV");
 
