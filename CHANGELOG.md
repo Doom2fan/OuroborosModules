@@ -3,6 +3,7 @@
 ## v2.3.0 (Not released yet)
   * New modules:
     * Crush
+    * Diffuse
   * Optimizations to Warp
   * Added cable glow option to Meta
   * Added cable lights option to Meta
