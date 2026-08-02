@@ -121,6 +121,14 @@
             "tags": [ "Limiter", "Envelope follower", "Polyphonic" ],
             "keywords": "leveler press normalize normalise normalization normalisation limiter",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Crush"
+        },
+        {
+            "slug": "Diffuse",
+            "name": "Diffuse",
+            "description": "Schroeder allpass filter/Diffusion effect",
+            "tags": [ "Filter", "Digital", "Effect" ],
+            "keywords": "diffusion schroeder",
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Diffuse"
         }
     ]
 }
