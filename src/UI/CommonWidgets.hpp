@@ -172,6 +172,42 @@ namespace OuroborosModules::Widgets {
         void operator= (const MetalKnobSmall& x) = delete;
     };
 
+    struct MetalKnobLarge : rack_themer::widgets::SvgKnob {
+        rack_themer::widgets::SvgWidget* background;
+
+        MetalKnobLarge () {
+            minAngle = -0.83 * M_PI;
+            maxAngle = 0.83 * M_PI;
+
+            background = new rack_themer::widgets::SvgWidget;
+            framebuffer->addChildBelow (background, transformWidget);
+
+            setSvg (Theme::getSvg ("components/KnobMetalLarge"));
+            background->setSvg (Theme::getSvg ("components/KnobMetalLarge_BG"));
+        }
+
+        MetalKnobLarge (const MetalKnobLarge& x) = delete;
+        void operator= (const MetalKnobLarge& x) = delete;
+    };
+
+    struct MetalKnobHuge : rack_themer::widgets::SvgKnob {
+        rack_themer::widgets::SvgWidget* background;
+
+        MetalKnobHuge () {
+            minAngle = -0.83 * M_PI;
+            maxAngle = 0.83 * M_PI;
+
+            background = new rack_themer::widgets::SvgWidget;
+            framebuffer->addChildBelow (background, transformWidget);
+
+            setSvg (Theme::getSvg ("components/KnobMetalHuge"));
+            background->setSvg (Theme::getSvg ("components/KnobMetalHuge_BG"));
+        }
+
+        MetalKnobHuge (const MetalKnobHuge& x) = delete;
+        void operator= (const MetalKnobHuge& x) = delete;
+    };
+
     template<typename TLightBase = rack::componentlibrary::WhiteLight>
     struct LightButton : rack_themer::widgets::SvgSwitch {
         struct ButtonLight : TLightBase {

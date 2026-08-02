@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 27.5.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   width="40"
+   height="40"
+   viewBox="0 0 40 40"
+   version="1.1"
+   id="svg15246"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   sodipodi:docname="KnobMetalHuge.svg"
+   xml:space="preserve"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs18"><linearGradient
+     id="linearGradient15"
+     inkscape:collect="always"><stop
+       style="stop-color:#d4d4d4;stop-opacity:1;"
+       offset="0"
+       id="stop15" /><stop
+       style="stop-color:#ffffff;stop-opacity:1;"
+       offset="1"
+       id="stop16" /></linearGradient><linearGradient
+     inkscape:collect="always"
+     xlink:href="#linearGradient15"
+     id="linearGradient16"
+     x1="4"
+     y1="3.9480793"
+     x2="4"
+     y2="0"
+     gradientUnits="userSpaceOnUse"
+     gradientTransform="matrix(3.0058569,0,0,5.0657551,7.9765737,0)" /></defs>
+<sodipodi:namedview
+   bordercolor="#666666"
+   borderopacity="1.0"
+   fit-margin-bottom="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-top="0"
+   id="base"
+   inkscape:current-layer="layer5"
+   inkscape:cx="13.390834"
+   inkscape:cy="22.362251"
+   inkscape:document-rotation="0"
+   inkscape:document-units="px"
+   inkscape:pageopacity="0.0"
+   inkscape:pageshadow="2"
+   inkscape:window-height="1027"
+   inkscape:window-maximized="1"
+   inkscape:window-width="1920"
+   inkscape:window-x="-8"
+   inkscape:window-y="22"
+   inkscape:zoom="11.313709"
+   pagecolor="#ffffff"
+   showgrid="false"
+   units="mm"
+   inkscape:showpageshadow="2"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   showguides="true">
+	</sodipodi:namedview>
+
+<g
+   inkscape:groupmode="layer"
+   id="layer5"
+   inkscape:label="Pointer"
+   style="display:inline"><path
+     style="display:inline;fill:#555555;fill-opacity:1;stroke-width:1.22227;paint-order:stroke fill markers"
+     id="knobBodyRef--hidden"
+     sodipodi:type="arc"
+     sodipodi:cx="20"
+     sodipodi:cy="20"
+     sodipodi:rx="20"
+     sodipodi:ry="20"
+     sodipodi:start="0"
+     sodipodi:end="6.219305"
+     sodipodi:arc-type="arc"
+     sodipodi:open="true"
+     d="M 40,20 A 20,20 0 0 1 20.319388,39.99745 20,20 0 0 1 0.01020087,20.638694 20,20 0 0 1 19.042162,0.02294951 20,20 0 0 1 39.959207,18.723263" /><path
+     id="knob-metal-pointer"
+     style="display:inline;opacity:1;fill:url(#linearGradient16);fill-opacity:1;stroke-width:5.12812;paint-order:stroke fill markers"
+     d="M 19.075,0 V 0.94240836 6.1989527 19.057594 C 19.075,19.579685 19.3244,20 19.634193,20 h 0.731614 C 20.6756,20 20.925,19.579685 20.925,19.057594 V 6.1989527 0.94240836 0 h -0.559193 -0.731614 z" /></g></svg>
