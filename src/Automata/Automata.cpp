@@ -66,10 +66,6 @@ namespace OuroborosModules::Modules::Automata {
 
         initialize ();
 
-        // Clock dividers.
-        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
-        clockParams = DSP::ClockDivider (32, rack::random::u32 ());
-
         // Schmitt triggers
         stepButtonTrigger = rack::dsp::SchmittTrigger ();
         clockTrigger = rack::dsp::SchmittTrigger ();
@@ -85,6 +81,14 @@ namespace OuroborosModules::Modules::Automata {
 
         // Widget communication
         updateRulesSignal.store (false);
+    }
+
+    void AutomataModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 64)), rack::random::u32 ());
+        clockParams = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
     }
 
     void AutomataModule::initialize () {

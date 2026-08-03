@@ -39,10 +39,15 @@ namespace OuroborosModules::Modules::Junction {
         configOutput (OUTPUT_SIGNAL    , "A");
         configOutput (OUTPUT_SIGNAL + 1, "B");
 
-        clockUpdate = DSP::ClockDivider (32, rack::random::u32 ());
-
         for (int i = 0; i < OutputCount; i++)
             outputData [i] = OutputData ();
+    }
+
+    void JunctionModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockUpdate = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
     }
 
     json_t* JunctionModule::dataToJson () {

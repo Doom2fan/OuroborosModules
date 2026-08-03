@@ -87,6 +87,7 @@ namespace OuroborosModules::Modules::Bernoulli {
 
         void process (const ProcessArgs& args) override;
         void onRandomize (const RandomizeEvent& e) override;
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
     };
 
     struct BernoulliWidget : Widgets::ModuleWidgetBase<BernoulliModule> {

@@ -74,6 +74,8 @@ namespace OuroborosModules::Modules::Median {
 
         void process (const ProcessArgs& args) override;
 
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
+
       private:
         rack::simd::float_4 getBank (int inputNum, int currentChannel);
         void setOversampleRate (int newOversampleRate);

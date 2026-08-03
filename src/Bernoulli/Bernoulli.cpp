@@ -58,11 +58,16 @@ namespace OuroborosModules::Modules::Bernoulli {
             });
         }
 
-        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
-
         randomizeProbability = true;
         randomizeProbabilityCV = true;
         randomizeModes = true;
+    }
+
+    void BernoulliModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
     }
 
     BernoulliGate::BernoulliGate (std::function<float ()> probabilityFunc)

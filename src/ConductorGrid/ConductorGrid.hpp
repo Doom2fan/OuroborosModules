@@ -86,6 +86,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         void process (const ProcessArgs& args) override;
 
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onDataUpdated (const ConductorDataUpdatedEvent& coreData) override;
 
       private:

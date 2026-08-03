@@ -49,10 +49,16 @@ namespace OuroborosModules::Modules::Median {
         configOutput (OUTPUT_MID, "Median");
         configOutput (OUTPUT_MAX, "Maximum");
 
-        clockOversample = DSP::ClockDivider (7, rack::random::u32 ());
         setOversampleRate (1);
 
-        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
+    }
+
+    void MedianModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockOversample = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 64)), rack::random::u32 ());
     }
 
     rack::simd::float_4 MedianModule::getBank (int inputNum, int currentChannel) {

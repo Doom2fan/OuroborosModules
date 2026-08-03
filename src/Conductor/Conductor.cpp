@@ -127,8 +127,13 @@ namespace OuroborosModules::Modules::Conductor {
         // Configure bypasses.
         configBypass (INPUT_CLOCK, OUTPUT_CLOCK);
         configBypass (INPUT_RESET, OUTPUT_RESET);
+    }
 
-        clockLights = DSP::ClockDivider (128, rack::random::u32 ());
+    void ConductorModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
     }
 
     json_t* ConductorModule::dataToJson () {

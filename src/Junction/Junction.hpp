@@ -73,6 +73,8 @@ namespace OuroborosModules::Modules::Junction {
         void dataFromJson (json_t* rootJ) override;
 
         void process (const ProcessArgs& args) override;
+
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
     };
 
     struct JunctionWidget : Widgets::ModuleWidgetBase<JunctionModule> {

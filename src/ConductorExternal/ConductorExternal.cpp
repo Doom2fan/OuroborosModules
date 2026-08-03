@@ -117,9 +117,14 @@ namespace OuroborosModules::Modules::Conductor {
         configLight (LIGHT_CV1_ENABLED, "CV 1 Enabled");
         configLight (LIGHT_CV2_ENABLED, "CV 2 Enabled");
 
-        clockLights = DSP::ClockDivider (128, rack::random::u32 ());
-
         switchMode (ModuleMode::Index);
+    }
+
+    void ConductorExternalModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
     }
 
     json_t* ConductorExternalModule::dataToJson () {

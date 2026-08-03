@@ -51,8 +51,6 @@ namespace OuroborosModules::Modules::Crush {
         configBypass (INPUT_SIGNAL, OUTPUT_SIGNAL);
 
         // Initialize the module.
-        clockParams = DSP::ClockDivider (32, rack::random::u32 ());
-
         setPeakFilter ();
     }
 
@@ -122,13 +120,11 @@ namespace OuroborosModules::Modules::Crush {
     void CrushModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         ModuleBase::onSampleRateChange (e);
 
-        auto newSampleRate = static_cast<uint32_t> (e.sampleRate);
-        if (newSampleRate == curSampleRate)
-            return;
+        // Clock dividers.
+        clockParams = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
 
-        curSampleRate = newSampleRate;
-        for (int bank = 0; bank < SIMDBankCount; bank++) {
-            dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
-        }
+        // DC blockers.
+        for (int bank = 0; bank < SIMDBankCount; bank++)
+            dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, e.sampleRate);
     }
 }

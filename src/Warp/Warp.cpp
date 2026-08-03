@@ -52,19 +52,25 @@ namespace OuroborosModules::Modules::Warp {
         configBypass (INPUT_SIGNAL, OUTPUT_SIGNAL);
 
         // Initialize the module.
-        curSampleRate = 0;
         oversampleRate = 0;
 
-        clockOversample = DSP::ClockDivider (7, rack::random::u32 ());
-
         setOversampleRate (DefaultOversampleRate);
-        updateSampleRate (48000);
     }
 
     void WarpModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         ModuleBase::onSampleRateChange (e);
 
-        updateSampleRate (static_cast<uint32_t> (e.sampleRate));
+        // Clock dividers.
+        clockOversample = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
+
+        // Filters.
+        auto newSampleRate = static_cast<uint32_t> (e.sampleRate);
+        for (int bank = 0; bank < SIMDBankCount; bank++) {
+            hilbertTransformSignal [bank].setSampleRate (newSampleRate);
+            hilbertTransformModulator [bank].setSampleRate (newSampleRate);
+
+            dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
+        }
     }
 
     void WarpModule::process (const ProcessArgs& args) {
@@ -160,19 +166,6 @@ namespace OuroborosModules::Modules::Warp {
             signalImUpsampler [bank].setParams (newOversampleRate);
             modulatorUpsampler [bank].setParams (newOversampleRate);
             downsamplerFilter [bank].setParams (newOversampleRate);
-        }
-    }
-
-    void WarpModule::updateSampleRate (uint32_t newSampleRate) {
-        if (newSampleRate == curSampleRate)
-            return;
-
-        curSampleRate = newSampleRate;
-        for (int bank = 0; bank < SIMDBankCount; bank++) {
-            hilbertTransformSignal [bank].setSampleRate (newSampleRate);
-            hilbertTransformModulator [bank].setSampleRate (newSampleRate);
-
-            dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, newSampleRate);
         }
     }
 }

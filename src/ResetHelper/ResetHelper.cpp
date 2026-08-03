@@ -39,9 +39,13 @@ namespace OuroborosModules::Modules::ResetHelper {
 
         configOutput (OUTPUT_RESET, "Reset trigger");
         configLight (LIGHT_OUTPUT, "Reset trigger");
+    }
 
-        // Configure clock dividers.
-        clockLights = DSP::ClockDivider (32, rack::random::u32 ());
+    void ResetHelperModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
     }
 
     void ResetHelperModule::process (const ProcessArgs& args) {

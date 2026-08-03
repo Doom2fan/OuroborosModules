@@ -59,8 +59,6 @@ namespace OuroborosModules::Modules::Crush {
             NUM_LIGHTS
         };
 
-        uint32_t curSampleRate = 0;
-
         rack::dsp::TPeakFilter<rack::simd::float_4> peakFilter [SIMDBankCount];
         DSP::DCBlocker<rack::simd::float_4> dcBlocker [SIMDBankCount];
 

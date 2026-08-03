@@ -38,8 +38,6 @@ namespace OuroborosModules::Modules::Meta {
 
         premuter_Func = &MetaModule::premuter_Process;
 
-        clockMetaSoundSettings = DSP::ClockDivider (32, rack::random::u32 ());
-
         for (int i = 0; i < METASOUNDS_LENGTH; i++)
             metaSounds_Channels [i].init (i);
     }
@@ -86,6 +84,8 @@ namespace OuroborosModules::Modules::Meta {
 
     void MetaModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         Module::onSampleRateChange (e);
+
+        clockMetaSoundSettings = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
 
         MetaSoundData::global_OnSampleRateChange (e.sampleRate);
         for (int i = 0; i < METASOUNDS_LENGTH; i++)

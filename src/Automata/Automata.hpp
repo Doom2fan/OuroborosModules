@@ -165,6 +165,7 @@ namespace OuroborosModules::Modules::Automata {
         void processStep (const ProcessArgs& args);
         void processTriggers ();
 
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onReset (const ResetEvent& e) override;
 
         json_t* dataToJson () override;

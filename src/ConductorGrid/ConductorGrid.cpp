@@ -34,8 +34,13 @@ namespace OuroborosModules::Modules::Conductor {
 
         for (int i = 0; i < PadCount; i++)
             configButton (PARAM_PAD_BUTTON + i, fmt::format (FMT_STRING ("Pad {}"), i + 1));
+    }
 
-        clockLights = DSP::ClockDivider (128, rack::random::u32 ());
+    void ConductorGridModule::onSampleRateChange (const SampleRateChangeEvent& e) {
+        ModuleBase::onSampleRateChange (e);
+
+        // Clock dividers.
+        clockLights = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
     }
 
     json_t* ConductorGridModule::dataToJson () {

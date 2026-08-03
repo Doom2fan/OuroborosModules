@@ -141,6 +141,7 @@ namespace OuroborosModules::Modules::Conductor {
         void requestEnqueue (int newQueue) override { queuePattern (newQueue); }
         void requestDequeue () override { dequeuePattern (); }
 
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onReset (const ResetEvent& e) override;
 
       protected:

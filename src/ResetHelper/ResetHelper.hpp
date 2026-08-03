@@ -64,6 +64,8 @@ namespace OuroborosModules::Modules::ResetHelper {
         ResetHelperModule ();
 
         void process (const ProcessArgs& args) override;
+
+        void onSampleRateChange (const SampleRateChangeEvent& e) override;
     };
 
     struct ResetHelperWidget : Widgets::ModuleWidgetBase<ResetHelperModule> {

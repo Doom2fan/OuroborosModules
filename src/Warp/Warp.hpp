@@ -67,7 +67,6 @@ namespace OuroborosModules::Modules::Warp {
         static constexpr float MaxBias = 5;
 
         // State
-        uint32_t curSampleRate;
         uint32_t oversampleRate;
 
         // Oversampling
@@ -92,7 +91,6 @@ namespace OuroborosModules::Modules::Warp {
 
       private:
         void setOversampleRate (uint32_t newOversampleRate);
-        void updateSampleRate (uint32_t newSampleRate);
 
         std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
             return {{ std::make_pair ("Input", std::make_pair (INPUT_SIGNAL, -1)) }};
