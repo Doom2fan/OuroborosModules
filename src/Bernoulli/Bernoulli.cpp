@@ -176,6 +176,11 @@ namespace OuroborosModules::Modules::Bernoulli {
             setOutput (OUTPUT_A + i, result.x);
             setOutput (OUTPUT_B + i, result.y);
 
+            if (result.x > .5f)
+                setLight (LIGHT_STATE_A + i, 1.f);
+            if (result.y > .5f)
+                setLight (LIGHT_STATE_B + i, 1.f);
+
             if (lightClocked) {
                 setLightSmooth (LIGHT_STATE_A + i, result.x, lightTime);
                 setLightSmooth (LIGHT_STATE_B + i, result.y, lightTime);
