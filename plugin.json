@@ -126,7 +126,7 @@
             "slug": "Diffuse",
             "name": "Diffuse",
             "description": "Schroeder allpass filter/Diffusion effect",
-            "tags": [ "Filter", "Digital", "Effect" ],
+            "tags": [ "Filter", "Digital", "Effect", "Physical modeling", "Polyphonic" ],
             "keywords": "diffusion schroeder",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Diffuse"
         }
