@@ -86,7 +86,7 @@ namespace OuroborosModules::DSP {
 
         void reset () {
             auto bufferLen = getBufferLength ();
-            auto delaySamples = std::max (delayTime + DelayLineInterpolators::MaxSampleCount, 0, bufferLen);
+            auto delaySamples = std::clamp (delayTime + DelayLineInterpolators::MaxSampleCount, 0, bufferLen);
             if (posIndex - delaySamples >= 0)
                 std::fill_n (samples + (posIndex + 1 - delaySamples), delaySamples, TSampleType (0));
             else {
