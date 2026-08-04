@@ -26,14 +26,12 @@ namespace OuroborosModules {
 namespace OuroborosModules::Modules::Diffuse {
     static constexpr float MinFreqHz = 32.f;
     static constexpr float MaxFreqHz = 20000.f;
-    static const float MinFreqVOct = std::log2 (MinFreqHz / rack::dsp::FREQ_C4);
-    static const float MaxFreqVOct = std::log2 (MaxFreqHz / rack::dsp::FREQ_C4);
 
     DiffuseModule::DiffuseModule () {
         config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
         // Configure parameters.
-        configParam (PARAM_FREQ, MinFreqVOct, MaxFreqVOct, 0.f, "Frequency", " Hz", 2, rack::dsp::FREQ_C4);
+        configParamVOctFromHz (PARAM_FREQ, MinFreqHz, MaxFreqHz, rack::dsp::FREQ_C4, "Frequency");
         configParam (PARAM_GAIN, -1.f, 1.f, 0.f, "Gain", "%", 0, 100);
         configParam (PARAM_MIX, 0.f, 1.f, .5f, "Mix", "%", 0, 100);
 
