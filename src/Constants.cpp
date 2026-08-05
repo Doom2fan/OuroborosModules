@@ -23,6 +23,11 @@
 
 #include <fmt/format.h>
 
+namespace OuroborosModules::Fonts {
+    const std::string getFont (std::string path) { return rack::asset::plugin (pluginInstance, path); }
+    const std::string getFontSystem (std::string path) { return rack::asset::system (path); }
+}
+
 namespace OuroborosModules {
 #define THEMES_BEGIN() StyleCollection themesCollection = StyleCollection ({
 #define DEFINE_THEME(key, fileName, displayName) StyleInfo (key, fileName, displayName),

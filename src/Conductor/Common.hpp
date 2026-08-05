@@ -109,7 +109,7 @@ namespace OuroborosModules::Modules::Conductor {
         }
 
         virtual std::shared_ptr<rack::window::Font> getFont () const {
-            return APP->window->loadFont (rack::asset::system ("res/fonts/DSEG7ClassicMini-BoldItalic.ttf"));
+            return APP->window->loadFont (Fonts::DSEG7ClassicMini_BoldItalic ());
         }
 
         void draw (const DrawArgs& args) override {

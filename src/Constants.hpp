@@ -169,4 +169,15 @@ namespace OuroborosModules {
             { "Orange", nvgRGB (0xFF, 0x99, 0x14) },
         };
     }
+
+    namespace Fonts {
+        const std::string getFont (std::string path);
+        const std::string getFontSystem (std::string path);
+
+        inline const std::string DotoBlack () { return getFont ("res/fonts/Doto-Black.ttf"); }
+        inline const std::string Inconsolata_Bold () { return getFont ("res/fonts/Inconsolata-Bold.ttf"); }
+        inline const std::string InconsolataCondensed_Medium () { return getFont ("res/fonts/Inconsolata_Condensed-Medium.ttf"); }
+        inline const std::string RobotoCondensed () { return getFont ("res/fonts/RobotoCondensed.ttf"); }
+        inline const std::string DSEG7ClassicMini_BoldItalic () { return getFontSystem ("res/fonts/DSEG7ClassicMini-BoldItalic.ttf"); }
+    }
 }

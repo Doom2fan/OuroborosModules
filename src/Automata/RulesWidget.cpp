@@ -24,12 +24,8 @@
 #include <fmt/format.h>
 
 namespace OuroborosModules::Modules::Automata {
-    auto getTitleFont () {
-        return APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata-Bold.ttf"));
-    }
-    auto getLabelFont () {
-        return APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata-Bold.ttf"));
-    }
+    auto getTitleFont () { return APP->window->loadFont (Fonts::Inconsolata_Bold ()); }
+    auto getLabelFont () { return APP->window->loadFont (Fonts::Inconsolata_Bold ()); }
 
     struct AutomataRulesWidgetButton : rack_themer::ThemedWidgetBase<rack::widget::Widget> {
       protected:

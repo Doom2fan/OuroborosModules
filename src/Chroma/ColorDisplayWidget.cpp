@@ -150,7 +150,7 @@ namespace OuroborosModules::Modules::Chroma {
         if ((glowInTheDark && layer != 1) || (!glowInTheDark && layer != 0))
             return;
 
-        auto font = APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Inconsolata_Condensed-Medium.ttf"));
+        auto font = APP->window->loadFont (Fonts::InconsolataCondensed_Medium ());
         if (font == nullptr)
             return;
 

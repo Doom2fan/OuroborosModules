@@ -134,7 +134,7 @@ namespace OuroborosModules::Modules::Automata {
     }
 
     auto getRulesFont () {
-        return APP->window->loadFont (rack::asset::plugin (pluginInstance, "res/fonts/Doto-Black.ttf"));
+        return APP->window->loadFont (Fonts::DotoBlack ());
     }
 
     void AutomataBoardWidget::draw (const DrawArgs& args) {
