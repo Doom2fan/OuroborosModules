@@ -70,7 +70,7 @@ namespace OuroborosModules::DSP {
             delayTimeFrac = std::modf (newDelayTime, &delayTimeI);
             delayTimeInt = static_cast<int32_t> (delayTimeI);
 
-            delayLine.setDelayTime (static_cast<int32_t> (std::ceil (newDelayTime)));
+            delayLine.setDelayTime (delayTimeInt);
         }
 
         void resetFull () { delayLine.resetFull (); }
@@ -81,7 +81,7 @@ namespace OuroborosModules::DSP {
 
             x = fpClean (x);
 
-            auto delay = delayLine.template getSampleFrac<DSP::DelayLineInterpolators::Lagrange<5>> (1.f - delayTimeFrac);
+            auto delay = delayLine.template getSampleFrac<DSP::DelayLineInterpolators::Lagrange<5>> (delayTimeFrac);
             auto node1 = fpClean (x * tGain - delay * gain);
             auto node2 = fpClean (delay * tGain + x * gain);
             delayLine.pushSample (node1);

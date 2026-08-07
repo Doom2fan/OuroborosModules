@@ -78,8 +78,9 @@ namespace OuroborosModules::DSP::DelayLineInterpolators {
 
         template<typename TSampleType>
         inline static TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
-            delayInt -= ORDER;
-            delayFrac += static_cast<int> (std::floor (ORDER / 2.f));
+            auto offs = static_cast<int> (std::floor (ORDER / 2.f));
+            delayInt -= offs;
+            delayFrac += offs;
             if (delayInt < 0)
                 delayInt = delayLength + delayInt;
 

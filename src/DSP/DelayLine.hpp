@@ -102,7 +102,7 @@ namespace OuroborosModules::DSP {
 
             auto bufferLen = getBufferLength ();
 
-            index = (posIndex - delayTime + std::clamp (index, 0, delayTime)) % bufferLen;
+            index = (posIndex - std::clamp (index, 0, delayTime)) % bufferLen;
             index = index < 0 ? bufferLen + index : index;
 
             return samples [index];
@@ -115,11 +115,15 @@ namespace OuroborosModules::DSP {
 
             auto bufferLen = getBufferLength ();
 
-            index = std::fmod (posIndex - delayTime + std::clamp (index, 0.f, static_cast<float> (delayTime)), bufferLen);
-            index = index < 0 ? bufferLen + index : index;
+            index = std::clamp (index, 0.f, static_cast<float> (delayTime));
 
-            auto delayInt = std::floor (index);
-            return TInterpolator::interpolate (samples, delayInt, index - delayInt, bufferLen);
+            auto delayInt = static_cast<int32_t> (std::floor (index));
+            auto delayFrac = index - delayInt;
+
+            delayInt = (posIndex - delayInt) % bufferLen;
+            delayInt = delayInt < 0 ? bufferLen + delayInt : delayInt;
+
+            return TInterpolator::interpolate (samples, delayInt, 1.f - delayFrac, bufferLen);
         }
 
         template<typename TInterpolator>
@@ -132,7 +136,7 @@ namespace OuroborosModules::DSP {
             auto index = posIndex - delayTime;
             index = index < 0 ? bufferLen + index : index;
 
-            return TInterpolator::interpolate (samples, index, delayFrac, bufferLen);
+            return TInterpolator::interpolate (samples, index, 1.f - delayFrac, bufferLen);
         }
 
         void pushSample (TSampleType newSample) {
