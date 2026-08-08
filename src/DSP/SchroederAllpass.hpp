@@ -66,9 +66,8 @@ namespace OuroborosModules::DSP {
             auto maxSamples = static_cast<float> (delayLine.getMaxSamples ());
             newDelayTime = std::clamp (newDelayTime, 1.f, maxSamples);
 
-            float delayTimeI;
-            delayTimeFrac = std::modf (newDelayTime, &delayTimeI);
-            delayTimeInt = static_cast<int32_t> (delayTimeI);
+            delayTimeInt = static_cast<int32_t> (std::floor (newDelayTime));
+            delayTimeFrac = newDelayTime - delayTimeInt;
 
             delayLine.setDelayTime (delayTimeInt);
         }
