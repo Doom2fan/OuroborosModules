@@ -170,6 +170,12 @@ class CmdShell(cmd2.Cmd):
             "--suppressions-list=CppCheckSuppressions.txt", "--inline-suppr",
             "--enable=warning,portability,missingInclude",
             "--check-level=exhaustive",
+            f"--config-exclude={globalData.rackSdkDir}/include",
+            f"--config-exclude={globalData.rackSdkDir}/dep",
+            f"--config-exclude={globalData.repoDir}/libs",
+            f"-i{globalData.rackSdkDir}/include",
+            f"-i{globalData.rackSdkDir}/dep",
+            f"-i{globalData.repoDir}/libs",
         ]
         if args.inconclusive:
             cppcheckArgs.append("--inconclusive")
