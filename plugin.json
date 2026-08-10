@@ -129,6 +129,13 @@
             "tags": [ "Filter", "Digital", "Effect", "Physical modeling", "Polyphonic" ],
             "keywords": "diffusion schroeder",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Diffuse"
+        },
+        {
+            "slug": "Thrum",
+            "name": "Thrum",
+            "description": "Physically modelled drum, based on Mike Moreno DSP's [mymembrane~] for Pure Data",
+            "tags": [ "Physical modeling", "Drum", "Polyphonic" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Thrum"
         }
     ]
 }
