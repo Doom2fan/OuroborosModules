@@ -21,6 +21,9 @@
 #include "PluginDef.hpp"
 
 namespace OuroborosModules::Math {
+    static constexpr float Sqrt2 = 1.41421356237309504880168872420969807856967187537695f;
+    static constexpr float OneOverSqrt2 = 0.70710678118654752440084436210484903928483593768847f;
+
     void Sort3 (rack::simd::float_4 vecA, rack::simd::float_4 vecB, rack::simd::float_4 vecC,
                 rack::simd::float_4& vecMin, rack::simd::float_4& vecMid, rack::simd::float_4& vecMax);
 
