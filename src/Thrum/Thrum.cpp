@@ -60,7 +60,7 @@ namespace OuroborosModules::Modules::Thrum {
         configParamVOctFromHz (PARAM_SNARE_FILTER_FREQ,
             MinSnareFreqHz, MaxSnareFreqHz, DefaultSnareFreqHz, "Snare noise filter frequency");
         configSwitch (PARAM_SNARE_FILTER_TYPE, 0.f, 1.f, 0.f, "Snare noise filter type", { "Bandpass", "Lowpass", });
-        configParam (PARAM_SNARE_FALL_TIME, 5.f / 1000.f, 500.f / 1000.f, 250.f / 1000.f, "Snare envelope follower fall time", " ms", 0, 1000);
+        configParam (PARAM_SNARE_FALL_TIME, 5.f / 1000.f, 150.f / 1000.f, 50.f / 1000.f, "Snare envelope follower fall time", " ms", 0, 1000);
 
         configParam (PARAM_VELOCITY, 0, 1, 1, "Velocity", "%", 0, 100);
 
