@@ -39,7 +39,7 @@ namespace OuroborosModules::Modules::Thrum {
 
         config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-        // Configure parameters.
+        // Configure parameters
         configParamVOctFromHz (PARAM_FREQ, MinFreqHz, MaxFreqHz, DefaultFreqHz, "Frequency");
 
         configParamDecibels (PARAM_EXCITE_SINE_LEVEL, -inf, 0, 0, "Exciter sine level");
@@ -47,7 +47,7 @@ namespace OuroborosModules::Modules::Thrum {
 
         configParamDecibels (PARAM_EXCITE_NOISE_BLEED_LEVEL, -inf, 0, 0, "Exciter noise bleed level");
 
-        configParam (PARAM_FEEDBACK, 0, 1, .5f, "Feedback", "%", 0, 100);
+        configParam (PARAM_FEEDBACK, -1, 1, .5f, "Feedback", "%", 0, 100);
         configParamVOctFromHz (PARAM_DAMPING, MinFreqHz, MaxFreqHz, 5000.f, "Damping");
 
         configParamVOctFromHz (PARAM_ALLPASS_FREQ, MinAPFreqHz, MaxAPFreqHz, DefaultAPFreqHz, "Allpass frequency");
@@ -66,14 +66,14 @@ namespace OuroborosModules::Modules::Thrum {
 
         configSwitch (PARAM_RESET_ON_HIT, 0.f, 1.f, 1.f, "Reset on hit", { "Off", "On", });
 
-        // Configure inputs.
+        // Configure inputs
         configInput (INPUT_TRIGGER, "Trigger");
         configInput (INPUT_VELOCITY, "Velocity");
 
-        // Configure outputs.
+        // Configure outputs
         configOutput (OUTPUT_SIGNAL, "Audio");
 
-        // Schmitt triggers.
+        // Schmitt triggers
         for (int channel = 0; channel < Constants::MaxPolyphony; channel++)
             hitTrigger [channel] = rack::dsp::SchmittTrigger ();
     }
@@ -81,10 +81,10 @@ namespace OuroborosModules::Modules::Thrum {
     void ThrumModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         ModuleBase::onSampleRateChange (e);
 
-        // Clock dividers.
+        // Clock dividers
         clockParams = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
 
-        // Drum cores.
+        // Drum cores
         for (int channel = 0; channel < Constants::MaxPolyphony; channel++)
             drumCores [channel].onSampleRateChange (e.sampleRate);
     }
