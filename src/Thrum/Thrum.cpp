@@ -101,7 +101,9 @@ namespace OuroborosModules::Modules::Thrum {
         for (int channel = 0; channel < channelCount; channel++) {
             auto& drumCore = drumCores [channel];
             if (hitTrigger [channel].process (getInput (INPUT_TRIGGER, channel), TriggerThreshLow, TriggerThreshHigh)) {
-                auto velocity = std::clamp (baseVelocity + fpClean (getInputPoly (INPUT_VELOCITY, channel)) / 10.f, 0.f, 1.f);
+                auto velocity = baseVelocity + fpClean (getInputPoly (INPUT_VELOCITY, channel)) / 10.f;
+                velocity = std::clamp (velocity, 0.f, 1.f);
+                velocity = std::sqrt (velocity);
 
                 drumCore.setFrequency (vOctToHz (getParam (PARAM_FREQ)));
 
