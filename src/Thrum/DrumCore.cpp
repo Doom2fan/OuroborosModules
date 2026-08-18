@@ -29,7 +29,7 @@ namespace OuroborosModules::Modules::Thrum {
         allpass.setMaxDelay (maxDelaySamples);
         allpass.resetFull ();
 
-        loopHighpass.setCutoffFreq (20.f / newSampleRate);
+        loopHighpass.setCutoffFreq (20.f / curSampleRate);
         loopFilter.setCutoffFreq (dampingFreq / curSampleRate);
 
         // Exciter.
@@ -94,11 +94,11 @@ namespace OuroborosModules::Modules::Thrum {
     }
 
     void DrumCore::hit (float velocity, bool reset) {
-        // Params.
+        // Params
         curVelocity = velocity;
         sqrtVelocity = rack::simd::sqrt (curVelocity);
 
-        // Exciter.
+        // Exciter
         exciter_ResetOnHit = reset;
 
         exciter_Velocity = rack::dsp::dbToAmplitude (-24.f * (1.f - velocity));
@@ -110,13 +110,14 @@ namespace OuroborosModules::Modules::Thrum {
         exciter_NoiseFilterFreq = std::clamp (exciter_NoiseFilterFreq, 20.f, curSampleRate / 2.f);
         updateExciterNoiseFilter ();
 
-        // Pitch bend.
+        // Pitch bend
         pitchbend_Phase = 1.f;
 
-        // Loop.
+        // Loop
         if (reset) {
             allpass.reset ();
             loopFilter.reset ();
+            delayLine.reset ();
         }
     }
 
@@ -149,7 +150,7 @@ namespace OuroborosModules::Modules::Thrum {
     float DrumCore::process (const rack::Module::ProcessArgs& args) {
         using Math::fpClean;
 
-        // Calculate the pitchbend envelope and advance the phase.
+        // Calculate the pitchbend envelope and advance the phase
         auto pitchBend = 0.f;
         if (pitchbend_Phase > 0.f) {
             pitchBend = rack::simd::pow (pitchbend_Phase, 10) * pitchbend_Depth;
@@ -157,65 +158,62 @@ namespace OuroborosModules::Modules::Thrum {
         }
         auto pitchBendSqr = pitchBend * pitchBend;
 
-        // Calculate the pitch bend frequency and set the delay line's frequency.
+        // Calculate the pitch bend frequency and set the delay line's frequency
         auto freqBend = baseFrequency * pitchBend * (2 + curVelocity);
         setDelayTime (args.sampleRate / (baseFrequency + freqBend));
 
-        // Get the delayed signal.
+        // Get the delayed signal
         auto signal = delayLine.getSampleFrac<DSP::DelayLineInterpolators::Lagrange<5>> (delayTimeFrac);
 
-        // Feedback.
+        // Feedback
         signal *= feedbackLevel;
 
-        // Loop highpass. (for DC blocking)
-        loopHighpass.process (signal);
-        signal = loopHighpass.highpass ();
+        // Loop filter
+        loopFilter.process (signal);
+        signal = loopFilter.lowpass ();
 
-        // Handle the exciter.
+        // Allpass
+        auto apBend = allpass_Freq * pitchBendSqr * (1 + curVelocity);
+        allpass.setGain (allpass_Gain);
+        allpass.setDelayTime (args.sampleRate / (allpass_Freq + apBend));
+        signal = allpass.process (fpClean (signal));
+
+        // Handle the exciter
         auto exciterBleed = 0.f;
         if (exciter_Phase > 0.f) {
-            // Zero out the delayed signal if Reset On Hit is active.
-            signal = exciter_ResetOnHit ? 0.f : signal;
-
-            // Noise exciter. (Scaled by 4 to better match mymembrane~)
+            // Noise exciter (Scaled by 4 to better match mymembrane~)
             auto exciterRandom = getNoise (exciter_RNG);
             exciterRandom = exciter_Filter.process (exciterRandom) * 4;
             exciterRandom *= exciter_Velocity;
             exciterRandom *= std::min (1.f, (1.f - std::abs (2.f * exciter_Phase - 1.f)) * 10.f); // Shaping
 
-            // Noise exciter bleed.
+            // Noise exciter bleed
             exciterBleed += exciterRandom * 3 * exciter_NoiseBleedLevel;
 
-            // Noise exciter level param.
+            // Noise exciter level param
             exciterRandom *= exciter_NoiseLevel;
 
-            // Sine exciter, sine level param, velocity.
+            // Sine exciter, sine level param, velocity
             auto exciterSine = sin_2pi_9 (1.f - exciter_Phase) * exciter_SineLevel * exciter_Velocity;
 
             signal += exciterSine + exciterRandom;
             exciter_Phase = std::max (fpClean (exciter_Phase - args.sampleTime * baseFrequency), 0.f);
         }
 
-        // Allpass.
-        auto apBend = allpass_Freq * pitchBendSqr * (1 + curVelocity);
-        allpass.setGain (allpass_Gain);
-        allpass.setDelayTime (args.sampleRate / (allpass_Freq + apBend));
-        signal = allpass.process (fpClean (signal));
+        // Loop highpass (for DC blocking)
+        loopHighpass.process (signal);
+        signal = loopHighpass.highpass ();
 
-        // Loop filter.
-        loopFilter.process (signal);
-        signal = loopFilter.lowpass ();
-
-        // Pitchbend distortion.
+        // Pitchbend distortion
         signal *= 1.f + (pitchBendSqr * sqrtVelocity * .7f);
 
-        // Feedback.
+        // Feedback
         delayLine.pushSample (fpClean (signal));
 
-        // Apply the exciter bleed and ensure the signal is "clean".
+        // Apply the exciter bleed and ensure the signal is "clean"
         signal = fpClean (signal + exciterBleed);
 
-        // Snares.
+        // Snares
         auto snareEnv = snare_PeakFilter.process (args.sampleTime, std::abs (signal));
         auto snareNoise = snare_Filter.process (rack::random::uniform () * 2 - 1);
         signal += snareNoise * snareEnv * snare_Level;
