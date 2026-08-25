@@ -67,7 +67,7 @@ namespace OuroborosModules {
         // Meta module
         bool hasMetaModule () { return metaModuleCount != 0; }
         void addMetaModule () { metaModuleCount++; }
-        void removeMetaModule () { metaModuleCount++; }
+        void removeMetaModule () { metaModuleCount--; }
 
         // Cable data
         bool checkCableConnected () { return cables_Connected; }
