@@ -16,7 +16,7 @@
         {
             "slug": "MetaModule",
             "name": "Meta",
-            "description": "Adds meta features to VCV Rack (Cable sounds, startup pre-muter; Full list in the manual)",
+            "description": "Adds meta features to VCV Rack (Cable sounds and lights, startup pre-muter; Full list in the manual)",
             "tags": [ "Utility" ],
             "keywords": "sounds cable_sounds cablesounds premute premuter",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Meta"
