@@ -42,6 +42,14 @@ namespace OuroborosModules::Math {
         return _mm_cvtss_f32 (_mm_rsqrt_ss (_mm_set_ss (x)));
     }
 
+    inline float hsum (rack::simd::float_4 v) {
+        __m128 shuf = _mm_movehdup_ps (v.v);      // broadcast elements 3,1 to 2,0
+        __m128 sums = _mm_add_ps (v.v, shuf);
+        shuf        = _mm_movehl_ps (shuf, sums); // high half -> low half
+        sums        = _mm_add_ss (sums, shuf);
+        return        _mm_cvtss_f32 (sums);
+    }
+
     inline bool isNan (const float x) { return std::isnan (x); }
     inline rack::simd::float_4 isNan (const rack::simd::float_4 x) { return x != x; }
 
