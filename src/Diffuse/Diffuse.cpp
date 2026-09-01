@@ -35,9 +35,9 @@ namespace OuroborosModules::Modules::Diffuse {
         configParam (PARAM_GAIN, -1.f, 1.f, 0.f, "Gain", "%", 0, 100);
         configParam (PARAM_MIX, 0.f, 1.f, .5f, "Mix", "%", 0, 100);
 
-        configParam (PARAM_FREQ_CV_ATTEN, -1.f, 1.f, 0.f, "Linear FM CV attenuverter", "%", 0, 100);
-        configParam (PARAM_GAIN_CV_ATTEN, -1.f, 1.f, 0.f, "Gain CV attenuverter", "%", 0, 100);
-        configParam (PARAM_MIX_CV_ATTEN, -1.f, 1.f, 0.f, "Dry/Wet mix CV attenuverter", "%", 0, 100);
+        configParamAttenuverter (PARAM_FREQ_CV_ATTEN, "Linear FM CV attenuverter");
+        configParamAttenuverter (PARAM_GAIN_CV_ATTEN, "Gain CV attenuverter");
+        configParamAttenuverter (PARAM_MIX_CV_ATTEN, "Dry/Wet mix CV attenuverter");
 
         // Configure inputs.
         configInput (INPUT_SIGNAL, "Signal");

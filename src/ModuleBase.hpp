@@ -87,6 +87,18 @@ namespace OuroborosModules {
             );
         }
 
+        template <class TParamQuantity = rack::engine::ParamQuantity>
+        TParamQuantity* configParamAttenuator (int paramId, std::string name = "", float defaultValue = 0.f) {
+            assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
+            return configParam<TParamQuantity> (paramId, 0.f, 1.f, defaultValue, name, "%", 0, 100);
+        }
+
+        template <class TParamQuantity = rack::engine::ParamQuantity>
+        TParamQuantity* configParamAttenuverter (int paramId, std::string name = "", float defaultValue = 0.f) {
+            assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
+            return configParam<TParamQuantity> (paramId, -1.f, 1.f, defaultValue, name, "%", 0, 100);
+        }
+
         /*
          * Param getters and setters
          */

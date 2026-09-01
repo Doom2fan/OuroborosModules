@@ -35,8 +35,8 @@ namespace OuroborosModules::Modules::Warp {
         configParam (PARAM_AMOUNT, 0.f, 1.f, 0.f, "Distortion amount", "%", 0, 100);
         configParam (PARAM_BIAS, -MaxBias, MaxBias, 0.f, "Bias", "° degrees", 0, 180.f / MaxBias);
 
-        configParam (PARAM_AMOUNT_CV_ATTEN, -1.f, 1.f, 0.f, "Distortion amount CV attenuverter", "%", 0, 100);
-        configParam (PARAM_BIAS_CV_ATTEN, -1.f, 1.f, 0.f, "Bias CV attenuverter", "%", 0, 100);
+        configParamAttenuverter (PARAM_AMOUNT_CV_ATTEN, "Distortion amount CV attenuverter");
+        configParamAttenuverter (PARAM_BIAS_CV_ATTEN, "Bias CV attenuverter");
 
         // Configure inputs.
         configInput (INPUT_SIGNAL, "Signal");

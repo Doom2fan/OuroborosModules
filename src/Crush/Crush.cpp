@@ -35,7 +35,7 @@ namespace OuroborosModules::Modules::Crush {
 
         configParam (PARAM_FILTER_TIME, 5.f / 1000.f, 500.f / 1000.f, 250.f / 1000.f, "Fall time", " ms", 0, 1000);
 
-        configParam (PARAM_AMOUNT_CV_ATTEN, -1.f, 1.f, 0.f, "Depth CV attenuverter", "%", 0, 100);
+        configParamAttenuverter (PARAM_AMOUNT_CV_ATTEN, "Depth CV attenuverter");
 
         // Configure inputs.
         configInput (INPUT_SIGNAL, "Signal");

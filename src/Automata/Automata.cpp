@@ -41,13 +41,13 @@ namespace OuroborosModules::Modules::Automata {
         configInput (INPUT_RANDOMIZE, "Randomize trigger");
         configParam (PARAM_RANDOM_DENSITY, 0.f, 1.f, .25f, "Random density", "%", 0, 100);
         configInput (INPUT_RANDOM_DENSITY_CV, "Random density CV");
-        configParam (PARAM_RANDOM_DENSITY_CV_ATTENUVERTER, -1.f, 1.f, 0.f, "Random density CV attenuverter", "%", 0, 100);
+        configParamAttenuverter (PARAM_RANDOM_DENSITY_CV_ATTENUVERTER, "Random density CV attenuverter");
 
         configButton (PARAM_LENGTH_BUTTON, "Automatic reset");
         configParamSnap (PARAM_LENGTH, 1.f, MaxSequenceLength, 16.f, "Automatic reset length");
         configInput (INPUT_LENGTH_ENABLE, "Automatic reset toggle");
         configInput (INPUT_LENGTH_CV, "Automatic reset length CV");
-        configParam (PARAM_LENGTH_CV_ATTENUVERTER, -1.f, 1.f, 0.f, "Automatic reset length CV attenuverter", "%", 0, 100);
+        configParamAttenuverter (PARAM_LENGTH_CV_ATTENUVERTER, "Automatic reset length CV attenuverter");
 
         auto modeSelectLabels = std::vector<std::string> ();
         modeSelectLabels.reserve (TriggerCount + 2);

@@ -39,7 +39,7 @@ namespace OuroborosModules::Modules::Median {
             configInput (INPUT_VALUES + i, fmt::format (FMT_STRING ("Value {}"), i + 1));
 
             auto valScaleText = fmt::format (FMT_STRING ("Value {} attenuverter"), i + 1);
-            configParam (PARAM_VAL_SCALE + i, -1.f, 1.f, 0.f, valScaleText, "%", 0, 100);
+            configParamAttenuverter (PARAM_VAL_SCALE + i, valScaleText);
 
             auto valOffsetText = fmt::format (FMT_STRING ("Value {} offset"), i + 1);
             configParam (PARAM_VAL_OFFSET + i, -1.f, 1.f, 0.f, valOffsetText, "V", 0, 10);

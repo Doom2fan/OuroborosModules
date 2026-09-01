@@ -43,7 +43,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             configInput (INPUT_PROBABILITY_CV + i, fmt::format (FMT_STRING ("Channel {} probability"), i + 1));
 
             auto probabilityCVScaleText = fmt::format (FMT_STRING ("Channel {} probability CV attenuverter"), i + 1);
-            configParam (PARAM_PROBABILITY_CV + i, -1.f, 1.f, 0.f, probabilityCVScaleText, "%", 0, 100);
+            configParamAttenuverter (PARAM_PROBABILITY_CV + i, probabilityCVScaleText);
 
             configOutput (OUTPUT_A + i, fmt::format (FMT_STRING ("Channel {} A"), i + 1));
             configOutput (OUTPUT_B + i, fmt::format (FMT_STRING ("Channel {} B"), i + 1));
