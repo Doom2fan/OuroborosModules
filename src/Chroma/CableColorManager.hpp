@@ -115,7 +115,7 @@ namespace OuroborosModules::Modules::Chroma {
         bool setDefaultCollection (const std::string& collectionName);
 
         json_t* dataToJson () const;
-        void dataFromJson (json_t* storageJ);
+        bool dataFromJson (json_t* storageJ);
     };
 
     struct ColorManagerHistory;

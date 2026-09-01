@@ -21,18 +21,19 @@
 #include "PluginDef.hpp"
 
 namespace OuroborosModules {
-    void json_object_try_get_bool (json_t* rootJ, const char* name, bool& value);
+    bool json_object_try_get_bool (json_t* rootJ, const char* name, bool& value);
     void json_object_set_new_bool (json_t* rootJ, const char* name, bool value);
 
     template<typename T>
-    void json_object_try_get_int (json_t* rootJ, const char* name, T& value) {
+    bool json_object_try_get_int (json_t* rootJ, const char* name, T& value) {
         static_assert (std::is_integral<T>::value, "T must be an integral type");
 
         auto nodeJ = json_object_get (rootJ, name);
         if (!json_is_integer (nodeJ))
-            return;
+            return false;
 
         value = json_integer_value (nodeJ);
+        return true;
     }
     template<typename T>
     void json_object_set_new_int (json_t* rootJ, const char* name, T value) {
@@ -41,14 +42,15 @@ namespace OuroborosModules {
     }
 
     template<typename T>
-    void json_object_try_get_enum (json_t* rootJ, const char* name, T& value) {
+    bool json_object_try_get_enum (json_t* rootJ, const char* name, T& value) {
         static_assert (std::is_enum<T>::value && std::is_integral<typename std::underlying_type<T>::type>::value, "T must be an integral type");
 
         auto nodeJ = json_object_get (rootJ, name);
         if (!json_is_integer (nodeJ))
-            return;
+            return false;
 
         value = (T) json_integer_value (nodeJ);
+        return true;
     }
     template<typename T>
     void json_object_set_new_enum (json_t* rootJ, const char* name, T value) {
@@ -57,14 +59,15 @@ namespace OuroborosModules {
     }
 
     template<typename T>
-    void json_object_try_get_float (json_t* rootJ, const char* name, T& value) {
+    bool json_object_try_get_float (json_t* rootJ, const char* name, T& value) {
         static_assert (std::is_floating_point<T>::value, "T must be a floating point type");
 
         auto nodeJ = json_object_get (rootJ, name);
         if (!json_is_number (nodeJ))
-            return;
+            return false;
 
         value = json_number_value (nodeJ);
+        return true;
     }
     template<typename T>
     void json_object_set_new_float (json_t* rootJ, const char* name, T value) {
@@ -72,16 +75,19 @@ namespace OuroborosModules {
         json_object_set_new (rootJ, name, json_real (value));
     }
 
-    void json_object_try_get_string (json_t* rootJ, const char* name, std::string& value);
+    bool json_object_try_get_string (json_t* rootJ, const char* name, std::string& value);
     void json_object_set_new_string (json_t* rootJ, const char* name, std::string value);
 
-    void json_object_try_get_string (json_t* rootJ, const char* name, const char*& value);
+    bool json_object_try_get_string (json_t* rootJ, const char* name, const char*& value);
     void json_object_set_new_string (json_t* rootJ, const char* name, const char* value);
 
     template<typename T>
-    void json_object_try_get_struct (json_t* rootJ, const char* name, T& value) {
+    bool json_object_try_get_struct (json_t* rootJ, const char* name, T& value) {
         auto nodeJ = json_object_get (rootJ, name);
-        value.dataFromJson (nodeJ);
+        if (nodeJ == nullptr)
+            return false;
+
+        return value.dataFromJson (nodeJ);
     }
 
     template<typename T>

@@ -107,12 +107,13 @@ namespace OuroborosModules {
 
         json_t* dataToJson () const { return json_string ((!isUnknown () ? getKey () : UnknownKey ()).c_str ()); }
 
-        void dataFromJson (json_t* storageJ) {
+        bool dataFromJson (json_t* storageJ) {
             if (!json_is_string (storageJ))
-                return;
+                return false;
 
             std::string key = json_string_value (storageJ);
             id = key != UnknownKey () ? getFromKey (key).id : ID_UNKNOWN;
+            return true;
         }
 
         bool operator== (const T& rhs) const { return id == rhs.id; }

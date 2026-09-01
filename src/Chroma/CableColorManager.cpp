@@ -277,13 +277,13 @@ namespace OuroborosModules::Modules::Chroma {
         return storageJ;
     }
 
-    void CollectionsStorage::dataFromJson (json_t* storageJ) {
+    bool CollectionsStorage::dataFromJson (json_t* storageJ) {
         if (!json_is_object (storageJ))
-            return;
+            return false;
 
         auto collectionsJ = json_object_get (storageJ, "collections");
         if (!json_is_array (collectionsJ))
-            return;
+            return false;
 
         json_object_try_get_string (storageJ, "defaultCollectionName", defaultCollectionName);
 
@@ -297,6 +297,8 @@ namespace OuroborosModules::Modules::Chroma {
             if (collection.dataFromJson (collectionJ))
                 addCollection (collection);
         }
+
+        return true;
     }
 
     /*
