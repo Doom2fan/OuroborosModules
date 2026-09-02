@@ -19,7 +19,7 @@
 #include "Crush.hpp"
 
 #include "../Math.hpp"
-#include "../JsonUtils.hpp"
+#include "../ModuleHelpers.hpp"
 
 namespace OuroborosModules {
     rack::plugin::Model* modelCrush = createModel<Modules::Crush::CrushWidget> ("Crush");
@@ -29,7 +29,7 @@ namespace OuroborosModules::Modules::Crush {
     CrushModule::CrushModule () {
         config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-        // Configure parameters.
+        // Configure parameters
         configParam (PARAM_TARGET_LEVEL, rack::dsp::dbToAmplitude (-40.f), 2.f, rack::dsp::dbToAmplitude (-3.f), "Target level", " dB", -10, 20);
         configParam (PARAM_AMOUNT, 0.f, 1.f, 1.f, "Depth", "%", 0, 100);
 
@@ -37,20 +37,20 @@ namespace OuroborosModules::Modules::Crush {
 
         configParamAttenuverter (PARAM_AMOUNT_CV_ATTEN, "Depth CV attenuverter");
 
-        // Configure inputs.
+        // Configure inputs
         configInput (INPUT_SIGNAL, "Signal");
 
         configInput (INPUT_TARGET_LEVEL, "Target level");
         configInput (INPUT_AMOUNT_CV, "Depth CV");
 
-        // Configure outputs.
+        // Configure outputs
         configOutput (OUTPUT_SIGNAL, "Signal");
         configOutput (OUTPUT_ENVELOPE, "Envelope");
 
-        // Configure bypasses.
+        // Configure bypasses
         configBypass (INPUT_SIGNAL, OUTPUT_SIGNAL);
 
-        // Initialize the module.
+        // Initialize the module
         setPeakFilter ();
     }
 
@@ -69,12 +69,12 @@ namespace OuroborosModules::Modules::Crush {
     void CrushModule::process (const ProcessArgs& args) {
         using rack::simd::float_4;
 
-        // Get the mono params.
+        // Get the mono params
         auto minimumLevelRcp = float_4 (1.f / (rack::dsp::dbToAmplitude (-96.f) * 5.f));
         auto targetLevelKnob = float_4 (getParam (PARAM_TARGET_LEVEL) * 5.f);
-        auto amountKnob = float_4 (getParam (PARAM_AMOUNT));
+        auto amountKnob = AutoAttenuverter (this, PARAM_AMOUNT, PARAM_AMOUNT_CV_ATTEN, 10);
 
-        // Calculate polyphony and SIMD counts, and set output polyphony counts.
+        // Calculate polyphony and SIMD counts, and set output polyphony counts
         const int channelCount = std::max (1, getInputChannels (INPUT_SIGNAL));
         int bankCount = channelCount / SIMDBankSize;
         if (bankCount * SIMDBankSize < channelCount)
@@ -83,33 +83,31 @@ namespace OuroborosModules::Modules::Crush {
         setOutputChannels (OUTPUT_SIGNAL, channelCount);
         setOutputChannels (OUTPUT_ENVELOPE, channelCount);
 
-        // Update params.
+        // Update params
         if (clockParams.process ())
             setPeakFilter ();
 
-        // Process the audio.
+        // Process the audio
         for (int bank = 0, channel = 0; bank < bankCount; bank++, channel += SIMDBankSize) {
-            // Get the per-channel params.
+            // Calculate the parameters
             auto targetLevel = Math::fpClean (rack::simd::fmax (
                 getInputNormalPolySimd<float_4> (INPUT_TARGET_LEVEL, targetLevelKnob, channel),
                 1.f
             ));
-            auto amount = rack::simd::clamp (amountKnob + Math::fpClean (
-                          getInputPolySimd<float_4> (INPUT_AMOUNT_CV, channel) / 10.f *
-                          getParam (PARAM_AMOUNT_CV_ATTEN)), float_4::zero (), 1.f);
+            auto amount = amountKnob.process (getInputPolySimd<float_4> (INPUT_AMOUNT_CV, channel));
 
-            // Get and clean the input signal.
+            // Get and clean the input signal
             auto inputSignal = Math::fpClean (getInputPolySimd<float_4> (INPUT_SIGNAL, channel));
             inputSignal = rack::simd::clamp (inputSignal, -100, 100);
 
-            // Calculate amplitude using the peak filter.
+            // Calculate amplitude using the peak filter
             auto amplitude = Math::fpClean (peakFilter [bank].process (args.sampleTime, rack::simd::abs (inputSignal)));
             setOutputSimd (OUTPUT_ENVELOPE, amplitude, channel);
 
-            // Calculate gain while ensuring amplitude is above a certain level.
+            // Calculate gain while ensuring amplitude is above a certain level
             auto gain = 1.f + (rack::simd::fmin (1.f / amplitude, minimumLevelRcp) * targetLevel - 1.f) * amount;
 
-            // Calculate the output signal.
+            // Calculate the output signal
             auto output = inputSignal * gain;
             output = dcBlocker [bank].process (output);
 
@@ -120,10 +118,10 @@ namespace OuroborosModules::Modules::Crush {
     void CrushModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         ModuleBase::onSampleRateChange (e);
 
-        // Clock dividers.
+        // Clock dividers
         clockParams = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
 
-        // DC blockers.
+        // DC blockers
         for (int bank = 0; bank < SIMDBankCount; bank++)
             dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, e.sampleRate);
     }

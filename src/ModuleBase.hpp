@@ -33,7 +33,7 @@ namespace OuroborosModules {
         json_t* dataToJson () override;
         void dataFromJson (json_t* rootJ) override;
 
-        template <class TParamQuantity = rack::engine::ParamQuantity>
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamSnap (
             int paramId,
             float minValue, float maxValue, float defaultValue,
@@ -54,7 +54,7 @@ namespace OuroborosModules {
             return quantity;
         }
 
-        template <class TParamQuantity = rack::engine::ParamQuantity>
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamDecibels (
             int paramId,
             float minValue, float maxValue, float defaultValue,
@@ -70,7 +70,7 @@ namespace OuroborosModules {
             );
         }
 
-        template <class TParamQuantity = rack::engine::ParamQuantity>
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamVOctFromHz (
             int paramId,
             float minValue, float maxValue, float defaultValue,
@@ -87,13 +87,13 @@ namespace OuroborosModules {
             );
         }
 
-        template <class TParamQuantity = rack::engine::ParamQuantity>
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamAttenuator (int paramId, std::string name = "", float defaultValue = 0.f) {
             assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
             return configParam<TParamQuantity> (paramId, 0.f, 1.f, defaultValue, name, "%", 0, 100);
         }
 
-        template <class TParamQuantity = rack::engine::ParamQuantity>
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamAttenuverter (int paramId, std::string name = "", float defaultValue = 0.f) {
             assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
             return configParam<TParamQuantity> (paramId, -1.f, 1.f, defaultValue, name, "%", 0, 100);

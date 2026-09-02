@@ -19,6 +19,8 @@
 
 #include "Diffuse.hpp"
 
+#include "../ModuleHelpers.hpp"
+
 namespace OuroborosModules {
     rack::plugin::Model* modelDiffuse = createModel<Modules::Diffuse::DiffuseWidget> ("Diffuse");
 }
@@ -30,7 +32,7 @@ namespace OuroborosModules::Modules::Diffuse {
     DiffuseModule::DiffuseModule () {
         config (NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-        // Configure parameters.
+        // Configure parameters
         configParamVOctFromHz (PARAM_FREQ, MinFreqHz, MaxFreqHz, rack::dsp::FREQ_C4, "Frequency");
         configParam (PARAM_GAIN, -1.f, 1.f, 0.f, "Gain", "%", 0, 100);
         configParam (PARAM_MIX, 0.f, 1.f, .5f, "Mix", "%", 0, 100);
@@ -39,7 +41,7 @@ namespace OuroborosModules::Modules::Diffuse {
         configParamAttenuverter (PARAM_GAIN_CV_ATTEN, "Gain CV attenuverter");
         configParamAttenuverter (PARAM_MIX_CV_ATTEN, "Dry/Wet mix CV attenuverter");
 
-        // Configure inputs.
+        // Configure inputs
         configInput (INPUT_SIGNAL, "Signal");
         configInput (INPUT_VOCT, "1V/Oct");
 
@@ -47,11 +49,11 @@ namespace OuroborosModules::Modules::Diffuse {
         configInput (INPUT_GAIN_CV, "Gain CV");
         configInput (INPUT_MIX_CV, "Dry/Wet mix CV");
 
-        // Configure outputs.
+        // Configure outputs
         configOutput (OUTPUT_WET, "Wet");
         configOutput (OUTPUT_MIX, "Mix");
 
-        // Configure bypasses.
+        // Configure bypasses
         configBypass (INPUT_SIGNAL, OUTPUT_WET);
         configBypass (INPUT_SIGNAL, OUTPUT_MIX);
     }
@@ -78,41 +80,37 @@ namespace OuroborosModules::Modules::Diffuse {
         if (!isOutputConnected (OUTPUT_WET) && !isOutputConnected (OUTPUT_MIX))
             return;
 
-        // Pre-fetch the params.
+        // Pre-fetch the params
         auto freqKnob = getParam (PARAM_FREQ);
-        auto gainKnob = getParam (PARAM_GAIN);
-        auto mixKnob = getParam (PARAM_MIX);
 
         auto freqCVKnob = getParam (PARAM_FREQ_CV_ATTEN);
-        auto gainCVKnob = getParam (PARAM_GAIN_CV_ATTEN);
-        auto mixCVKnob = getParam (PARAM_MIX_CV_ATTEN);
+        auto gainKnob = AutoAttenuverter (this, PARAM_GAIN, PARAM_GAIN_CV_ATTEN, 5);
+        auto mixKnob = AutoAttenuverter (this, PARAM_MIX, PARAM_MIX_CV_ATTEN, 10);
 
-        // Calculate and set the polyphony count.
+        // Calculate and set the polyphony count
         auto channelCount = std::max (1, getInputChannels (INPUT_SIGNAL));
         setOutputChannels (OUTPUT_WET, channelCount);
         setOutputChannels (OUTPUT_MIX, channelCount);
 
-        // Process.
+        // Process
         for (int channel = 0; channel < channelCount; channel++) {
-            // Calculate "pitch" from knob + V/Oct.
+            // Calculate "pitch" from knob + V/Oct
             auto vOct = freqKnob + fpClean (getInputPoly (INPUT_VOCT, channel));
             auto delayFreq = std::clamp (calculateDelayFreq (vOct), MinFreqHz, maxDelayFreq);
 
-            // Apply FM.
+            // Apply FM
             auto fm = fpClean (getInputPoly (INPUT_FREQ_CV, channel) / 5.f * freqCVKnob * 5000.f);
             delayFreq = std::clamp (delayFreq + fm, MinFreqHz, maxDelayFreq);
 
-            // Process.
+            // Process
             allpass [channel].setDelayTime (args.sampleRate / delayFreq);
-
-            auto gain = gainKnob + fpClean (getInputPoly (INPUT_GAIN_CV, channel) / 5.f * gainCVKnob);
-            allpass [channel].setGain (std::clamp (gain, -1.f, 1.f));
+            allpass [channel].setGain (gainKnob.process (getInputPoly (INPUT_GAIN_CV, channel)));
 
             auto input = fpClean (getInputPoly (INPUT_SIGNAL, channel));
             auto wet = allpass [channel].process (input);
 
-            // Dry/wet mix.
-            auto mixRatio = std::clamp (mixKnob + fpClean (getInputPoly (INPUT_MIX_CV, channel) / 10.f) * mixCVKnob, 0.f, 1.f);
+            // Dry/wet mix
+            auto mixRatio = mixKnob.process (getInputPoly (INPUT_MIX_CV, channel));
             auto mix = input * (1.f - mixRatio) + wet * mixRatio;
 
             setOutput (OUTPUT_WET, wet, channel);

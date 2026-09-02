@@ -18,8 +18,8 @@
 
 #include "Warp.hpp"
 
-#include "../JsonUtils.hpp"
 #include "../Math.hpp"
+#include "../ModuleHelpers.hpp"
 
 namespace OuroborosModules {
     rack::plugin::Model* modelWarp = createModel<Modules::Warp::WarpWidget> ("PhaseDistortion");
@@ -29,7 +29,7 @@ namespace OuroborosModules::Modules::Warp {
     WarpModule::WarpModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
-        // Configure parameters.
+        // Configure parameters
         configParam (PARAM_OVERSAMPLE, 1.f, MaxOversample, DefaultOversampleRate, "Oversample", "x", 0, 1);
 
         configParam (PARAM_AMOUNT, 0.f, 1.f, 0.f, "Distortion amount", "%", 0, 100);
@@ -38,20 +38,20 @@ namespace OuroborosModules::Modules::Warp {
         configParamAttenuverter (PARAM_AMOUNT_CV_ATTEN, "Distortion amount CV attenuverter");
         configParamAttenuverter (PARAM_BIAS_CV_ATTEN, "Bias CV attenuverter");
 
-        // Configure inputs.
+        // Configure inputs
         configInput (INPUT_SIGNAL, "Signal");
         configInput (INPUT_MODULATOR, "Modulator");
 
         configInput (INPUT_AMOUNT_CV, "Distortion amount CV");
         configInput (INPUT_BIAS_CV, "Bias CV");
 
-        // Configure outputs.
+        // Configure outputs
         configOutput (OUTPUT_SIGNAL, "Signal");
 
-        // Configure bypasses.
+        // Configure bypasses
         configBypass (INPUT_SIGNAL, OUTPUT_SIGNAL);
 
-        // Initialize the module.
+        // Initialize the module
         oversampleRate = 0;
 
         setOversampleRate (DefaultOversampleRate);
@@ -60,10 +60,10 @@ namespace OuroborosModules::Modules::Warp {
     void WarpModule::onSampleRateChange (const SampleRateChangeEvent& e) {
         ModuleBase::onSampleRateChange (e);
 
-        // Clock dividers.
+        // Clock dividers
         clockOversample = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
 
-        // Filters.
+        // Filters
         auto newSampleRate = static_cast<uint32_t> (e.sampleRate);
         for (int bank = 0; bank < SIMDBankCount; bank++) {
             hilbertTransformSignal [bank].setSampleRate (newSampleRate);
@@ -77,13 +77,13 @@ namespace OuroborosModules::Modules::Warp {
         using Math::fpClean;
         using rack::simd::float_4;
 
-        // Check for oversample updates.
+        // Check for oversample updates
         if (clockOversample.process ()) {
             const auto newOversampleRate = static_cast<int> (getParam (PARAM_OVERSAMPLE));
             setOversampleRate (newOversampleRate);
         }
 
-        // Don't waste CPU if there's no input signal or output connected.
+        // Don't waste CPU if there's no input signal or output connected
         if (!isInputConnected (INPUT_SIGNAL) || !isOutputConnected (OUTPUT_SIGNAL)) {
             setOutputChannels (OUTPUT_SIGNAL, 1);
             setOutput (OUTPUT_SIGNAL, 0);
@@ -91,42 +91,37 @@ namespace OuroborosModules::Modules::Warp {
             return;
         }
 
-        // Get the channel count and set the output's.
+        // Get the channel count and set the output's
         auto channelCount = std::min (getInputChannels (INPUT_SIGNAL), Constants::MaxPolyphony);
         setOutputChannels (OUTPUT_SIGNAL, channelCount);
 
-        // Calculate. the bank count.
+        // Calculate the bank count
         int bankCount = channelCount / SIMDBankSize;
         if (bankCount * SIMDBankSize < channelCount)
             bankCount++;
 
-        // Get the parameters.
-        auto amountKnob = float_4 (getParam (PARAM_AMOUNT));
-        auto biasKnob = float_4 (getParam (PARAM_BIAS));
-        auto amountCVAtten = float_4 (getParam (PARAM_AMOUNT_CV_ATTEN));
-        auto biasCVAtten = float_4 (getParam (PARAM_AMOUNT_CV_ATTEN));
+        // Get the parameters
+        auto amountKnob = AutoAttenuverter (this, PARAM_AMOUNT, PARAM_AMOUNT_CV_ATTEN, 10);
+        auto biasKnob = AutoAttenuverter (this, PARAM_BIAS, PARAM_BIAS_CV_ATTEN, 10);
 
         for (int bank = 0, channel = 0; channel < channelCount; bank++, channel += SIMDBankSize) {
-            // Get the CV and apply it to the parameters.
-            auto amount = fpClean (getInputNormalPolySimd<float_4> (INPUT_AMOUNT_CV, 0.f, channel) / 10.f * amountCVAtten);
-            auto bias = fpClean (getInputNormalPolySimd<float_4> (INPUT_BIAS_CV, 0.f, channel) * biasCVAtten);
+            // Calculate the parameters
+            auto amount = amountKnob.process (getInputNormalPolySimd<float_4> (INPUT_AMOUNT_CV, 0.f, channel));
+            auto bias = biasKnob.process (getInputNormalPolySimd<float_4> (INPUT_BIAS_CV, 0.f, channel)) / MaxBias * M_PI;
 
-            amount = rack::simd::clamp (amountKnob + amount, 0.f, 1.f);
-            bias = rack::simd::clamp ((biasKnob + bias) / MaxBias, -1.f, 1.f) * M_PI;
-
-            // Get the signals.
+            // Get the signals
             auto signal = rack::simd::clamp (fpClean (getInputPolySimd<float_4> (INPUT_SIGNAL, channel)), -100.f, 100.f);
 
             auto modulator = getInputNormalPolySimd<float_4> (INPUT_MODULATOR, signal, channel);
             modulator = rack::simd::clamp (fpClean (modulator), -100.f, 100.f);
             modulator = bias + (modulator * amount / MaxBias) * M_PI * 4.f;
 
-            // Perform the hilbert transform.
+            // Perform the hilbert transform
             float_4 signalRe, signalIm;
             hilbertTransformSignal [bank].step (signal, signalRe, signalIm);
             auto modulatorRe = hilbertTransformModulator [bank].stepReal (modulator);
 
-            // Upsample.
+            // Upsample
             float_4 signalBufferRe [MaxOversample];
             float_4 signalBufferIm [MaxOversample];
             float_4 modulatorBuffer [MaxOversample];
@@ -135,17 +130,17 @@ namespace OuroborosModules::Modules::Warp {
             signalImUpsampler [bank].process (signalBufferIm, signalIm);
             modulatorUpsampler [bank].process (modulatorBuffer, modulatorRe);
 
-            // Process the audio.
+            // Process the audio
             for (uint32_t i = 0; i < oversampleRate; i++) {
-                // Fetch the signal and modulator.
+                // Fetch the signal and modulator
                 auto phi = modulatorBuffer [i];
 
-                // Rotate the real part of the signal.
+                // Rotate the real part of the signal
                 auto signal = signalBufferRe [i] * rack::simd::cos (phi) - signalBufferIm [i] * rack::simd::sin (phi);
                 signalBufferRe [i] = fpClean (signal);
             }
 
-            // Downsample, perform DC blocking and output.
+            // Downsample, perform DC blocking and output
             auto output = downsamplerFilter [bank].process (signalBufferRe);
             output = dcBlocker [bank].process (output);
             setOutputSimd (OUTPUT_SIGNAL, output, channel);

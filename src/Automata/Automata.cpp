@@ -19,6 +19,7 @@
 #include "Automata.hpp"
 
 #include "../JsonUtils.hpp"
+#include "../ModuleHelpers.hpp"
 #include "../Utils.hpp"
 
 #include <fmt/format.h>
@@ -170,11 +171,8 @@ namespace OuroborosModules::Modules::Automata {
         auto eocReset = false;
         if (doStep && !resetPulseHigh) {
             if (lengthEnabled) {
-                auto seqLength = getParam (PARAM_LENGTH);
-                seqLength += getInput (INPUT_LENGTH_CV) / 10.f
-                           * getParam (PARAM_LENGTH_CV_ATTENUVERTER)
-                           * MaxSequenceLength;
-                seqLength = std::clamp (seqLength, 1.f, static_cast<float> (MaxSequenceLength));
+                auto lengthCVAtten = AutoAttenuverter (this, PARAM_LENGTH, PARAM_LENGTH_CV_ATTENUVERTER, 10, MaxSequenceLength);
+                auto seqLength = lengthCVAtten.process (getInput (INPUT_LENGTH_CV));
                 eocReset = ++stepCount >= static_cast<int> (seqLength);
             }
 
@@ -223,12 +221,8 @@ namespace OuroborosModules::Modules::Automata {
     }
 
     void AutomataModule::processRandomize () {
-        auto density = getParam (PARAM_RANDOM_DENSITY);
-        density += getInput (INPUT_RANDOM_DENSITY_CV) / 10.f
-                 * getParam (PARAM_RANDOM_DENSITY_CV_ATTENUVERTER);
-        density = std::clamp (density, 0.f, 1.f);
-
-        lifeBoard.randomize (density);
+        auto densityCVAtten = AutoAttenuverter (this, PARAM_RANDOM_DENSITY, PARAM_RANDOM_DENSITY_CV_ATTENUVERTER, 10);
+        lifeBoard.randomize (densityCVAtten.process (getInput (INPUT_RANDOM_DENSITY_CV)));
     }
 
     void AutomataModule::processStep (const ProcessArgs& args) {
