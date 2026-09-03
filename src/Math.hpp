@@ -42,6 +42,12 @@ namespace OuroborosModules::Math {
         return _mm_cvtss_f32 (_mm_rsqrt_ss (_mm_set_ss (x)));
     }
 
+    template<typename T>
+    inline T rsqrt_nr1 (const T x) {
+        auto y = rsqrt (x);
+        return y * (T (3.f) - x * y * y) * T (.5f);
+    }
+
     inline float hsum (rack::simd::float_4 v) {
         __m128 shuf = _mm_movehdup_ps (v.v);      // broadcast elements 3,1 to 2,0
         __m128 sums = _mm_add_ps (v.v, shuf);
