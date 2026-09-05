@@ -117,8 +117,9 @@ namespace OuroborosModules::DSP {
 
             index = std::clamp (index, 0.f, static_cast<float> (delayTime));
 
-            auto delayInt = static_cast<int32_t> (std::floor (index));
-            auto delayFrac = index - delayInt;
+            auto delayFloor = std::floor (index);
+            auto delayInt = static_cast<int32_t> (delayFloor);
+            auto delayFrac = index - delayFloor;
 
             delayInt = (posIndex - delayInt) % bufferLen;
             delayInt = delayInt < 0 ? bufferLen + delayInt : delayInt;
