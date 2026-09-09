@@ -51,7 +51,7 @@ namespace OuroborosModules::Modules::ResetHelper {
             LIGHTS_LEN
         };
 
-        rack::dsp::SchmittTrigger inputTriggers [InputCount] [Constants::MaxPolyphony];
+        rack::dsp::SchmittTrigger inputTriggers [InputCount] [Constants::MaxPolyphony] = { };
 
         rack::dsp::PulseGenerator outputPulse [Constants::MaxPolyphony];
         rack::dsp::PulseGenerator mergeWindowPulse [Constants::MaxPolyphony];

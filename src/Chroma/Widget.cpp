@@ -370,9 +370,9 @@ namespace OuroborosModules::Modules::Chroma {
     template<typename T = rack::ui::MenuItem>
     struct ReplacePatchCablesItem : public T {
       protected:
-        ChromaModule* module;
-        bool isCollectionColor;
-        uint32_t collectionIndex;
+        ChromaModule* module = nullptr;
+        bool isCollectionColor = false;
+        uint32_t collectionIndex = 0;
 
         virtual std::vector<rack::app::CableWidget*> getCables () = 0;
         rack::ui::Menu* createChildMenu () override {

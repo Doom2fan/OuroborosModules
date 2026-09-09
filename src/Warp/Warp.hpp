@@ -76,8 +76,8 @@ namespace OuroborosModules::Modules::Warp {
         DSP::OptimizedHalfBandDecimator<rack::simd::float_4> downsamplerFilter [SIMDBankCount];
 
         // Filters
-        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformSignal [SIMDBankCount];
-        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformModulator [SIMDBankCount];
+        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformSignal [SIMDBankCount] = { };
+        DSP::HilbertTransform<rack::simd::float_4> hilbertTransformModulator [SIMDBankCount] = { };
         DSP::DCBlocker<rack::simd::float_4> dcBlocker [SIMDBankCount];
 
         // Clock dividers

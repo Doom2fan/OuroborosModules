@@ -127,6 +127,15 @@ namespace OuroborosModules::Modules::Conductor {
         // Configure bypasses.
         configBypass (INPUT_CLOCK, OUTPUT_CLOCK);
         configBypass (INPUT_RESET, OUTPUT_RESET);
+
+        // Schmitt triggers.
+        advanceTrigger = rack::dsp::SchmittTrigger ();
+        resetTrigger = rack::dsp::SchmittTrigger ();
+
+        advanceButtonTrigger = rack::dsp::SchmittTrigger ();
+        resetButtonTrigger = rack::dsp::SchmittTrigger ();
+        resetPatternToggleTrigger = rack::dsp::SchmittTrigger ();
+        patternSetButtonTrigger = rack::dsp::SchmittTrigger ();
     }
 
     void ConductorModule::onSampleRateChange (const SampleRateChangeEvent& e) {

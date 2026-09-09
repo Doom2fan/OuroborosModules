@@ -135,7 +135,7 @@ namespace OuroborosModules::Modules::Automata {
         // Size = B012345678/S012345678 + extra byte
         static constexpr int MaxLength = 22;
         struct TextBuffer {
-            char buffer [MaxLength];
+            char buffer [MaxLength] = { };
             std::size_t textLen = 0;
 
             void append (char c) {

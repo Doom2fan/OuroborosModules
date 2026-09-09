@@ -44,7 +44,7 @@ namespace OuroborosModules {
         bool cables_Connected = false;
         bool cables_Disconnected = false;
 
-        MetaCableWidget* metaCableWidget;
+        MetaCableWidget* metaCableWidget = nullptr;
 
         // Module data
         std::unordered_map<RackModuleId, TimeUnit> modules_Time;
@@ -56,6 +56,9 @@ namespace OuroborosModules {
 
         MetaHandler ();
         ~MetaHandler ();
+
+        MetaHandler (const MetaHandler& x) = delete;
+        void operator= (const MetaHandler& x) = delete;
 
         void update ();
         void updateCables ();

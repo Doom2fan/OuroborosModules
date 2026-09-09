@@ -35,7 +35,7 @@ namespace OuroborosModules::Modules::Junction {
         static constexpr int SIMDBankCount = static_cast<int> (static_cast<float> (Constants::MaxPolyphony) / SIMDBankSize + .5f);
 
         struct OutputData {
-            uint8_t inputs [SwitchCount];
+            uint8_t inputs [SwitchCount] = { };
             uint8_t inputCount = 0;
 
             void resetInputs () { inputCount = 0; }

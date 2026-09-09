@@ -106,7 +106,7 @@ namespace OuroborosModules::DSP {
         } allpass [2] [3];
 
         float sampleRate {0};
-        float hilbertCoefs [12];
+        float hilbertCoefs [12] {0};
 
         void setSampleRate (float sr) {
             sampleRate = sr;

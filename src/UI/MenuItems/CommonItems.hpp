@@ -63,8 +63,8 @@ namespace OuroborosModules::UI {
     TTextField* createEventTextField (std::string text, std::string placeholder, std::function<bool(std::string)> action, bool alwaysConsume = false, bool closeOnConsume = true) {
         struct EventTextField : TTextField {
             std::function<bool(std::string)> eventAction = nullptr;
-            bool alwaysConsume;
-            bool closeOnConsume;
+            bool alwaysConsume = false;
+            bool closeOnConsume = false;
 
             void onSelectKey (const rack::event::SelectKey &e) override {
                 if (e.action == GLFW_PRESS && (e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER)) {

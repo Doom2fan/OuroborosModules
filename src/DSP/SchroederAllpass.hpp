@@ -26,8 +26,8 @@ namespace OuroborosModules::DSP {
     template<typename T>
     struct SchroederAllpass {
       private:
-        int32_t delayTimeInt;
-        float delayTimeFrac;
+        int32_t delayTimeInt = 0;
+        float delayTimeFrac = 0.f;
         float gain = 0.f;
         float tGain = 1.f;
 

@@ -40,7 +40,7 @@ namespace OuroborosModules::Modules::Conductor {
             float clockDelayLine [MaxDelay + 1] = { };
 
             bool clockHigh = false;
-            rack::dsp::SchmittTrigger clockTrigger;
+            rack::dsp::SchmittTrigger clockTrigger = { };
 
           public:
             void setParams (bool ignoreFirstClock, uint32_t delay);

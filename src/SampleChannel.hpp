@@ -67,10 +67,10 @@ namespace OuroborosModules::Audio {
         std::shared_ptr<AudioSample> withSampleRate (int newSampleRate, bool shared);
 
       private:
-        bool _isShared;
-        bool _isStereo;
-        bool _rawOnly;
-        bool _noResampledBuffer;
+        bool _isShared = false;
+        bool _isStereo = false;
+        bool _rawOnly = false;
+        bool _noResampledBuffer = false;
         AudioBuffer _rawBuffer;
         AudioBuffer _resampledBuffer;
 

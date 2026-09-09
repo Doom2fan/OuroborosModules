@@ -64,9 +64,9 @@ namespace OuroborosModules::Modules::Conductor {
         int curPage = 0;
 
         // Triggers
-        rack::dsp::SchmittTrigger pageDownButtonTrigger;
-        rack::dsp::SchmittTrigger pageUpButtonTrigger;
-        rack::dsp::SchmittTrigger padButtonTriggers [PadCount];
+        rack::dsp::SchmittTrigger pageDownButtonTrigger = { };
+        rack::dsp::SchmittTrigger pageUpButtonTrigger = { };
+        rack::dsp::SchmittTrigger padButtonTriggers [PadCount] = { };
 
         // Pulses
         rack::dsp::PulseGenerator pageDownLightPulse;

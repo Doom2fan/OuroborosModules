@@ -102,6 +102,7 @@ namespace OuroborosModules {
         /*
          * Param getters and setters
          */
+        // cppcheck-suppress duplInheritedMember
         float getParam (int idx) { return params [idx].getValue (); }
         void setParam (int idx, float value) { params [idx].setValue (value); }
 

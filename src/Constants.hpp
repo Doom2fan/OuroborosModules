@@ -73,7 +73,7 @@ namespace OuroborosModules {
             ID_UNKNOWN = 0,
         };
 
-        IdType id;
+        IdType id = ID_UNKNOWN;
 
         T withId (IdType id) {
             auto val = T ();
