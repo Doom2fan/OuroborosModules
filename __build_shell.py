@@ -164,7 +164,8 @@ class CmdShell(cmd2.Cmd):
         cppcheckArgs = [
             globalData.cppcheckPath,
             f"--project={COMPILE_DATABASE}",
-            f"--cppcheck-build-dir={buildInfo.cppcheckDir}", "--std=c++17",
+            f"--cppcheck-build-dir={buildInfo.cppcheckDir}",
+            "--std=c++17",
             f"--relative-paths={globalData.rackSdkDir};{globalData.repoDir}",
             "--error-exitcode=1",
             "--suppressions-list=CppCheckSuppressions.txt", "--inline-suppr",
@@ -176,6 +177,9 @@ class CmdShell(cmd2.Cmd):
             f"-i{globalData.rackSdkDir}/include",
             f"-i{globalData.rackSdkDir}/dep",
             f"-i{globalData.repoDir}/libs",
+            # WORKAROUNDS
+            "-DSIMDE_ENDIAN_ORDER=SIMDE_ENDIAN_LITTLE", # SIMDe "#error Unknown byte order; please file a bug"
+            "-D__glew_h__", # GLEW syntaxError
         ]
         if args.inconclusive:
             cppcheckArgs.append("--inconclusive")
