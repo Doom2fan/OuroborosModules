@@ -78,10 +78,11 @@ namespace OuroborosModules::DSP::DelayLineInterpolators {
 
         template<typename TSampleType>
         inline static TSampleType interpolate (const TSampleType* buffer, int32_t delayInt, float delayFrac, int32_t delayLength) {
+            // Lagrange interpolation needs the fractional index to be roughly centered or it performs poorly
             auto offs = static_cast<int> (std::floor (ORDER / 2.f));
             delayInt -= offs;
             delayFrac += offs;
-            if (delayInt < 0)
+            if (delayInt < 0) // Wrap the index
                 delayInt = delayLength + delayInt;
 
             TSampleType accum = TSampleType (0);
