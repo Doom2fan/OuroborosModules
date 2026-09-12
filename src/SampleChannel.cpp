@@ -33,17 +33,26 @@ namespace OuroborosModules::Audio {
         bool isShared,
         int sampleRate
     ) {
-        {
-            FILE* file = fopen (path.c_str (), "r");
-            if (file == nullptr)
-                return LoadStatus::FileDoesntExist;
-            DEFER ({ fclose (file); });
-        }
+        FILE* file = std::fopen (path.c_str (), "rb");
+        if (file == nullptr)
+            return LoadStatus::FileDoesntExist;
+        DEFER ({ std::fclose (file); });
+
+        std::vector<uint8_t> data;
+        std::fseek (file, 0, SEEK_END);
+        size_t len = std::ftell (file);
+        std::fseek (file, 0, SEEK_SET);
+
+        data.resize (len);
+        size_t lenRead = std::fread (data.data (), 1, len, file);
+
+        if (lenRead < len)
+            return LoadStatus::CouldntReadFile;
 
         AudioFile<float> audioFile;
         audioFile.shouldLogErrorsToConsole (false);
 
-        if (!audioFile.load (path))
+        if (!audioFile.loadFromMemory (data))
             return LoadStatus::InvalidFile;
 
         if (!audioFile.isMono () && !audioFile.isStereo ())
@@ -329,6 +338,9 @@ namespace OuroborosModules::Audio {
 
             case AudioSample::LoadStatus::FileDoesntExist:
                 return fmt::format (FMT_STRING ("Sample file \"{}\" does not exist."), path);
+
+            case AudioSample::LoadStatus::CouldntReadFile:
+                return fmt::format (FMT_STRING ("Sample file \"{}\" could not be read."), path);
 
             case AudioSample::LoadStatus::InvalidFile:
                 return fmt::format (FMT_STRING ("Sample file \"{}\" could not be loaded."), path);

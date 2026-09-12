@@ -47,6 +47,7 @@ namespace OuroborosModules::Audio {
         enum class LoadStatus {
             Success,
             FileDoesntExist,
+            CouldntReadFile,
             InvalidFile,
             ChannelCount,
         };
