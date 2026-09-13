@@ -34,7 +34,7 @@ namespace OuroborosModules::DSP {
         int32_t delayTime = 0;
         int32_t posIndex = 0;
 
-        int32_t getBufferLength () { return maxSamples + DelayLineInterpolators::MaxSampleCount; }
+        int32_t getBufferLength () const { return maxSamples + DelayLineInterpolators::MaxSampleCount; }
 
       public:
         DelayLine () {
@@ -96,7 +96,7 @@ namespace OuroborosModules::DSP {
             }
         }
 
-        TSampleType getSample (int32_t index) {
+        TSampleType getSample (int32_t index) const {
             assert (index >= 0);
             assert (index <= delayTime);
 
@@ -109,7 +109,7 @@ namespace OuroborosModules::DSP {
         }
 
         template<typename TInterpolator>
-        TSampleType getSample (float index) {
+        TSampleType getSample (float index) const {
             assert (index >= 0);
             assert (index <= delayTime);
 
@@ -128,7 +128,7 @@ namespace OuroborosModules::DSP {
         }
 
         template<typename TInterpolator>
-        TSampleType getSampleFrac (float delayFrac) {
+        TSampleType getSampleFrac (float delayFrac) const {
             assert (delayFrac >= 0.f && delayFrac <= 1.f);
             delayFrac = std::clamp (delayFrac, 0.f, 1.f);
 
