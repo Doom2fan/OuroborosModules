@@ -20,6 +20,7 @@
 #include "MetaHandler.hpp"
 
 #include "Math.hpp"
+#include "Math/BezierCurve.hpp"
 #include "Utils.hpp"
 
 #include <functional>
