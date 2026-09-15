@@ -71,6 +71,22 @@ namespace OuroborosModules {
         }
 
         template<class TParamQuantity = rack::engine::ParamQuantity>
+        TParamQuantity* configParamVOct (
+            int paramId,
+            float minValue, float maxValue, float defaultValue,
+            std::string name = "", float baseFreq = rack::dsp::FREQ_C4
+        ) {
+            assert (paramId < (int) params.size () && paramId < (int) paramQuantities.size ());
+
+            return configParam<TParamQuantity> (
+                paramId,
+                minValue, maxValue, defaultValue,
+                name, " Hz",
+                2, baseFreq, 0.f
+            );
+        }
+
+        template<class TParamQuantity = rack::engine::ParamQuantity>
         TParamQuantity* configParamVOctFromHz (
             int paramId,
             float minValue, float maxValue, float defaultValue,
