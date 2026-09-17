@@ -37,15 +37,26 @@ namespace OuroborosModules::Math {
         return min + x * (max - min);
     }
 
+    using rack::simd::rcp;
+    inline float rcp (const float x) {
+        return _mm_cvtss_f32 (_mm_rcp_ss (_mm_set_ss (x)));
+    }
+
     using rack::simd::rsqrt;
     inline float rsqrt (const float x) {
         return _mm_cvtss_f32 (_mm_rsqrt_ss (_mm_set_ss (x)));
     }
 
     template<typename T>
+    inline T rcp_nr1 (const T x) {
+        auto y = rcp (x);
+        return y * (T (2.) - x * y);
+    }
+
+    template<typename T>
     inline T rsqrt_nr1 (const T x) {
         auto y = rsqrt (x);
-        return y * (T (3.f) - x * y * y) * T (.5f);
+        return y * (T (3.) - x * y * y) * T (.5);
     }
 
     inline float hsum (rack::simd::float_4 v) {
