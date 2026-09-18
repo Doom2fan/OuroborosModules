@@ -381,7 +381,7 @@ namespace OuroborosModules::DSP {
 
         void setParams (int factor) {
             assert (rack::math::isPow2 (factor));
-            assert (factor < MaxOversample);
+            assert (factor <= MaxOversample);
 
             if (!rack::math::isPow2 (factor))
                 factor = 1;
