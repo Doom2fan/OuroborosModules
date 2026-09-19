@@ -79,17 +79,16 @@ namespace OuroborosModules::Modules::Warp {
         // Oversampling options
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createSubmenuItem ("Oversampling", "", [=] (Menu* menu) {
-            auto curOversample = static_cast<uint32_t> (moduleT->getParam (WarpModule::PARAM_OVERSAMPLE));
+            auto getOversample = [=] { return static_cast<uint32_t> (moduleT->getParam (WarpModule::PARAM_OVERSAMPLE)); };
             for (uint32_t accum = 1; accum <= WarpModule::MaxOversample; accum *= 2) {
                 auto label = accum > 1 ? fmt::format (FMT_STRING ("{}x"), accum) : "Off";
-                auto isCurrent = accum == curOversample;
 
                 menu->addChild (rack::createCheckMenuItem (label, "",
-                    [=] { return isCurrent; },
+                    [=] { return getOversample () == accum; },
                     [=] {
                         createContextMenuHistory<uint32_t> ("Set Warp oversampling factor", [=] (WarpModule* module, uint32_t value) {
                             APP->engine->setParamValue (module, WarpModule::PARAM_OVERSAMPLE, value);
-                        }, curOversample, accum);
+                        }, getOversample (), accum);
                     }
                 ));
             }
