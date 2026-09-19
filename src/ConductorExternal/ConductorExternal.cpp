@@ -105,8 +105,10 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Params
         configSwitch (PARAM_MODE, 0.f, 2.f, 0.f, "Mode selector", { "Index", "Scroll", "Note Map" });
-
         configButton (PARAM_MAP_BUTTON, "Map");
+
+        // Disable randomization for relevant params
+        getParamQuantity (PARAM_MODE)->randomizeEnabled = false;
 
         // Inputs
         configInput (INPUT_CV1, "CV 1");

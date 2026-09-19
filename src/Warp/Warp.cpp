@@ -38,6 +38,9 @@ namespace OuroborosModules::Modules::Warp {
         configParamAttenuverter (PARAM_AMOUNT_CV_ATTEN, "Distortion amount CV attenuverter");
         configParamAttenuverter (PARAM_BIAS_CV_ATTEN, "Bias CV attenuverter");
 
+        // Disable randomization for relevant params
+        getParamQuantity (PARAM_OVERSAMPLE)->randomizeEnabled = false;
+
         // Configure inputs
         configInput (INPUT_SIGNAL, "Signal");
         configInput (INPUT_MODULATOR, "Modulator");

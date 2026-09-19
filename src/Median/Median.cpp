@@ -34,6 +34,7 @@ namespace OuroborosModules::Modules::Median {
 
         // Configure parameters.
         configParam (PARAM_OVERSAMPLE, 1.f, MaxOversample, 1.f, "Oversample", "x", 0, 1);
+        getParamQuantity (PARAM_OVERSAMPLE)->randomizeEnabled = false;
 
         for (int i = 0; i < 3; i++) {
             configInput (INPUT_VALUES + i, fmt::format (FMT_STRING ("Value {}"), i + 1));
