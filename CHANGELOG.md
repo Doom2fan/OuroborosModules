@@ -7,7 +7,7 @@
   * Optimizations to Warp
   * Added cable glow option to Meta
   * Added cable lights option to Meta
-  * Added some hardening against NaNs in Warp
+  * Added some hardening against NaNs in some modules
   * Added an option to make Chroma's colour list glow in the dark (On by default)
   * Misc optimizations, improvements and fixes
 
