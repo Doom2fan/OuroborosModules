@@ -18,7 +18,7 @@
 
 #include "SampleChannel.hpp"
 
-#include "PluginDef.hpp"
+#include "Math.hpp"
 
 #include <AudioFile.h>
 #include <fmt/format.h>
@@ -61,21 +61,23 @@ namespace OuroborosModules::Audio {
         audioSample = std::make_shared<AudioSample> ();
 
         auto rawSampleRate = audioFile.getSampleRate ();
-        auto rawSampleCount = static_cast<std::size_t> (audioFile.getNumSamplesPerChannel ());
+        auto rawSampleCount = static_cast<size_t> (audioFile.getNumSamplesPerChannel ());
         audioSample->_isStereo = audioFile.isStereo ();
         assert (audioFile.getNumChannels () == audioSample->getChannelCount ());
 
         std::vector<float> samples;
         if (audioSample->isStereo ()) {
-            samples.resize (rawSampleCount * audioSample->getChannelCount ());
             const auto& samplesL = audioFile.samples [0];
             const auto& samplesR = audioFile.samples [1];
-            for (std::size_t i = 0; i < rawSampleCount; i++) {
-                samples [i * 2    ] = samplesL [i];
-                samples [i * 2 + 1] = samplesR [i];
+            for (size_t i = 0; i < rawSampleCount; i++) {
+                samples [i * 2    ] = Math::fpClean (samplesL [i]);
+                samples [i * 2 + 1] = Math::fpClean (samplesR [i]);
             }
-        } else
-            samples = audioFile.samples [0];
+        } else {
+            samples.resize (rawSampleCount);
+            for (size_t i = 0; i < rawSampleCount; i++)
+                samples [i] = Math::fpClean (audioFile.samples [0] [i]);
+        }
 
         assert (samples.size () == rawSampleCount * audioSample->getChannelCount ());
 
@@ -123,7 +125,7 @@ namespace OuroborosModules::Audio {
         DEFER ({ src = src_delete (src); });
 
         // Set up the resampling info.
-        const std::size_t rawBufferSize = 128;
+        const size_t rawBufferSize = 128;
         float tmpBuffer [rawBufferSize];
         auto bufferSize = rawBufferSize / channelCount;
         SRC_DATA srcData;
@@ -136,8 +138,8 @@ namespace OuroborosModules::Audio {
         std::vector<float> samples;
         auto tmpBufferStart = std::begin (tmpBuffer);
         auto rawSampleCount = _rawBuffer.getSampleCount ();
-        std::size_t curTime = 0;
-        std::size_t outSampleCount = 0;
+        size_t curTime = 0;
+        size_t outSampleCount = 0;
         while (curTime < rawSampleCount) {
             srcData.input_frames = std::min (rawSampleCount - curTime, bufferSize);
             srcData.end_of_input = (rawSampleCount - curTime) <= bufferSize;
