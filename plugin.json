@@ -129,6 +129,13 @@
             "tags": [ "Filter", "Digital", "Effect", "Physical modeling", "Polyphonic" ],
             "keywords": "diffusion schroeder",
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Diffuse"
+        },
+        {
+            "slug": "Pulsar",
+            "name": "Pulsar",
+            "description": "Pulsar synthesizer based on Curtis Roads' writings",
+            "tags": [ "Oscillator", "Granular", "Low-frequency oscillator", "Polyphonic", "Function generator" ],
+            "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Pulsar"
         }
     ]
 }
