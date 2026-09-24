@@ -185,7 +185,6 @@ namespace OuroborosModules::Modules::Pulsar {
         void update ();
         float read ();
         void readCount (float* outBuffer, uint32_t count);
-        rack::simd::float_4 readSimd ();
     };
 
     struct PulsarEngine {

@@ -463,18 +463,6 @@ namespace OuroborosModules::Modules::Pulsar {
         readIdx = (readIdx + count) & BufferSizeMask;
     }
 
-    rack::simd::float_4 NoiseBuffer::readSimd () {
-        auto idx = readIdx;
-
-        // Mask out the bottom of the index to align it so we don't go past the end of the buffer
-        idx &= ~16u;
-
-        // Increment the read index
-        readIdx = (readIdx + 4) & BufferSizeMask;
-
-        return rack::simd::float_4::load (buffer + idx);
-    }
-
     /*
      * PulsarEngine
      */
