@@ -23,6 +23,8 @@
 #include "Logging.hpp"
 #include "ModelDeclarations.hpp"
 
+#include "Vector/VCV_Functions4.hpp"
+
 #include <cstddef>
 #include <cstdint>
 
