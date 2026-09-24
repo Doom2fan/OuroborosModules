@@ -450,17 +450,10 @@ namespace OuroborosModules::Modules::Pulsar {
     }
 
     void NoiseBuffer::readCount (float* outBuffer, uint32_t count) {
-        auto idx = readIdx;
-
-        if (idx + count < BufferSize)
-            std::copy_n (buffer, count, outBuffer);
-        else {
-            std::copy_n (buffer + idx, BufferSize - idx, outBuffer);
-            auto remainder = count - (BufferSize - idx);
-            std::copy_n (buffer, remainder, outBuffer);
+        while (count > 0) {
+            outBuffer [--count] = buffer [readIdx];
+            readIdx = (readIdx + 1) & BufferSizeMask;
         }
-
-        readIdx = (readIdx + count) & BufferSizeMask;
     }
 
     /*
