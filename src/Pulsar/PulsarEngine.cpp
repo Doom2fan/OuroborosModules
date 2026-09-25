@@ -470,6 +470,8 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_set_new_struct (rootJ, "pulsars", pulsars [channel]);
         json_object_set_new_struct (rootJ, "maskingData", maskingData [channel]);
 
+        json_object_set_new_float (rootJ, "emissionPhase", emissionPhase [channel]);
+
         return rootJ;
     }
 
@@ -487,6 +489,8 @@ namespace OuroborosModules::Modules::Pulsar {
         // State
         failed |= !json_object_try_get_struct (rootJ, "pulsars", pulsars [channel]);
         failed |= !json_object_try_get_struct (rootJ, "maskingData", maskingData [channel]);
+
+        failed |= !json_object_try_get_float (rootJ, "emissionPhase", emissionPhase [channel]);
 
         if (failed)
             return false;
