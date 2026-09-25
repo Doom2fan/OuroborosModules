@@ -24,6 +24,42 @@
 #include <vector>
 
 namespace OuroborosModules::DSP {
+    struct Wavetable;
+
+    struct WavetableSampler {
+        friend Wavetable;
+
+      private:
+        const float* samples = nullptr;
+        uint32_t waveLength = 0;
+
+      public:
+        float sample (uint32_t sampleIndex) const {
+            assert (sampleIndex < waveLength);
+
+            return samples [sampleIndex];
+        }
+
+        void sampleRange (float* outSamples, uint32_t firstSample, uint32_t sampleCount) const;
+
+        template<typename TInterpolator>
+        float sample (float sampleIndex) const {
+            assert (sampleIndex < waveLength);
+
+            auto sampleIndexInt = static_cast<uint32_t> (sampleIndex);
+            auto sampleFrac = sampleIndex - sampleIndexInt;
+            return TInterpolator::interpolate (samples, sampleIndex, sampleFrac, waveLength);
+        }
+
+        template<typename TInterpolator>
+        float sampleFrac (uint32_t sampleIndex, float sampleFrac) const {
+            assert (sampleIndex < waveLength);
+            assert (sampleFrac >= 0 && sampleFrac < 1);
+
+            return TInterpolator::interpolate (samples, sampleIndex, sampleFrac, waveLength);
+        }
+    };
+
     struct Wavetable {
       private:
         uint32_t waveLength;
@@ -56,51 +92,22 @@ namespace OuroborosModules::DSP {
         uint32_t getWaveLength () const { return waveLength; }
         uint32_t getFrameCount () const { return frameCount; }
         uint32_t getOctaves () const { return octaves; }
+        WavetableSampler getSampler (uint32_t frameIndex, uint32_t octave) const;
 
-        float getSample (uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const;
-        void getSamples (float* outSamples, uint32_t sampleCount, uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const;
+        float sample (uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const;
+        void sampleRange (
+            float* outSamples,
+            uint32_t firstSample, uint32_t sampleCount,
+            uint32_t frameIndex, uint32_t octave) const;
 
         template<typename TInterpolator>
-        float getSample (uint32_t frameIndex, float sampleIndex, uint32_t octave) const {
-            assert (frameIndex < frameCount);
-            assert (sampleIndex >= 0 && sampleIndex < waveLength);
-            assert (octave < octaves);
-
-            if (sampleIndex < 0 || sampleIndex >= waveLength ||
-                frameIndex >= frameCount ||
-                octave >= octaves
-            ) {
-                return 0.f;
-            }
-
-            auto sampleIndexInt = static_cast<uint32_t> (sampleIndex);
-            auto sampleFrac = sampleIndex - sampleIndexInt;
-            auto waveLen = waveLength + WavetableInterpolators::MaxSampleCount;
-            auto waveOffs = octave * frameCount * waveLen +
-                            frameIndex * waveLen;
-
-            return TInterpolator::interpolate (samples.data () + waveOffs, sampleIndexInt, sampleFrac, waveLength);
+        float sample (uint32_t frameIndex, float sampleIndex, uint32_t octave) const {
+            return getSampler (frameIndex, octave).sample<TInterpolator> (sampleIndex);
         }
 
         template<typename TInterpolator>
-        float getSampleFrac (uint32_t frameIndex, uint32_t sampleIndex, float sampleFrac, uint32_t octave) const {
-            assert (frameIndex < frameCount);
-            assert (sampleIndex < waveLength);
-            assert (sampleFrac >= 0 && sampleFrac < 1);
-            assert (octave < octaves);
-
-            if (sampleIndex >= waveLength ||
-                frameIndex >= frameCount ||
-                octave >= octaves
-            ) {
-                return 0.f;
-            }
-
-            auto waveLen = waveLength + WavetableInterpolators::MaxSampleCount;
-            auto waveOffs = octave * frameCount * waveLen +
-                            frameIndex * waveLen;
-
-            return TInterpolator::interpolate (samples.data () + waveOffs, sampleIndex, sampleFrac, waveLength);
+        float sampleFrac (uint32_t frameIndex, uint32_t sampleIndex, float sampleFrac, uint32_t octave) const {
+            return getSampler (frameIndex, octave).sample<TInterpolator> (sampleIndex, sampleFrac);
         }
 
         /** Sets the samples for the wavetable, and generates bandwidth-limited octave mipmaps, if necessary.
@@ -109,6 +116,9 @@ namespace OuroborosModules::DSP {
          * frameCount: The number of frames in the wavetable. Must be greater than 0.
          * maxOctaves: The maximum number of octaves the wavetable may have. Must be greater than 0.
          */
-        bool setSamples (const float* newSamples, uint32_t waveLength, uint32_t frameCount, uint32_t maxOctaves = std::numeric_limits<uint32_t>::max ());
+        bool setSamples (
+            const float* newSamples,
+            uint32_t waveLength, uint32_t frameCount,
+            uint32_t maxOctaves = std::numeric_limits<uint32_t>::max ());
     };
 }
