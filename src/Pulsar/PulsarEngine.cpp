@@ -108,29 +108,19 @@ namespace OuroborosModules::Modules::Pulsar {
         return static_cast<uint32_t> (oversampled ? std::floor (value) : std::ceil (value));
     }
 
-    struct WaveSampleData {
-        const DSP::Wavetable* wavetable;
+    [[using gnu: always_inline, hot]]
+    inline DSP::WavetableSampler getSampler (const DSP::Wavetable* wavetable, float frame, uint32_t octave) {
+        auto frameCount = wavetable->getFrameCount ();
+        auto frameIndex = std::min (static_cast<uint32_t> (frame * (frameCount - 1)), frameCount - 1);
 
-        uint32_t frameIndex;
-        uint32_t octave;
-
-        [[using gnu: always_inline, hot]]
-        WaveSampleData () { }
-
-        [[using gnu: always_inline, hot]]
-        WaveSampleData (const DSP::Wavetable* wavetable, float frame, uint32_t octave)
-            : wavetable (wavetable), octave (octave) {
-            auto frameCount = wavetable->getFrameCount ();
-
-            frameIndex = std::min (static_cast<uint32_t> (frame * (frameCount - 1)), frameCount - 1);
-        }
-    };
+        return wavetable->getSampler (frameIndex, octave);
+    }
 
     template<typename TInterpolator>
     [[using gnu: always_inline, hot]]
-    inline float sampleWave (const WaveSampleData& sampleData, float phase) {
+    inline float sampleWave (const DSP::WavetableSampler& sampler, float phase) {
         auto sampleIndex = std::clamp (phase * (WavetableLength - 1), 0.f, static_cast<float> (WavetableLength - 1));
-        return sampleData.wavetable->getSample<TInterpolator> (sampleData.frameIndex, sampleIndex, sampleData.octave);
+        return sampler.sample<TInterpolator> (sampleIndex);
     }
 
     /*
@@ -677,23 +667,23 @@ namespace OuroborosModules::Modules::Pulsar {
         auto windowPhaseIncrement = (freq * args.osSampleTime) & usedMask;
         auto edgePhaseIncrement = (VectorT (args.edgeFrequency) * args.osSampleTime) & (edgePhase >= 0.f) & usedMask;
 
-        WaveSampleData wave0Data [SIMDBankSize];
-        WaveSampleData wave1Data [SIMDBankSize];
-        WaveSampleData window0Data [SIMDBankSize];
-        WaveSampleData window1Data [SIMDBankSize];
+        DSP::WavetableSampler wave0Sampler [SIMDBankSize];
+        DSP::WavetableSampler wave1Sampler [SIMDBankSize];
+        DSP::WavetableSampler window0Sampler [SIMDBankSize];
+        DSP::WavetableSampler window1Sampler [SIMDBankSize];
 
         for (uint32_t i = 0; i < SIMDBankSize; i++) {
             auto slotIdx = baseIndex + i;
 
             auto wave0 = pulsars.waveIndex [slotIdx];
             auto frame = pulsars.shaperAmount [slotIdx];
-            wave0Data [i] = WaveSampleData (&wavetables.waves [wave0    ], frame, pulsars.wave0Octave [slotIdx]);
-            wave1Data [i] = WaveSampleData (&wavetables.waves [wave0 + 1], frame, pulsars.wave1Octave [slotIdx]);
+            wave0Sampler [i] = getSampler (&wavetables.waves [wave0    ], frame, pulsars.wave0Octave [slotIdx]);
+            wave1Sampler [i] = getSampler (&wavetables.waves [wave0 + 1], frame, pulsars.wave1Octave [slotIdx]);
 
             auto window0 = pulsars.windowIndex [slotIdx];
             frame = pulsars.windowSkew [slotIdx];
-            window0Data [i] = WaveSampleData (&wavetables.windows [window0    ], frame, pulsars.window0Octave [slotIdx]);
-            window1Data [i] = WaveSampleData (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
+            window0Sampler [i] = getSampler (&wavetables.windows [window0    ], frame, pulsars.window0Octave [slotIdx]);
+            window1Sampler [i] = getSampler (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
         }
 
         for (int i = 0; i < osFactor; i++) {
@@ -703,15 +693,15 @@ namespace OuroborosModules::Modules::Pulsar {
                     continue;
 
                 auto phase = wavePhase [j];
-                wave0Arr [j] = sampleWave<LinearInterp> (wave0Data [j], phase);
+                wave0Arr [j] = sampleWave<LinearInterp> (wave0Sampler [j], phase);
                 if ((pulsars.waveIndex [baseIndex + j] + 1) < WavesCount - 1)
-                    wave1Arr [j] = sampleWave<LinearInterp> (wave1Data [j], phase);
+                    wave1Arr [j] = sampleWave<LinearInterp> (wave1Sampler [j], phase);
                 else
                     wave1Arr [j] = noiseArr [j];
 
                 phase = windowPhase [j];
-                window0Arr [j] = sampleWave<LinearInterp> (window0Data [j], phase);
-                window1Arr [j] = sampleWave<LinearInterp> (window1Data [j], phase);
+                window0Arr [j] = sampleWave<LinearInterp> (window0Sampler [j], phase);
+                window1Arr [j] = sampleWave<LinearInterp> (window1Sampler [j], phase);
             }
 
             // Load and crossfade signals
