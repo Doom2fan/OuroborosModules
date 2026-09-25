@@ -28,7 +28,7 @@ namespace OuroborosModules::Modules::Pulsar {
     static constexpr uint32_t SlotBankSize = sizeof (SlotBankType) * 8;
     static constexpr uint32_t SlotBankCount = (MaxPulsars + SlotBankSize - 1) / SlotBankSize;
 
-    static constexpr uint32_t WavetableLength = 2048;
+    static constexpr uint32_t WavetableLength = 2048; // Must be a power of two
     static constexpr uint32_t WavesCount = 5;
     static constexpr uint32_t WindowsCount = 4;
 

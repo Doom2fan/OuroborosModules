@@ -116,11 +116,13 @@ namespace OuroborosModules::Modules::Pulsar {
         return wavetable->getSampler (frameIndex, octave);
     }
 
-    template<typename TInterpolator>
     [[using gnu: always_inline, hot]]
-    inline float sampleWave (const DSP::WavetableSampler& sampler, float phase) {
-        auto sampleIndex = std::clamp (phase * (WavetableLength - 1), 0.f, static_cast<float> (WavetableLength - 1));
-        return sampler.sample<TInterpolator> (sampleIndex);
+    inline void calcSampleIndex (float phase, uint32_t& sampleIndexInt, float& sampleFrac) {
+        auto sampleIndex = phase * WavetableLength;
+
+        sampleIndexInt = static_cast<uint32_t> (sampleIndex);
+        sampleFrac = sampleIndex - sampleIndexInt;
+        sampleIndexInt &= (WavetableLength - 1u);
     }
 
     /*
@@ -692,16 +694,22 @@ namespace OuroborosModules::Modules::Pulsar {
                 if ((slotMask & (1 << j)) == 0)
                     continue;
 
-                auto phase = wavePhase [j];
-                wave0Arr [j] = sampleWave<LinearInterp> (wave0Sampler [j], phase);
+                /*float sampleA [SIMDBankSize];
+                float sampleB [SIMDBankSize];
+                float sampleT [SIMDBankSize];*/
+
+                uint32_t sampleIndex; float sampleFrac;
+
+                calcSampleIndex (wavePhase [j], sampleIndex, sampleFrac);
+                wave0Arr [j] = wave0Sampler [j].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
                 if ((pulsars.waveIndex [baseIndex + j] + 1) < WavesCount - 1)
-                    wave1Arr [j] = sampleWave<LinearInterp> (wave1Sampler [j], phase);
+                    wave1Arr [j] = wave1Sampler [j].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
                 else
                     wave1Arr [j] = noiseArr [j];
 
-                phase = windowPhase [j];
-                window0Arr [j] = sampleWave<LinearInterp> (window0Sampler [j], phase);
-                window1Arr [j] = sampleWave<LinearInterp> (window1Sampler [j], phase);
+                calcSampleIndex (wavePhase [j], sampleIndex, sampleFrac);
+                window0Arr [j] = window0Sampler [j].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
+                window1Arr [j] = window1Sampler [j].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
             }
 
             // Load and crossfade signals
