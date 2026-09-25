@@ -65,7 +65,7 @@ namespace OuroborosModules::Modules::Pulsar {
         float edgeFactor = 0.f;
 
         bool syncEnabled = false;
-        float syncVoltages [Constants::MaxPolyphony];
+        float syncVoltages [Constants::MaxPolyphony] = { };
 
         float* mainOut = nullptr;
         float* restOut = nullptr;
