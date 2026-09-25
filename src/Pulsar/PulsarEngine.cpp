@@ -710,7 +710,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 else
                     wave1Arr [slot] = noiseArr [slot];
 
-                calcSampleIndex (wavePhase [slot], sampleIndex, sampleFrac);
+                calcSampleIndex (windowPhase [slot], sampleIndex, sampleFrac);
                 window0Arr [slot] = window0Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
                 window1Arr [slot] = window1Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
             }
