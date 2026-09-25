@@ -55,9 +55,8 @@ namespace OuroborosModules::DSP {
         return sampleInfo;
     }
 
-
     float Wavetable::sample (uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const {
-        getSampler (frameIndex, octave).sample (sampleIndex);
+        return getSampler (frameIndex, octave).sample (sampleIndex);
     }
 
     void Wavetable::sampleRange (
