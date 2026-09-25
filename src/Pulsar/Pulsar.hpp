@@ -116,7 +116,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         PulsarMaskingMode maskingMode = PulsarMaskingMode::Invalid;
         bool formantDecoupled = false;
-        bool overlapMode;
+        bool overlapMode = false;
         PulsarFrequencyMode frequencyMode = PulsarFrequencyMode::Audio;
 
         PulsarEngine engine;
