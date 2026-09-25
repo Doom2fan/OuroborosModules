@@ -66,6 +66,7 @@ namespace OuroborosModules::Audio {
         assert (audioFile.getNumChannels () == audioSample->getChannelCount ());
 
         std::vector<float> samples;
+        samples.resize (rawSampleCount * audioSample->getChannelCount ());
         if (audioSample->isStereo ()) {
             const auto& samplesL = audioFile.samples [0];
             const auto& samplesR = audioFile.samples [1];
@@ -73,11 +74,8 @@ namespace OuroborosModules::Audio {
                 samples [i * 2    ] = Math::fpClean (samplesL [i]);
                 samples [i * 2 + 1] = Math::fpClean (samplesR [i]);
             }
-        } else {
-            samples.resize (rawSampleCount);
-            for (size_t i = 0; i < rawSampleCount; i++)
-                samples [i] = Math::fpClean (audioFile.samples [0] [i]);
-        }
+        } else for (size_t i = 0; i < rawSampleCount; i++)
+            samples [i] = Math::fpClean (audioFile.samples [0] [i]);
 
         assert (samples.size () == rawSampleCount * audioSample->getChannelCount ());
 
