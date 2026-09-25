@@ -32,7 +32,6 @@ namespace OuroborosModules::Modules::Pulsar {
     template<typename T>
     [[using gnu: always_inline, hot]]
     inline T softClip (T sample) {
-        return DSP::Waveshapers::softClipApprox (sample);
         return rack::simd::ifelse (rack::simd::abs (sample) > 1, DSP::Waveshapers::softClipApprox (sample + rack::simd::sgn (sample)), sample);
     }
 
