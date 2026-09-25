@@ -20,57 +20,52 @@
 
 namespace OuroborosModules::DSP {
     /*
-     * Wavetable
+     * WavetableSampler
      */
-    float Wavetable::getSample (uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const {
-        assert (frameIndex < frameCount);
+    void WavetableSampler::sampleRange (float* outSamples, uint32_t firstSample, uint32_t sampleCount) const {
         assert (sampleIndex < waveLength);
-        assert (octave < octaves);
-
-        if (sampleIndex >= waveLength ||
-            frameIndex >= frameCount ||
-            octave >= octaves
-        ) {
-            return 0.f;
-        }
+        assert (sampleCount > 1 && sampleCount < waveLength);
 
         auto waveLen = waveLength + WavetableInterpolators::MaxSampleCount;
-        return samples [
-            octave * frameCount * waveLen + // Z
-            frameIndex * waveLen + // Y
-            sampleIndex // X
-        ];
+        if (firstSample + sampleCount < waveLen)
+            std::copy (samples + firstSample, samples + firstSample + sampleCount, outSamples);
+        else {
+            std::copy_n (samples + firstSample, waveLength - firstSample, outSamples);
+            auto remainder = sampleCount - (waveLength - firstSample);
+            std::copy_n (samples, remainder, outSamples);
+        }
     }
 
-    void Wavetable::getSamples (
-        float* outSamples, uint32_t sampleCount, uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const {
-        assert (outSamples != nullptr);
-        assert (sampleCount > 1 && sampleCount < waveLength);
+    /*
+     * Wavetable
+     */
+    WavetableSampler Wavetable::getSampler (uint32_t frameIndex, uint32_t octave) const {
         assert (frameIndex < frameCount);
-        assert (sampleIndex < waveLength);
         assert (octave < octaves);
 
-        if (outSamples == nullptr ||
-            sampleCount < 1 || sampleCount >= waveLength ||
-            frameIndex >= frameCount ||
-            sampleIndex >= waveLength ||
-            octave >= octaves
-        ) {
-            return;
-        }
+        auto sampleInfo = WavetableSampler ();
+
+        sampleInfo.waveLength = waveLength;
 
         auto waveLen = waveLength + WavetableInterpolators::MaxSampleCount;
-        auto zOffs = octave * frameCount * waveLen;
-        auto yOffs = frameIndex * waveLen;
-        if (sampleIndex + sampleCount < waveLen) {
-            auto initialIdx = zOffs + yOffs + sampleIndex;
-            std::copy (samples.begin () + initialIdx, samples.begin () + initialIdx + sampleCount, outSamples);
-        } else {
-            auto initialIdx = zOffs + yOffs + sampleIndex;
-            std::copy_n (samples.begin () + initialIdx, waveLength - initialIdx, outSamples);
-            auto remainder = sampleCount - (waveLength - initialIdx);
-            std::copy_n (samples.begin (), remainder, outSamples);
-        }
+        auto waveOffs = octave * frameCount * waveLen +
+                        frameIndex * waveLen;
+        sampleInfo.samples = samples.data () + waveOffs;
+
+        return sampleInfo;
+    }
+
+
+    float Wavetable::sample (uint32_t frameIndex, uint32_t sampleIndex, uint32_t octave) const {
+        getSampler (frameIndex, octave).sample (sampleIndex);
+    }
+
+    void Wavetable::sampleRange (
+        float* outSamples,
+        uint32_t firstSample, uint32_t sampleCount,
+        uint32_t frameIndex, uint32_t octave
+    ) const {
+        getSampler (frameIndex, octave).sampleRange (outSamples, firstSample, sampleCount);
     }
 
     bool Wavetable::setSamples (const float* newSamples, uint32_t waveLength, uint32_t frameCount, uint32_t maxOctaves) {
