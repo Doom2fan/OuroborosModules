@@ -32,9 +32,6 @@ namespace OuroborosModules::Modules::Pulsar {
     static constexpr uint32_t WavesCount = 5;
     static constexpr uint32_t WindowsCount = 4;
 
-    static constexpr float MinFreqHz = 20.f;
-    static constexpr float MaxFreqHz = 20000.f;
-
     static constexpr uint8_t DefaultOversampleRate = 4;
     static constexpr uint8_t MaxOversample = 16;
 
@@ -48,12 +45,6 @@ namespace OuroborosModules::Modules::Pulsar {
         None,
         Pulse,
         Rest,
-    };
-
-    enum class PulsarFrequencyMode {
-        Audio,
-        LFO,
-        Triggered,
     };
 
     struct PulsarWavetables;

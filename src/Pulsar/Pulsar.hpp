@@ -29,6 +29,22 @@
 #include "PulsarEngine.hpp"
 
 namespace OuroborosModules::Modules::Pulsar {
+    enum class PulsarFrequencyMode {
+        Audio,
+        LFO,
+        Triggered,
+        TriggeredLFO,
+    };
+
+    enum class PulsarFormantMode {
+        Coupled,
+        AudioRate,
+        LFO,
+    };
+
+    static const float BaseFrequencyAudio = rack::dsp::FREQ_C4;
+    static constexpr float BaseFrequencyLFO = 2.f;
+
     struct PulsarModule : ModuleBase {
         enum ParamIds {
             // Frequency
@@ -51,7 +67,8 @@ namespace OuroborosModules::Modules::Pulsar {
 
             // Mode switches
             PARAM_MASKINGMODE,
-            PARAM_DECOUPLE,
+            PARAM_FREQUENCY_MODE,
+            PARAM_FORMANT_MODE,
 
             // CV attenuverters
             PARAM_FORMANT_CV_ATTEN,
@@ -72,7 +89,6 @@ namespace OuroborosModules::Modules::Pulsar {
             PARAM_CHANNEL_COUNT,
             PARAM_OVERLAP_MODE,
             PARAM_EDGE_FACTOR,
-            PARAM_FREQUENCY_MODE,
 
             NUM_PARAMS
         };
@@ -114,10 +130,13 @@ namespace OuroborosModules::Modules::Pulsar {
         float curSampleRate;
         float curSampleTime;
 
+        float centerMainFreq = BaseFrequencyAudio;
+        float centerFormantFreq = BaseFrequencyAudio;
+
         PulsarMaskingMode maskingMode = PulsarMaskingMode::Invalid;
-        bool formantDecoupled = false;
         bool overlapMode = false;
         PulsarFrequencyMode frequencyMode = PulsarFrequencyMode::Audio;
+        PulsarFormantMode formantMode = PulsarFormantMode::Coupled;
 
         PulsarEngine engine;
         PulsarParameters pulsarParams;
@@ -135,9 +154,9 @@ namespace OuroborosModules::Modules::Pulsar {
 
         void updateOversampleRate ();
         void setMaskingMode (PulsarMaskingMode mode, bool force = false);
-        void setFormantDecouple (bool decoupled, bool force = false);
         void setOverlapMode (bool overlap, bool force = false);
         void setFrequencyMode (PulsarFrequencyMode mode, bool force = false);
+        void setFormantMode (PulsarFormantMode mode, bool force = false);
 
         uint8_t getChannelCount ();
         void updateParams ();
