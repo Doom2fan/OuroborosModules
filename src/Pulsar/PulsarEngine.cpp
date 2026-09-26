@@ -680,20 +680,6 @@ namespace OuroborosModules::Modules::Pulsar {
         DSP::WavetableSampler window0Sampler [SIMDBankSize];
         DSP::WavetableSampler window1Sampler [SIMDBankSize];
 
-        for (uint32_t i = 0; i < SIMDBankSize; i++) {
-            auto slotIdx = baseIndex + i;
-
-            auto wave0 = pulsars.waveIndex [slotIdx];
-            auto frame = pulsars.shaperAmount [slotIdx];
-            wave0Sampler [i] = getSampler (&wavetables.waves [wave0    ], frame, pulsars.wave0Octave [slotIdx]);
-            wave1Sampler [i] = getSampler (&wavetables.waves [wave0 + 1], frame, pulsars.wave1Octave [slotIdx]);
-
-            auto window0 = pulsars.windowIndex [slotIdx];
-            frame = pulsars.windowSkew [slotIdx];
-            window0Sampler [i] = getSampler (&wavetables.windows [window0    ], frame, pulsars.window0Octave [slotIdx]);
-            window1Sampler [i] = getSampler (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
-        }
-
         uint32_t slotCount = 0;
         uint32_t slotIndices [SIMDBankSize] = { };
         for (uint32_t j = 0; j < SIMDBankSize; j++) {
@@ -701,6 +687,21 @@ namespace OuroborosModules::Modules::Pulsar {
                 continue;
 
             slotIndices [slotCount++] = j;
+        }
+
+        for (uint32_t i = 0; i < slotCount; i++) {
+            auto slot = slotIndices [i];
+            auto slotIdx = baseIndex + slot;
+
+            auto wave0 = pulsars.waveIndex [slotIdx];
+            auto frame = pulsars.shaperAmount [slotIdx];
+            wave0Sampler [slot] = getSampler (&wavetables.waves [wave0    ], frame, pulsars.wave0Octave [slotIdx]);
+            wave1Sampler [slot] = getSampler (&wavetables.waves [wave0 + 1], frame, pulsars.wave1Octave [slotIdx]);
+
+            auto window0 = pulsars.windowIndex [slotIdx];
+            frame = pulsars.windowSkew [slotIdx];
+            window0Sampler [slot] = getSampler (&wavetables.windows [window0    ], frame, pulsars.window0Octave [slotIdx]);
+            window1Sampler [slot] = getSampler (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
         }
 
         for (int i = 0; i < osFactor; i++) {
