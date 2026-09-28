@@ -101,6 +101,7 @@ namespace OuroborosModules::Modules::Automata {
         stepCount = 0;
 
         // Initialize options.
+        triggerInfo = { };
         randomizeOnManualReset = false;
         randomizeOnAutoReset = false;
         momentaryLengthEnable = false;
