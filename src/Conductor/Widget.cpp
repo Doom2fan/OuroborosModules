@@ -73,10 +73,15 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Display
         auto displayBox = findNamedBox ("widget_Display", rack::math::Rect ());
-        auto displayWidget = createWidget<LedNumberDisplay> (displayBox.pos, displayBox.size, 32.f, 3, [&] {
-            return moduleT != nullptr ? moduleT->currentPattern + 1 : 16;
-        });
-        addChild (displayWidget);
+        addChild (createWidget<LedNumberDisplay> (
+            displayBox.pos, displayBox.size, 32.f, 3,
+            [&] { return moduleT != nullptr ? moduleT->currentPattern + 1 : 16; },
+            [=] {
+                return (moduleT != nullptr)
+                    ? moduleT->displayColor.getColor (&pluginSettings.conductor_DefaultDisplayColor, &pluginSettings.global_DisplayColor)
+                    : pluginSettings.conductor_DefaultDisplayColor.getColor (nullptr, &pluginSettings.global_DisplayColor);
+            }
+        ));
     }
 
     void ConductorWidget::onChangeEmblem (EmblemId emblemId) {
@@ -107,5 +112,58 @@ namespace OuroborosModules::Modules::Conductor {
         clockDelaySlider->box.size.x = 200.f;
         menu->addChild (clockDelaySlider);
         menu->addChild (createBoolPtrMenuItem ("Ignore first clock within 1ms after reset", "", &moduleT->resetIgnoreFirstClock));
+    }
+
+    void ConductorWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createLocalStyleMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (Widgets::createColorList (
+            "Display color",
+
+            &moduleT->displayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) {
+                APP->history->push (new Widgets::HistoryChangeDisplayColor (
+                    moduleT, "Conductor",
+                    [=] (rack::engine::Module* module) {
+                        auto moduleT = dynamic_cast<ConductorModule*> (module);
+                        return (moduleT != nullptr) ? &moduleT->displayColor : nullptr;
+                    },
+                    oldColor, newColor
+                ));
+            },
+            &pluginSettings.conductor_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor
+        ));
+    }
+
+    void ConductorWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createPluginSettingsMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Visual"));
+        menu->addChild (Widgets::createColorList (
+            "Default display color",
+
+            &pluginSettings.conductor_DefaultDisplayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.conductor_DefaultDisplayColor = newColor; },
+            &pluginDefaults.conductor_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor,
+            true
+        ));
     }
 }

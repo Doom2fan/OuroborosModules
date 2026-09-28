@@ -47,6 +47,11 @@ namespace OuroborosModules::Modules::Conductor {
 
         emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
+        auto getDisplayColor = [=] {
+            return (moduleT != nullptr)
+                ? moduleT->displayColor.getColor (&pluginSettings.conductorExternal_DefaultDisplayColor, &pluginSettings.global_DisplayColor)
+                : pluginSettings.conductorExternal_DefaultDisplayColor.getColor (nullptr, &pluginSettings.global_DisplayColor);
+        };
 
         // Params
         addChild (createParamCentered<MetalKnobSmall> (findNamed ("param_Mode", Vec ()), moduleT, ExternalModule::PARAM_MODE));
@@ -63,15 +68,19 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Displays
         auto selDisplayBox = findNamedBox ("widget_SelDisplay", rack::math::Rect ());
-        selectionDisplay = createWidget<LedNumberDisplay> (selDisplayBox.pos, selDisplayBox.size, 32.f, 3, [&] {
-            return moduleT != nullptr ? moduleT->selectedPattern + 1 : 5;
-        });
+        selectionDisplay = createWidget<LedNumberDisplay> (
+            selDisplayBox.pos, selDisplayBox.size, 32.f, 3,
+            [&] { return moduleT != nullptr ? moduleT->selectedPattern + 1 : 5; },
+            getDisplayColor
+        );
         addChild (selectionDisplay);
 
         auto queueDisplayBox = findNamedBox ("widget_QueueDisplay", rack::math::Rect ());
-        queueDisplay = createWidget<LedNumberDisplay> (queueDisplayBox.pos, queueDisplayBox.size, 32.f, 3, [&] {
-            return moduleT != nullptr ? moduleT->queuedPattern + 1 : 0;
-        });
+        queueDisplay = createWidget<LedNumberDisplay> (
+            queueDisplayBox.pos, queueDisplayBox.size, 32.f, 3,
+            [&] { return moduleT != nullptr ? moduleT->queuedPattern + 1 : 0; },
+            getDisplayColor
+        );
         queueDisplay->disabled = moduleT == nullptr;
         addChild (queueDisplay);
     }
@@ -106,5 +115,58 @@ namespace OuroborosModules::Modules::Conductor {
         menu->addChild (createMenuItem ("Clear mappings", "", [=] {
             moduleT->noteMapState.clearMappings ();
         }));
+    }
+
+    void ConductorExternalWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createLocalStyleMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (Widgets::createColorList (
+            "Display color",
+
+            &moduleT->displayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) {
+                APP->history->push (new Widgets::HistoryChangeDisplayColor (
+                    moduleT, "Conductor - External",
+                    [=] (rack::engine::Module* module) {
+                        auto moduleT = dynamic_cast<ConductorExternalModule*> (module);
+                        return (moduleT != nullptr) ? &moduleT->displayColor : nullptr;
+                    },
+                    oldColor, newColor
+                ));
+            },
+            &pluginSettings.conductorExternal_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor
+        ));
+    }
+
+    void ConductorExternalWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createPluginSettingsMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Visual"));
+        menu->addChild (Widgets::createColorList (
+            "Default display color",
+
+            &pluginSettings.conductorExternal_DefaultDisplayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.conductorExternal_DefaultDisplayColor = newColor; },
+            &pluginDefaults.conductorExternal_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor,
+            true
+        ));
     }
 }
