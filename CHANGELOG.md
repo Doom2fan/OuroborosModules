@@ -9,6 +9,9 @@
   * Added cable lights option to Meta
   * Added some hardening against NaNs in some modules
   * Added an option to make Chroma's colour list glow in the dark (On by default)
+  * Added a global default display colour option
+  * Added display colour options to Automata and the Conductor modules
+  * Resetting Automata now resets the trigger options
   * Misc optimizations, improvements and fixes
 
 ## v2.2.3 (2026-05-02)
