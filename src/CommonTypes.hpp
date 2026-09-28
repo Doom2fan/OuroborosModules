@@ -74,8 +74,8 @@ namespace OuroborosModules {
 
     struct DisplayColor {
       private:
-        bool isDefault;
-        bool isGlobal;
+        bool isDefault = false;
+        bool isGlobal = false;
         RGBColor localColor;
 
         DisplayColor (bool isDefault, bool isGlobal)
