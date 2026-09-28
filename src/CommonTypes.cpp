@@ -40,12 +40,17 @@ namespace OuroborosModules {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_float (rootJ, "R", r);
-        json_object_try_get_float (rootJ, "G", g);
-        json_object_try_get_float (rootJ, "B", b);
-        json_object_try_get_float (rootJ, "A", a);
+        auto failed = false;
+        failed |= !json_object_try_get_float (rootJ, "R", r);
+        failed |= !json_object_try_get_float (rootJ, "G", g);
+        failed |= !json_object_try_get_float (rootJ, "B", b);
+        failed |= !json_object_try_get_float (rootJ, "A", a);
 
-        return true;
+        return !failed;
+    }
+
+    bool RGBColor::operator== (const RGBColor& rhs) const {
+        return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
     }
 
     /*
@@ -70,5 +75,36 @@ namespace OuroborosModules {
         json_object_try_get_float (rootJ, "Volume", volume);
 
         return true;
+    }
+
+    /*
+     * DisplayColor
+     */
+    json_t* DisplayColor::dataToJson () const {
+        auto rootJ = json_object ();
+
+        json_object_set_new_bool (rootJ, "isDefault", isDefault);
+        json_object_set_new_bool (rootJ, "isGlobal", isGlobal);
+        json_object_set_new_struct (rootJ, "localColor", localColor);
+
+        return rootJ;
+    }
+
+    bool DisplayColor::dataFromJson (json_t* rootJ) {
+        if (!json_is_object (rootJ))
+            return false;
+
+        auto failed = false;
+        failed |= !json_object_try_get_bool (rootJ, "isDefault", isDefault);
+        failed |= !json_object_try_get_bool (rootJ, "isGlobal", isGlobal);
+        failed |= !json_object_try_get_struct (rootJ, "localColor", localColor);
+
+        return !failed;
+    }
+
+    bool DisplayColor::operator== (const DisplayColor& rhs) const {
+        return isDefault == rhs.isDefault &&
+               isGlobal == rhs.isGlobal &&
+               localColor == rhs.localColor;
     }
 }

@@ -161,6 +161,8 @@ namespace OuroborosModules::Modules::Automata {
 
         auto module = panelWidget->getAutomata ();
 
+        auto displayColor = panelWidget->getDisplayColor ();
+
         nvgSave (args.vg);
 
         // Rule display
@@ -172,7 +174,7 @@ namespace OuroborosModules::Modules::Automata {
 
         std::string_view textStr = ruleString;
         auto ruleStringPos = Vec (BoardMargin, box.size.y - BoardMargin);
-        nvgFillColor (args.vg, rack::color::WHITE);
+        nvgFillColor (args.vg, displayColor);
         nvgTextAlign (args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
         nvgText (args.vg, VEC_ARGS (ruleStringPos), textStr.begin (), textStr.end ());
         nvgTextMetrics (args.vg, nullptr, nullptr, &lastFooterSize);
@@ -191,8 +193,9 @@ namespace OuroborosModules::Modules::Automata {
         auto liveFlag = board.getLiveFlag ();
         auto triggerFlag = modeToCellTrigger (modeSelect);
 
-        auto litColor = rack::color::WHITE;
-        auto dimColor = nvgRGB (128, 128, 128);
+        auto litColor = displayColor;
+        auto dimColor = displayColor / nvgRGBf (2, 2, 2);
+        auto unlitColor = nvgRGB (64, 64, 64);
 
         for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
@@ -220,7 +223,7 @@ namespace OuroborosModules::Modules::Automata {
                         hasTrigger = editSet;
                 }
 
-                auto color = nvgRGB (64, 64, 64);
+                auto color = unlitColor;
                 if (cellLit)
                     color = litColor;
                 else if (cellDim)

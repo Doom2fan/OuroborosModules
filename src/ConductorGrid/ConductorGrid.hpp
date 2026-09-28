@@ -63,6 +63,9 @@ namespace OuroborosModules::Modules::Conductor {
         int pageCount = 0;
         int curPage = 0;
 
+        // Options
+        DisplayColor displayColor = DisplayColor::createDefault ();
+
         // Triggers
         rack::dsp::SchmittTrigger pageDownButtonTrigger = { };
         rack::dsp::SchmittTrigger pageUpButtonTrigger = { };
@@ -87,6 +90,8 @@ namespace OuroborosModules::Modules::Conductor {
         void process (const ProcessArgs& args) override;
 
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
+        void onReset (const ResetEvent& e) override;
+
         void onDataUpdated (const ConductorDataUpdatedEvent& coreData) override;
 
       private:
@@ -109,6 +114,8 @@ namespace OuroborosModules::Modules::Conductor {
         void initializeWidget () override;
 
         void onChangeEmblem (EmblemId emblemId) override;
+        void createLocalStyleMenu (rack::ui::Menu* menu) override;
+        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
 
         void step () override;
     };

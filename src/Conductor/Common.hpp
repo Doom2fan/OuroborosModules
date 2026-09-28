@@ -95,11 +95,15 @@ namespace OuroborosModules::Modules::Conductor {
         int numDigits;
         float fontSize;
         std::function<int ()> numberFunc;
+        std::function<RGBColor ()> displayColor;
 
         bool disabled = false;
 
-        LedNumberDisplay (rack::math::Vec size, float fontSize, int digits, std::function<int ()> numberFunc)
-            : numDigits (std::clamp (digits, 1, MaxDigits)), fontSize (fontSize), numberFunc (numberFunc) {
+        LedNumberDisplay (
+            rack::math::Vec size, float fontSize, int digits,
+            std::function<int ()> numberFunc, std::function<RGBColor ()> displayColor
+        ) : numDigits (std::clamp (digits, 1, MaxDigits)), fontSize (fontSize), numberFunc (numberFunc),
+            displayColor (displayColor) {
             assert (digits > 0 && digits < MaxDigits);
             box.size = size;
 
@@ -134,7 +138,7 @@ namespace OuroborosModules::Modules::Conductor {
 
             // Text
             fmt::format_to_n (text, MaxDigits, FMT_STRING ("{0:!>{1}d}"), numberFunc (), numDigits);
-            nvgFillColor (args.vg, rack::color::WHITE);
+            nvgFillColor (args.vg, displayColor ());
             nvgText (args.vg, VEC_ARGS (box.size / 2.), text, text + numDigits);
         }
     };

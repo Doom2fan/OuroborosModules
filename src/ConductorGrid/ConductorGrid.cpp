@@ -32,6 +32,9 @@ namespace OuroborosModules::Modules::Conductor {
     ConductorGridModule::ConductorGridModule () {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
+        configButton (PARAM_PAGE_DOWN_BUTTON, "Page down");
+        configButton (PARAM_PAGE_UP_BUTTON, "Page up");
+
         for (int i = 0; i < PadCount; i++)
             configButton (PARAM_PAD_BUTTON + i, fmt::format (FMT_STRING ("Pad {}"), i + 1));
     }
@@ -46,7 +49,11 @@ namespace OuroborosModules::Modules::Conductor {
     json_t* ConductorGridModule::dataToJson () {
         auto rootJ = ConductorExpander::dataToJson ();
 
+        // State
         json_object_set_new_int (rootJ, "curPage", curPage);
+
+        // Options
+        json_object_set_new_struct (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -54,7 +61,18 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorGridModule::dataFromJson (json_t* rootJ) {
         ConductorExpander::dataFromJson (rootJ);
 
+        // State
         json_object_try_get_int (rootJ, "curPage", curPage);
+
+        // Options
+        json_object_try_get_struct (rootJ, "displayColor", displayColor);
+    }
+
+    void ConductorGridModule::onReset (const ResetEvent& e) {
+        ConductorExpander::onReset (e);
+
+        // Options
+        displayColor = DisplayColor::createDefault ();
     }
 
     void ConductorGridModule::onDataUpdated (const ConductorDataUpdatedEvent& e) {

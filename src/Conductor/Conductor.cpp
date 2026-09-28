@@ -148,6 +148,7 @@ namespace OuroborosModules::Modules::Conductor {
     json_t* ConductorModule::dataToJson () {
         auto rootJ = ConductorCore::dataToJson ();
 
+        // State
         json_object_set_new_int (rootJ, "currentPattern", currentPattern);
         json_object_set_new_int (rootJ, "queuedPattern", queuedPattern);
 
@@ -155,12 +156,16 @@ namespace OuroborosModules::Modules::Conductor {
         json_object_set_new_bool (rootJ, "resetPatternOn", resetPatternOn);
         json_object_set_new_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
+        // Options
+        json_object_set_new_struct (rootJ, "displayColor", displayColor);
+
         return rootJ;
     }
 
     void ConductorModule::dataFromJson (json_t* rootJ) {
         ConductorCore::dataFromJson (rootJ);
 
+        // State
         json_object_try_get_int (rootJ, "currentPattern", currentPattern);
         json_object_try_get_int (rootJ, "queuedPattern", queuedPattern);
 
@@ -168,16 +173,24 @@ namespace OuroborosModules::Modules::Conductor {
         json_object_try_get_bool (rootJ, "resetPatternOn", resetPatternOn);
         json_object_try_get_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
+        // Options
+        json_object_try_get_struct (rootJ, "displayColor", displayColor);
+
         calculatePatternInfo ();
     }
 
     void ConductorModule::onReset (const ResetEvent& e) {
         ConductorCore::onReset (e);
 
+        // State
         queuedPattern = QueueCleared;
+
+        // Options
         resetQueuedOn = false;
         resetPatternOn = false;
         resetIgnoreFirstClock = true;
+
+        displayColor = DisplayColor::createDefault ();
     }
 
     void ConductorModule::changePattern (int newPattern) {

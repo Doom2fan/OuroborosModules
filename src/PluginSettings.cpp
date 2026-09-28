@@ -25,6 +25,7 @@
 
 namespace OuroborosModules {
     OuroborosSettings pluginSettings;
+    OuroborosSettings pluginDefaults;
 
     void tryLoadDefaults () {
         auto defaultsFilePath = rack::asset::user ("OuroborosModules_Default.json");
@@ -49,6 +50,7 @@ namespace OuroborosModules {
     }
 
     void initSettings () {
+        pluginDefaults = OuroborosSettings ();
         pluginSettings = OuroborosSettings ();
         tryLoadDefaults ();
     }

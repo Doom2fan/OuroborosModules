@@ -105,6 +105,8 @@ namespace OuroborosModules::Modules::Automata {
         bool randomizeOnAutoReset;
         bool momentaryLengthEnable;
 
+        DisplayColor displayColor;
+
         // Inputs
         rack::dsp::SchmittTrigger stepButtonTrigger;
         rack::dsp::SchmittTrigger clockTrigger;
@@ -183,12 +185,15 @@ namespace OuroborosModules::Modules::Automata {
         AutomataModule* getAutomata () { return moduleT; }
         AutomataRulesWidget* getRulesWidget () { return rulesWidget; }
         int getDisplayLayer () { return 1; } // TODO: Add options for different layers?
+        NVGcolor getDisplayColor () const;
 
       protected:
         void initializeWidget () override;
 
         void onChangeEmblem (EmblemId emblemId) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
+        void createLocalStyleMenu (rack::ui::Menu* menu) override;
+        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
         void generateRulesContextMenu (rack::ui::Menu* menu);
         void generateTriggerContextMenu (rack::ui::Menu* menu, int i);
     };

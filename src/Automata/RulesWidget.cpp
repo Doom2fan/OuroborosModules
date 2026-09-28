@@ -277,7 +277,6 @@ namespace OuroborosModules::Modules::Automata {
         this->panelWidget = panelWidget;
         box.size = size;
 
-        //addChild (Widgets::createWidget<AutomataRulesWidgetBG> (Vec (), size / 2., panelWidget));
         addChild (Widgets::createWidget<AutomataRulesWidgetBG> (Vec (BoardMargin), size - BoardMargin * 2, panelWidget, rules));
 
         auto closeButtonSize = Vec (40, 18);

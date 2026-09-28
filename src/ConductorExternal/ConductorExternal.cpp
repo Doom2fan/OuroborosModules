@@ -132,8 +132,12 @@ namespace OuroborosModules::Modules::Conductor {
     json_t* ConductorExternalModule::dataToJson () {
         auto rootJ = ConductorExpander::dataToJson ();
 
+        // State
         json_object_set_new_int (rootJ, "selectedPattern", selectedPattern);
         json_object_set_new_struct (rootJ, "noteMapState", noteMapState);
+
+        // Options
+        json_object_set_new_struct (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -141,8 +145,12 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorExternalModule::dataFromJson (json_t* rootJ) {
         ConductorExpander::dataFromJson (rootJ);
 
+        // State
         json_object_try_get_int (rootJ, "selectedPattern", selectedPattern);
         json_object_try_get_struct (rootJ, "noteMapState", noteMapState);
+
+        // Options
+        json_object_try_get_struct (rootJ, "displayColor", displayColor);
 
         checkMode ();
     }
@@ -164,6 +172,10 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorExternalModule::onReset (const ResetEvent& e) {
         ConductorExpander::onReset (e);
 
+        // Options
+        displayColor = DisplayColor::createDefault ();
+
+        // State
         noteMapState.clearMappings ();
         noteMapState.reset ();
 

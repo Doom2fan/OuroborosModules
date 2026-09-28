@@ -21,6 +21,7 @@ DEFINE_BOOL (debug_Logging, "debug::Logging", false)
 DEFINE_STRUCT (ThemeId, global_ThemeLight, "global::ThemeLight", ThemeId::getFromKey ("Light"))
 DEFINE_STRUCT (ThemeId, global_ThemeDark, "global::ThemeDark", ThemeId::getFromKey ("Dark"))
 DEFINE_STRUCT (EmblemId, global_DefaultEmblem, "global::DefaultEmblem", EmblemId::getFromKey ("Dragon"))
+DEFINE_STRUCT (DisplayColor, global_DisplayColor, "global::DisplayColor", Colors::DisplayColors.at ("White"))
 
 DEFINE_BOOL (metaSounds_Enable, "metaSounds::Enable", true)
 DEFINE_FLOAT (float, metaSounds_Volume, "metaSounds::Volume", 1.f)
@@ -40,4 +41,12 @@ DEFINE_STRUCT (Modules::Chroma::CableColorKey, chroma_LatchKey, "cableColorManag
 DEFINE_STRUCT (Modules::Chroma::CableColorKey, chroma_CycleFwdKey, "cableColorManager::CycleForwardKey", Modules::Chroma::CableColorKey ())
 DEFINE_STRUCT (Modules::Chroma::CableColorKey, chroma_CycleBackKey, "cableColorManager::CycleBackwardKey", Modules::Chroma::CableColorKey ())
 
-DEFINE_STRUCT (RGBColor, stVCA_DefaultDisplayColor, "stereoVCA::DefaultDisplayColor", Colors::DisplayColors.at ("Yellow"))
+DEFINE_STRUCT (DisplayColor, stVCA_DefaultDisplayColor, "stereoVCA::DefaultDisplayColor", Colors::DisplayColors.at ("Yellow"))
+
+DEFINE_STRUCT (DisplayColor, automata_DefaultDisplayColor, "automata::DefaultDisplayColor", DisplayColor::createGlobal ())
+
+DEFINE_STRUCT (DisplayColor, conductor_DefaultDisplayColor, "conductor::DefaultDisplayColor", DisplayColor::createGlobal ())
+
+DEFINE_STRUCT (DisplayColor, conductorGrid_DefaultDisplayColor, "conductorGrid::DefaultDisplayColor", DisplayColor::createGlobal ())
+
+DEFINE_STRUCT (DisplayColor, conductorExternal_DefaultDisplayColor, "conductorExternal::DefaultDisplayColor", DisplayColor::createGlobal ())

@@ -190,3 +190,25 @@ namespace std {
 inline bool operator== (const NVGcolor& lhs, const NVGcolor& rhs) {
     return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b && lhs.a == rhs.a;
 }
+
+inline NVGcolor operator* (const NVGcolor& lhs, const NVGcolor& rhs) {
+    auto newColor = lhs;
+
+    newColor.r *= rhs.r;
+    newColor.g *= rhs.g;
+    newColor.b *= rhs.b;
+    newColor.a *= rhs.a;
+
+    return newColor;
+}
+
+inline NVGcolor operator/ (const NVGcolor& lhs, const NVGcolor& rhs) {
+    auto newColor = lhs;
+
+    newColor.r /= rhs.r;
+    newColor.g /= rhs.g;
+    newColor.b /= rhs.b;
+    newColor.a /= rhs.a;
+
+    return newColor;
+}

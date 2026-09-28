@@ -106,6 +106,12 @@ namespace OuroborosModules::Modules::Conductor {
         emblemWidget = new Widgets::EmblemWidget (curEmblem, findNamed ("widgetLogo", Vec ()));
         addChild (emblemWidget);
 
+        auto getDisplayColor = [=] {
+            return (moduleT != nullptr)
+                ? moduleT->displayColor.getColor (&pluginSettings.conductorGrid_DefaultDisplayColor, &pluginSettings.global_DisplayColor)
+                : pluginSettings.conductorGrid_DefaultDisplayColor.getColor (nullptr, &pluginSettings.global_DisplayColor);
+        };
+
         // Pads.
         forEachMatched ("param_Pad(\\d+)", [&] (std::vector<std::string> captures, Vec pos) {
             auto i = stoi (captures [0]) - 1;
@@ -118,9 +124,11 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Page display and buttons.
         auto pageDisplayBox = findNamedBox ("widget_PageDisplay", rack::math::Rect ());
-        pageDisplay = createWidget<LedNumberDisplay> (pageDisplayBox.pos, pageDisplayBox.size, 32.f, 3, [&] {
-            return moduleT != nullptr ? moduleT->curPage + 1 : 5;
-        });
+        pageDisplay = createWidget<LedNumberDisplay> (
+            pageDisplayBox.pos, pageDisplayBox.size, 32.f, 3,
+            [&] { return moduleT != nullptr ? moduleT->curPage + 1 : 5; },
+            getDisplayColor
+        );
         addChild (pageDisplay);
 
         addChild (createLightParamCentered<ConductorGridPadSmaller> (findNamed ("param_PageDown", Vec ()), moduleT, GridModule::PARAM_PAGE_DOWN_BUTTON, GridModule::LIGHT_PAGE_DOWN_BUTTON));
@@ -128,9 +136,11 @@ namespace OuroborosModules::Modules::Conductor {
 
         // Queue display.
         auto queueDisplayBox = findNamedBox ("widget_QueueDisplay", rack::math::Rect ());
-        queueDisplay = createWidget<LedNumberDisplay> (queueDisplayBox.pos, queueDisplayBox.size, 32.f, 3, [&] {
-            return moduleT != nullptr ? moduleT->queuedPattern + 1 : 0;
-        });
+        queueDisplay = createWidget<LedNumberDisplay> (
+            queueDisplayBox.pos, queueDisplayBox.size, 32.f, 3,
+            [&] { return moduleT != nullptr ? moduleT->queuedPattern + 1 : 0; },
+            getDisplayColor
+        );
         queueDisplay->disabled = moduleT == nullptr;
         addChild (queueDisplay);
     }
@@ -148,5 +158,58 @@ namespace OuroborosModules::Modules::Conductor {
     void ConductorGridWidget::onChangeEmblem (EmblemId emblemId) {
         _WidgetBase::onChangeEmblem (emblemId);
         emblemWidget->setEmblem (emblemId);
+    }
+
+    void ConductorGridWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createLocalStyleMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (Widgets::createColorList (
+            "Display color",
+
+            &moduleT->displayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) {
+                APP->history->push (new Widgets::HistoryChangeDisplayColor (
+                    moduleT, "Conductor - Grid",
+                    [=] (rack::engine::Module* module) {
+                        auto moduleT = dynamic_cast<ConductorGridModule*> (module);
+                        return (moduleT != nullptr) ? &moduleT->displayColor : nullptr;
+                    },
+                    oldColor, newColor
+                ));
+            },
+            &pluginSettings.conductorGrid_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor
+        ));
+    }
+
+    void ConductorGridWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createPluginSettingsMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Visual"));
+        menu->addChild (Widgets::createColorList (
+            "Default display color",
+
+            &pluginSettings.conductorGrid_DefaultDisplayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.conductorGrid_DefaultDisplayColor = newColor; },
+            &pluginDefaults.conductorGrid_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor,
+            true
+        ));
     }
 }

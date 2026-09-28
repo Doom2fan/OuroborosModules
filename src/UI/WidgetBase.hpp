@@ -62,6 +62,46 @@ namespace OuroborosModules::Widgets {
         void redo () override;
     };
 
+    struct HistoryChangeDisplayColor : rack::history::ModuleAction {
+      private:
+        std::function<DisplayColor* (rack::engine::Module*)> getPointer;
+
+        DisplayColor oldValue;
+        DisplayColor newValue;
+
+        void setValue (const DisplayColor& value) {
+            auto module = APP->engine->getModule (moduleId);
+            if (module == nullptr)
+                return;
+
+            auto pointer = getPointer (module);
+            if (pointer != nullptr)
+                *pointer = value;
+        }
+
+      public:
+        HistoryChangeDisplayColor (
+            rack::engine::Module* module, std::string moduleName,
+            std::function<DisplayColor* (rack::engine::Module*)> getPointer,
+            DisplayColor oldValue, DisplayColor newValue
+        ) : getPointer (getPointer), oldValue (oldValue), newValue (newValue) {
+            moduleId = module->id;
+            this->name = fmt::format (FMT_STRING ("Set {} display color"), moduleName);
+
+            setValue (newValue);
+        }
+
+        void undo () override { setValue (oldValue); }
+        void redo () override { setValue (newValue); }
+    };
+
+    rack::ui::MenuItem* createColorList (
+        std::string menuTitle,
+        DisplayColor* currentColor, std::function<void (DisplayColor, DisplayColor)> setColor,
+        DisplayColor* defaultColor, DisplayColor* globalColor,
+        bool directDefault = false
+    );
+
     template<typename TModule, typename TBase = rack::app::ModuleWidget>
     struct ModuleWidgetBase : rack_themer::SvgHelper<rack_themer::ThemeHolderWidgetBase<TBase>>, rack_themer::IThemedWidget {
       public:
@@ -216,7 +256,7 @@ namespace OuroborosModules::Widgets {
         }
 
         virtual void createPluginSettingsMenu (rack::ui::Menu* menu) {
-            menu->addChild (rack::createSubmenuItem ("Theme settings", "", [] (rack::ui::Menu* menu) {
+            menu->addChild (rack::createSubmenuItem ("Global theme settings", "", [] (rack::ui::Menu* menu) {
                 menu->addChild (rack::createMenuLabel ("Default light theme"));
                 ThemeId::forEachValue ([=] (ThemeId id) { menu->addChild (createThemeMenuItem (id.getDisplayName (), "", &pluginSettings.global_ThemeLight, id)); });
 
@@ -227,6 +267,17 @@ namespace OuroborosModules::Widgets {
                 menu->addChild (new rack::ui::MenuSeparator);
                 menu->addChild (rack::createMenuLabel ("Default emblem"));
                 EmblemId::forEachValue ([=] (EmblemId id) { menu->addChild (createThemeMenuItem (id.getDisplayName (), "", &pluginSettings.global_DefaultEmblem, id)); });
+
+                menu->addChild (new rack::ui::MenuSeparator);
+                menu->addChild (Widgets::createColorList (
+                    "Default display color",
+
+                    &pluginSettings.global_DisplayColor,
+                    [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.global_DisplayColor = newColor; },
+                    &pluginDefaults.global_DisplayColor,
+                    nullptr,
+                    true
+                ));
             }));
         }
 

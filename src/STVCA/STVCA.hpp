@@ -50,8 +50,7 @@ namespace OuroborosModules::Modules::STVCA {
             LIGHTS_LEN
         };
 
-        bool displayColorUseDefault = true;
-        RGBColor displayColor = RGBColor ();
+        DisplayColor displayColor = DisplayColor::createDefault ();
 
         int lastChannels = 1;
         float lastGains [16] = { };

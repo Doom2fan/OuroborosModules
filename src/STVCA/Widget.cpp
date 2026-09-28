@@ -70,9 +70,10 @@ namespace OuroborosModules::Modules::STVCA {
                 }
             }
 
-            auto displayColor = (module != nullptr && !module->displayColorUseDefault)
-                              ? module->displayColor
-                              : pluginSettings.stVCA_DefaultDisplayColor;
+            auto displayColor
+                = (module != nullptr)
+                ? module->displayColor.getColor (&pluginSettings.stVCA_DefaultDisplayColor, &pluginSettings.global_DisplayColor)
+                : pluginSettings.stVCA_DefaultDisplayColor.getColor (nullptr, &pluginSettings.global_DisplayColor);
             nvgFillColor (args.vg, (NVGcolor) displayColor);
             // If nvgFill is called with 0 path elements, it can fill other undefined paths.
             if (segmentFill)
@@ -143,54 +144,6 @@ namespace OuroborosModules::Modules::STVCA {
         emblemWidget->setEmblem (emblemId);
     }
 
-    struct HistoryChangeDisplayColor : rack::history::ModuleAction {
-      private:
-        struct ColorValue {
-            bool isDefault;
-            RGBColor color;
-
-            ColorValue (bool isDefault, RGBColor color) : isDefault (isDefault), color (color) { }
-        };
-
-        static ColorValue createDefault () { return ColorValue (true, RGBColor ()); }
-        static ColorValue createColor (RGBColor color) { return ColorValue (false, color); }
-        static ColorValue createFromModule (STVCAModule* module) {
-            return module->displayColorUseDefault ? createDefault () : createColor (module->displayColor);
-        }
-
-        ColorValue oldValue;
-        ColorValue newValue;
-
-        HistoryChangeDisplayColor (STVCAModule* module, ColorValue oldValue, ColorValue newValue)
-            : oldValue (oldValue), newValue (newValue) {
-            moduleId = module->id;
-            this->name = "Set ST-VCA display color";
-
-            setValue (newValue);
-        }
-
-      public:
-        static void createDefault (STVCAModule* module) {
-            APP->history->push (new HistoryChangeDisplayColor (module, createFromModule (module), createDefault ()));
-        }
-
-        static void createColor (STVCAModule* module, RGBColor color) {
-            APP->history->push (new HistoryChangeDisplayColor (module, createFromModule (module), createColor (color)));
-        }
-
-        void setValue (const ColorValue& value) {
-            auto module = dynamic_cast<STVCAModule*> (APP->engine->getModule (moduleId));
-            if (module == nullptr)
-                return;
-
-            module->displayColorUseDefault = value.isDefault;
-            module->displayColor = value.color;
-        }
-
-        void undo () override { setValue (oldValue); }
-        void redo () override { setValue (newValue); }
-    };
-
     void STVCAWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
         using rack::ui::Menu;
         using rack::createSubmenuItem;
@@ -202,62 +155,23 @@ namespace OuroborosModules::Modules::STVCA {
             return;
 
         menu->addChild (new rack::ui::MenuSeparator);
-        struct DisplayColorPickerMenu : UI::ColorPickerMenuItem<UI::ColorMenuItem> {
-            STVCAModule* module;
+        menu->addChild (Widgets::createColorList (
+            "Display color",
 
-            DisplayColorPickerMenu (STVCAModule* module, NVGcolor color)
-                : _WidgetBase (color), module (module) {
-                text = "Custom";
-            }
-
-            void onApply (NVGcolor newColor) override {
-                module->displayColor = newColor;
-                module->displayColorUseDefault = false;
-            }
-
-            void onCancel (NVGcolor newColor) override { }
-        };
-
-        auto displayColorItem = createSubmenuItem<UI::ColorMenuItem> (
-            "     Display color", "",
-            [=] (Menu* menu) {
-
-
-                auto defaultColorItem = createCheckMenuItem<UI::ColorMenuItem> (
-                    "     Default", "",
-                    [=] { return moduleT->displayColorUseDefault; },
-                    [=] { HistoryChangeDisplayColor::createDefault (moduleT); }
-                );
-                defaultColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
-                menu->addChild (defaultColorItem);
-                menu->addChild (new DisplayColorPickerMenu (moduleT,
-                    !moduleT->displayColorUseDefault ? moduleT->displayColor : pluginSettings.stVCA_DefaultDisplayColor
+            &moduleT->displayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) {
+                APP->history->push (new Widgets::HistoryChangeDisplayColor (
+                    moduleT, "ST-VCA",
+                    [=] (rack::engine::Module* module) {
+                        auto moduleT = dynamic_cast<STVCAModule*> (module);
+                        return (moduleT != nullptr) ? &moduleT->displayColor : nullptr;
+                    },
+                    oldColor, newColor
                 ));
-
-                auto firstColor = true;
-                for (auto colorKVP : Colors::DisplayColors) {
-                    auto name = colorKVP.first;
-                    auto color = colorKVP.second;
-
-                    if (firstColor) {
-                        firstColor = false;
-                        menu->addChild (new rack::ui::MenuSeparator);
-                    }
-
-                    auto menuItem = createCheckMenuItem<UI::ColorMenuItem> (
-                        fmt::format (FMT_STRING ("     {}"), name), "",
-                        [=] { return color == moduleT->displayColor && !moduleT->displayColorUseDefault; },
-                        [=] { HistoryChangeDisplayColor::createColor (moduleT, color); }
-                    );
-                    menuItem->color = color;
-                    menu->addChild (menuItem);
-                }
-            }
-        );
-        displayColorItem->color = !moduleT->displayColorUseDefault
-                                ? moduleT->displayColor
-                                : pluginSettings.stVCA_DefaultDisplayColor;
-        menu->addChild (displayColorItem);
+            },
+            &pluginSettings.stVCA_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor
+        ));
     }
 
     void STVCAWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
@@ -272,44 +186,14 @@ namespace OuroborosModules::Modules::STVCA {
 
         menu->addChild (new rack::ui::MenuSeparator);
         menu->addChild (rack::createMenuLabel ("Visual"));
-        struct DisplayColorPickerMenu : UI::ColorPickerMenuItem<UI::ColorMenuItem> {
-            STVCAModule* module;
+        menu->addChild (Widgets::createColorList (
+            "Default display color",
 
-            DisplayColorPickerMenu (STVCAModule* module, NVGcolor color)
-                : _WidgetBase (color), module (module) {
-                text = "Custom";
-            }
-
-            void onApply (NVGcolor newColor) override { pluginSettings.stVCA_DefaultDisplayColor = newColor; }
-
-            void onCancel (NVGcolor newColor) override { }
-        };
-
-        auto displayColorItem = createSubmenuItem<UI::ColorMenuItem> (
-            "     Default display color", "",
-            [=] (Menu* menu) {
-                rack::ui::MenuItem* firstColor = nullptr;
-                for (auto colorKVP : Colors::DisplayColors) {
-                    auto name = colorKVP.first;
-                    auto color = colorKVP.second;
-                    auto menuItem = createCheckMenuItem<UI::ColorMenuItem> (
-                        fmt::format (FMT_STRING ("     {}"), name), "",
-                        [=] { return color == pluginSettings.stVCA_DefaultDisplayColor; },
-                        [=] { pluginSettings.stVCA_DefaultDisplayColor = color; }
-                    );
-                    menuItem->color = color;
-                    menu->addChild (menuItem);
-                    if (firstColor == nullptr)
-                        firstColor = menuItem;
-                }
-                if (firstColor != nullptr) {
-                    menu->addChildBelow (new DisplayColorPickerMenu (moduleT, pluginSettings.stVCA_DefaultDisplayColor), firstColor);
-                    menu->addChildBelow (new rack::ui::MenuSeparator, firstColor);
-                } else
-                    menu->addChild (new DisplayColorPickerMenu (moduleT, pluginSettings.stVCA_DefaultDisplayColor));
-            }
-        );
-        displayColorItem->color = pluginSettings.stVCA_DefaultDisplayColor;
-        menu->addChild (displayColorItem);
+            &pluginSettings.stVCA_DefaultDisplayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.stVCA_DefaultDisplayColor = newColor; },
+            &pluginDefaults.stVCA_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor,
+            true
+        ));
     }
 }

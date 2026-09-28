@@ -103,15 +103,18 @@ namespace OuroborosModules::Modules::Conductor {
         int currentPattern = 0;
         int queuedPattern = QueueCleared;
 
-        bool resetQueuedOn = false;
-        bool resetPatternOn = false;
-        bool resetIgnoreFirstClock = true;
-
         float curPatternOffset = 0.f;
         float curMaxCV = 0.f;
         float curPatternCV = 0.f;
 
         bool dataUpdated = true;
+
+        // Options
+        bool resetQueuedOn = false;
+        bool resetPatternOn = false;
+        bool resetIgnoreFirstClock = true;
+
+        DisplayColor displayColor = DisplayColor::createDefault ();
 
         // Triggers
         rack::dsp::SchmittTrigger advanceTrigger;
@@ -163,6 +166,7 @@ namespace OuroborosModules::Modules::Conductor {
     struct ConductorWidget : Widgets::ModuleWidgetBase<ConductorModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
+        LedNumberDisplay* displayWidget = nullptr;
 
       public:
         ConductorWidget (ConductorModule* module);
@@ -172,5 +176,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         void onChangeEmblem (EmblemId emblemId) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
+        void createLocalStyleMenu (rack::ui::Menu* menu) override;
+        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
 }
