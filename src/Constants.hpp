@@ -159,6 +159,7 @@ namespace OuroborosModules {
 
     namespace Colors {
         static const std::map<std::string, NVGcolor> DisplayColors = {
+            { "White", nvgRGB (0xFF, 0xFF, 0xFF) },
             { "Yellow", nvgRGB (0xFF, 0xD7, 0x14) },
             { "Red", nvgRGB (0xEC, 0x11, 0x2A) },
             { "Purple", nvgRGB (0x8E, 0x14, 0xFF) },

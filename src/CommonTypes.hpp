@@ -21,6 +21,7 @@
 #include <jansson.h>
 #include <nanovg.h>
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 
@@ -52,6 +53,9 @@ namespace OuroborosModules {
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);
+
+        bool operator== (const RGBColor& rhs) const;
+        bool operator!= (const RGBColor& rhs) { return !(*this == rhs); }
     };
 
     struct SoundSettings {
@@ -66,5 +70,51 @@ namespace OuroborosModules {
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);
+    };
+
+    struct DisplayColor {
+      private:
+        bool isDefault;
+        bool isGlobal;
+        RGBColor localColor;
+
+        DisplayColor (bool isDefault, bool isGlobal)
+            : isDefault (isDefault), isGlobal (isGlobal), localColor (RGBColor (1.f, 1.f, 1.f)) { }
+
+      public:
+        static DisplayColor createDefault () { return DisplayColor (true, false); }
+        static DisplayColor createGlobal () { return DisplayColor (false, true); }
+        static DisplayColor createLocal (RGBColor color) { return DisplayColor (color); }
+
+        DisplayColor () = default;
+        DisplayColor (RGBColor color) : isDefault (false), isGlobal (false), localColor (color) { }
+        DisplayColor (NVGcolor color) : isDefault (false), isGlobal (false), localColor (color) { }
+
+        bool checkDefault () const { return isDefault; }
+        bool checkGlobal () const { return isGlobal; }
+        bool checkLocal () const { return !isDefault && !isGlobal; }
+
+        RGBColor getLocal () const { return localColor; }
+
+        RGBColor getColor (DisplayColor* defaultColor, DisplayColor* globalColor) const {
+            if (checkDefault ()) {
+                assert (defaultColor != nullptr);
+                if (defaultColor != nullptr)
+                    return defaultColor->getColor (nullptr, globalColor);
+            }
+            if (checkGlobal ()) {
+                assert (globalColor != nullptr);
+                if (globalColor != nullptr)
+                    return globalColor->getLocal ();
+            }
+
+            return getLocal ();
+        }
+
+        json_t* dataToJson () const;
+        bool dataFromJson (json_t* rootJ);
+
+        bool operator== (const DisplayColor& rhs) const;
+        inline bool operator!= (const DisplayColor& rhs) { return !(*this == rhs); }
     };
 }
