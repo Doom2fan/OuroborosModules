@@ -59,6 +59,7 @@ namespace OuroborosModules {
     void initSettings ();
 
     extern OuroborosSettings pluginSettings;
+    extern OuroborosSettings pluginDefaults;
 }
 
 using OuroborosModules::pluginSettings;
