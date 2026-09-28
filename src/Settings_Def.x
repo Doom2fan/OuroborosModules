@@ -42,3 +42,5 @@ DEFINE_STRUCT (Modules::Chroma::CableColorKey, chroma_CycleFwdKey, "cableColorMa
 DEFINE_STRUCT (Modules::Chroma::CableColorKey, chroma_CycleBackKey, "cableColorManager::CycleBackwardKey", Modules::Chroma::CableColorKey ())
 
 DEFINE_STRUCT (DisplayColor, stVCA_DefaultDisplayColor, "stereoVCA::DefaultDisplayColor", Colors::DisplayColors.at ("Yellow"))
+
+DEFINE_STRUCT (DisplayColor, automata_DefaultDisplayColor, "automata::DefaultDisplayColor", DisplayColor::createGlobal ())

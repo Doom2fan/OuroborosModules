@@ -25,6 +25,12 @@
 namespace OuroborosModules::Modules::Automata {
     AutomataWidget::AutomataWidget (AutomataModule* module) { constructor (module, "panels/Automata"); }
 
+    NVGcolor AutomataWidget::getDisplayColor () const {
+        return (moduleT != nullptr)
+            ? moduleT->displayColor.getColor (&pluginSettings.automata_DefaultDisplayColor, &pluginSettings.global_DisplayColor)
+            : pluginSettings.automata_DefaultDisplayColor.getColor (nullptr, &pluginSettings.global_DisplayColor);
+    }
+
     void AutomataWidget::initializeWidget () {
         using rack::createInputCentered;
         using rack::createLightParamCentered;
@@ -139,6 +145,59 @@ namespace OuroborosModules::Modules::Automata {
             "Momentary length enable input", "",
             "Toggle Automata \"Momentary length enable input\"",
             &AutomataModule::momentaryLengthEnable
+        ));
+    }
+
+    void AutomataWidget::createLocalStyleMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createLocalStyleMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (Widgets::createColorList (
+            "Display color",
+
+            &moduleT->displayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) {
+                APP->history->push (new Widgets::HistoryChangeDisplayColor (
+                    moduleT, "Automata",
+                    [=] (rack::engine::Module* module) {
+                        auto moduleT = dynamic_cast<AutomataModule*> (module);
+                        return (moduleT != nullptr) ? &moduleT->displayColor : nullptr;
+                    },
+                    oldColor, newColor
+                ));
+            },
+            &pluginSettings.automata_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor
+        ));
+    }
+
+    void AutomataWidget::createPluginSettingsMenu (rack::ui::Menu* menu) {
+        using rack::ui::Menu;
+        using rack::createSubmenuItem;
+        using rack::createCheckMenuItem;
+
+        _WidgetBase::createPluginSettingsMenu (menu);
+
+        if (moduleT == nullptr)
+            return;
+
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (rack::createMenuLabel ("Visual"));
+        menu->addChild (Widgets::createColorList (
+            "Default display color",
+
+            &pluginSettings.automata_DefaultDisplayColor,
+            [=] (DisplayColor oldColor, DisplayColor newColor) { pluginSettings.automata_DefaultDisplayColor = newColor; },
+            &pluginDefaults.automata_DefaultDisplayColor,
+            &pluginSettings.global_DisplayColor,
+            true
         ));
     }
 

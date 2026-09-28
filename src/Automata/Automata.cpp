@@ -105,6 +105,8 @@ namespace OuroborosModules::Modules::Automata {
         randomizeOnManualReset = false;
         randomizeOnAutoReset = false;
         momentaryLengthEnable = false;
+
+        displayColor = DisplayColor::createDefault ();
     }
 
     void AutomataModule::process (const ProcessArgs& args) {
@@ -315,6 +317,7 @@ namespace OuroborosModules::Modules::Automata {
         json_object_set_new_bool (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
         json_object_set_new_bool (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
         json_object_set_new_bool (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
+        json_object_set_new_struct (rootJ, "displayColor", displayColor);
         json_object_set_new_int (rootJ, "stepCount", stepCount);
 
         auto triggerInfoJ = json_array ();
@@ -335,6 +338,7 @@ namespace OuroborosModules::Modules::Automata {
         json_object_try_get_bool (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
         json_object_try_get_bool (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
         json_object_try_get_bool (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
+        json_object_try_get_struct (rootJ, "displayColor", displayColor);
         json_object_try_get_int (rootJ, "stepCount", stepCount);
 
         auto triggerInfoJ = json_object_get (rootJ, "triggerInfo");
