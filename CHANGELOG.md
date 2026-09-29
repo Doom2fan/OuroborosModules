@@ -12,6 +12,7 @@
   * Added a global default display colour option
   * Added display colour options to Automata and the Conductor modules
   * Resetting Automata now resets the trigger options
+  * Fixed Conductor - Grid's page buttons not being initialized
   * Misc optimizations, improvements and fixes
 
 ## v2.2.3 (2026-05-02)
