@@ -62,6 +62,20 @@ namespace OuroborosModules::Modules::Pulsar {
         sampleIndexInt &= (WavetableLength - 1u);
     }
 
+    template<typename T, int U>
+    [[using gnu: always_inline, hot]]
+    inline void calcSampleIndex (rack::simd::Vector<T, U> phase, int32_t* indexOut, float* fracOut) {
+        using int32_U = rack::simd::Vector<int32_t, U>;
+
+        auto sampleIndex = phase * WavetableLength;
+
+        auto sampleIndexFloor = rack::simd::floor (sampleIndex);
+        auto sampleIndexInt = static_cast<int32_U> (sampleIndexFloor);
+
+        (sampleIndex - sampleIndexFloor).store (fracOut);
+        (sampleIndexInt & static_cast<int32_t> (WavetableLength - 1u)).store (indexOut);
+    }
+
     /*
      * Masking
      */
