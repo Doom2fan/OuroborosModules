@@ -145,9 +145,10 @@ namespace OuroborosModules::Modules::Pulsar {
         float windowAmount = 0.f;
 
         // State
-        float wavePhase = 0.f;
-        float windowPhase = 0.f;
-        float edgePhase = -1.f;
+        float edgeFrequency = 0.f;
+
+        float pulsarPhase = 0.f;
+        float edgePhase = 0.f;
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);
@@ -172,8 +173,9 @@ namespace OuroborosModules::Modules::Pulsar {
         float windowAmount [MaxPulsars] = { };
 
         // State
-        float wavePhase [MaxPulsars] = { };
-        float windowPhase [MaxPulsars] = { };
+        float edgeFrequency [MaxPulsars] = { };
+
+        float pulsarPhase [MaxPulsars] = { };
         float edgePhase [MaxPulsars] = { };
 
         uint32_t wave0Octave [MaxPulsars] = { };
@@ -266,7 +268,8 @@ namespace OuroborosModules::Modules::Pulsar {
         std::shared_ptr<PulsarWavetables> wavetables = nullptr;
         NoiseBuffer noiseBuffer;
 
-        int oversampleFactor = 0;
+        uint8_t oversampleFactor = 1;
+        DSP::OptimizedHalfBandInterpolator<VectorT> syncUpsampler [SIMDBankCount];
         DSP::OptimizedHalfBandDecimator<VectorT> decimatorMain [SIMDBankCount];
         DSP::OptimizedHalfBandDecimator<VectorT> decimatorRest [SIMDBankCount];
 
@@ -294,7 +297,7 @@ namespace OuroborosModules::Modules::Pulsar {
         void setChannelCount (uint32_t count);
         void setActiveOutputs (bool main, bool rest);
 
-        void emitPulsar (uint32_t channel, const PulsarParameters& params, bool isRest, float phase);
+        void emitPulsar (PulsarProcessArgs& args, uint32_t channel, bool isRest, int curSample);
 
         inline void processPulsarQuad (PulsarFrameArgs& args);
         void processPulsars (PulsarProcessArgs& args, PulsarOutput& pulsarOut, uint32_t channel, uint32_t bankIdx);

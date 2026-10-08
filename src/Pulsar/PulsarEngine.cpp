@@ -84,7 +84,7 @@ namespace OuroborosModules::Modules::Pulsar {
         loadWavetable ("res/wavetables/PulsarTriangle.wav", wavetables->waves [1], true);
         loadWavetable ("res/wavetables/PulsarSaw.wav",      wavetables->waves [2], true);
         loadWavetable ("res/wavetables/PulsarSquare.wav",   wavetables->waves [3], true);
-        // Last wave shape is "noise", for simplicitly we just make it an empty wavetable.
+        // Last wave shape is "noise", for simplicitly we just make it an empty wavetable
         float emptySamples [WavetableLength] = { };
         wavetables->waves [4].setSamples (emptySamples, WavetableLength, 1, 1);
 
@@ -237,8 +237,9 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_set_new_float (rootJ, "windowAmount", windowAmount);
 
         // State
-        json_object_set_new_float (rootJ, "wavePhase", wavePhase);
-        json_object_set_new_float (rootJ, "windowPhase", windowPhase);
+        json_object_set_new_float (rootJ, "edgeFrequency", edgeFrequency);
+
+        json_object_set_new_float (rootJ, "pulsarPhase", pulsarPhase);
         json_object_set_new_float (rootJ, "edgePhase", edgePhase);
 
         return rootJ;
@@ -262,8 +263,9 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_try_get_float (rootJ, "windowAmount", windowAmount);
 
         // State
-        json_object_try_get_float (rootJ, "wavePhase", wavePhase);
-        json_object_try_get_float (rootJ, "windowPhase", windowPhase);
+        json_object_try_get_float (rootJ, "edgeFrequency", edgeFrequency);
+
+        json_object_try_get_float (rootJ, "pulsarPhase", pulsarPhase);
         json_object_try_get_float (rootJ, "edgePhase", edgePhase);
 
         return true;
@@ -361,8 +363,9 @@ namespace OuroborosModules::Modules::Pulsar {
         windowAmount [index] = params.windowAmount;
 
         // State
-        wavePhase [index] = params.wavePhase;
-        windowPhase [index] = params.windowPhase;
+        edgeFrequency [index] = params.edgeFrequency;
+
+        pulsarPhase [index] = params.pulsarPhase;
         edgePhase [index] = params.edgePhase;
     }
 
@@ -381,8 +384,9 @@ namespace OuroborosModules::Modules::Pulsar {
         params.windowAmount = windowAmount [index];
 
         // State
-        params.wavePhase = wavePhase [index];
-        params.windowPhase = windowPhase [index];
+        params.edgeFrequency = edgeFrequency [index];
+
+        params.pulsarPhase = pulsarPhase [index];
         params.edgePhase = edgePhase [index];
     }
 
@@ -520,6 +524,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         oversampleFactor = factor;
         for (uint32_t bank = 0; bank < SIMDBankCount; bank++) {
+            syncUpsampler [bank].setParams (factor);
             decimatorMain [bank].setParams (factor);
             decimatorRest [bank].setParams (factor);
         }
@@ -566,12 +571,12 @@ namespace OuroborosModules::Modules::Pulsar {
     }
 
     [[gnu::hot]]
-    void PulsarEngine::emitPulsar (uint32_t channel, const PulsarParameters& params, bool isRest, float emissionPhase) {
-        auto& pulsars = this->pulsars [channel];
-
+    void PulsarEngine::emitPulsar (PulsarProcessArgs& args, uint32_t channel, bool isRest, int curSample) {
         // Don't emit pulsars if the respective outputs aren't active
         if ((!isRest && !outputActiveMain) || (isRest && !outputActiveRest))
             return;
+
+        auto& pulsars = this->pulsars [channel];
 
         uint32_t pulsarIndex = MaxPulsars;
         for (uint32_t i = 0; i < SlotBankCount; i++) {
@@ -586,20 +591,59 @@ namespace OuroborosModules::Modules::Pulsar {
         if (pulsarIndex >= MaxPulsars)
             return;
 
+        const auto& params = parameters [channel];
+
+        auto emissionPhase = this->emissionPhase [channel];
+        auto emissionFrequency = this->emissionFrequency [channel];
+        auto emissionFrequencyInv = 1.f / emissionFrequency;
+
+        auto sampleOffset = static_cast<float> (curSample) / oversampleFactor;
+        auto deltaPhase = params.frequency / args.sampleRate;
+        auto basePhase = -sampleOffset * deltaPhase + emissionPhase * params.frequency * emissionFrequencyInv;
+
+       // Parameters
         pulsars.setSlot (pulsarIndex, true);
         pulsars.copyToSlot (pulsarIndex, params);
 
         pulsars.isRest [pulsarIndex] = isRest ? 1.f : 0.f;
-        pulsars.wavePhase [pulsarIndex] = emissionPhase * params.cluster;
-        pulsars.windowPhase [pulsarIndex] = emissionPhase;
-        pulsars.edgePhase [pulsarIndex] = -1.f;
+
+        // State
+        pulsars.edgeFrequency [pulsarIndex] = 0.f;
+
+        pulsars.pulsarPhase [pulsarIndex] = basePhase;
+        pulsars.edgePhase [pulsarIndex] = 0.f;
 
         setPulsarOctave (channel, pulsarIndex);
 
         if (!overlapMode) {
-            for (uint32_t i = 0; i < MaxPulsars; i++) {
-                if (i != pulsarIndex && pulsars.isRest [i] == isRest)
-                    pulsars.edgePhase [i] = 0.f;
+            auto oneSampleHz = args.sampleRate;
+            auto baseEdgeFreq = std::max (args.edgeFactor, emissionFrequency);
+
+            auto restMask = isRest ? VectorT::mask () : VectorT::zero ();
+            for (uint32_t baseIndex = 0; baseIndex < MaxPulsars; baseIndex += SIMDBankSize) {
+                auto slot = baseIndex + VectorT (0, 1, 2, 3);
+
+                // Get parameters
+                auto isRest = VectorT::load (pulsars.isRest + baseIndex) >= .5f;
+                auto edgeFrequency = VectorT::load (pulsars.edgeFrequency + baseIndex);
+                auto edgePhase = VectorT::load (pulsars.edgePhase + baseIndex);
+
+                // Calculate slot mask
+                auto slotMask = (slot != pulsarIndex) & (isRest == restMask) & (edgeFrequency <= 0.f);
+
+                // Calculate and set edge frequency and phase
+                auto phaseLeft = 1 - rack::simd::clamp (VectorT::load (pulsars.pulsarPhase + baseIndex), 0, 1);
+                auto phaseFrequency = 1.f / rack::simd::fmin (1e-15f, phaseLeft);
+
+                auto newEdgeFreq = rack::simd::fmin (oneSampleHz, rack::simd::fmax (baseEdgeFreq, phaseFrequency));
+                auto edgeDelta = newEdgeFreq * args.sampleTime;
+                auto newEdgePhase = -sampleOffset * edgeDelta + emissionPhase * newEdgeFreq * emissionFrequencyInv;
+
+                edgeFrequency = rack::simd::ifelse (slotMask, newEdgeFreq, edgeFrequency);
+                edgePhase = rack::simd::ifelse (slotMask, newEdgePhase, edgePhase);
+
+                edgeFrequency.store (pulsars.edgeFrequency + baseIndex);
+                edgePhase.store (pulsars.edgePhase + baseIndex);
             }
         }
     }
@@ -624,22 +668,21 @@ namespace OuroborosModules::Modules::Pulsar {
         noiseBuffer.readCount (noiseArr, SIMDBankSize);
 
         // Parameters
-        auto freq = VectorT::load (pulsars.frequency + args.baseIndex);
-        auto windowAmount = VectorT::load (pulsars.windowAmount + args.baseIndex);
-        auto restMask = VectorT::load (pulsars.isRest + args.baseIndex) >= .5f;
+        auto freq = VectorT::load (pulsars.frequency + baseIndex);
+        auto cluster = VectorT::load (pulsars.cluster + baseIndex);
+        auto windowAmount = VectorT::load (pulsars.windowAmount + baseIndex);
+        auto restMask = VectorT::load (pulsars.isRest + baseIndex) >= .5f;
 
-        auto waveIndexFrac = VectorT::load (pulsars.waveIndexFrac + args.baseIndex);
-        auto windowIndexFrac = VectorT::load (pulsars.windowIndexFrac + args.baseIndex);
+        auto waveIndexFrac = VectorT::load (pulsars.waveIndexFrac + baseIndex);
+        auto windowIndexFrac = VectorT::load (pulsars.windowIndexFrac + baseIndex);
 
         // State
         auto usedMask = rack::simd::movemaskInverse<VectorT> (slotMask);
-        auto wavePhase = VectorT::load (pulsars.wavePhase + args.baseIndex);
-        auto windowPhase = VectorT::load (pulsars.windowPhase + args.baseIndex);
-        auto edgePhase = VectorT::load (pulsars.edgePhase + args.baseIndex);
+        auto pulsarPhase = VectorT::load (pulsars.pulsarPhase + baseIndex);
+        auto edgePhase = VectorT::load (pulsars.edgePhase + baseIndex);
 
-        auto wavePhaseIncrement = (freq * VectorT::load (pulsars.cluster + args.baseIndex) * args.osSampleTime) & usedMask;
-        auto windowPhaseIncrement = (freq * args.osSampleTime) & usedMask;
-        auto edgePhaseIncrement = (VectorT (args.edgeFrequency) * args.osSampleTime) & (edgePhase >= 0.f) & usedMask;
+        auto pulsarPhaseIncrement = (freq * args.osSampleTime) & usedMask;
+        auto edgePhaseIncrement = (VectorT::load (pulsars.edgeFrequency + baseIndex) * args.osSampleTime) & usedMask;
 
         DSP::WavetableSampler wave0Sampler [SIMDBankSize];
         DSP::WavetableSampler wave1Sampler [SIMDBankSize];
@@ -670,7 +713,11 @@ namespace OuroborosModules::Modules::Pulsar {
             window1Sampler [slot] = getSampler (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
         }
 
-        for (int i = 0; i < osFactor; i++) {
+        for (uint32_t sampleIdx = 0; sampleIdx < osFactor; sampleIdx++) {
+            auto windowPhase = rack::simd::clamp (pulsarPhase, 0, 1);
+            auto wavePhase = windowPhase * cluster;
+            wavePhase -= rack::simd::floor (wavePhase);
+
             // Generate signal and window
             for (uint32_t j = 0; j < slotCount; j++) {
                 auto slot = slotIndices [j];
@@ -694,28 +741,25 @@ namespace OuroborosModules::Modules::Pulsar {
 
             // Apply windowing
             signal *= Math::lerp (VectorT (1.f), windowSignal, windowAmount);
-            signal *= 1.f - rack::simd::clamp (edgePhase, 0.f, 1.f);
-
-            // Advance phase
-            wavePhase += wavePhaseIncrement;
-            windowPhase += windowPhaseIncrement;
-            edgePhase += edgePhaseIncrement;
-
-            wavePhase -= rack::simd::floor (wavePhase);
+            signal *= 1.f - rack::simd::clamp (edgePhase, 0, 1);
 
             // Accumulate the signal
             signal &= usedMask;
-            args.mainSignal [i] += signal & ~restMask;
-            args.restSignal [i] += signal & restMask;
+            args.mainSignal [sampleIdx] += signal & ~restMask;
+            args.restSignal [sampleIdx] += signal & restMask;
+
+            // Advance phase
+            pulsarPhase += pulsarPhaseIncrement;
+            edgePhase += edgePhaseIncrement;
+
+            usedMask &= (pulsarPhase <= 1) & (edgePhase <= 1);
         }
 
         // Store phase
-        wavePhase.store (pulsars.wavePhase + baseIndex);
-        windowPhase.store (pulsars.windowPhase + baseIndex);
+        pulsarPhase.store (pulsars.pulsarPhase + baseIndex);
         edgePhase.store (pulsars.edgePhase + baseIndex);
 
         // Update the used slots
-        usedMask &= (windowPhase < 1) & (edgePhase < 1);
         args.slotMask &= rack::simd::movemask (usedMask) & 0x0F;
     }
 
@@ -727,10 +771,12 @@ namespace OuroborosModules::Modules::Pulsar {
         PulsarFrameArgs frameArgs = { };
         frameArgs.osSampleRate = args.sampleRate * osFactor;
         frameArgs.osSampleTime = 1.f / frameArgs.osSampleRate;
+
         frameArgs.edgeFrequency = 1.f / std::max (0.f, std::min (
             args.edgeFactor,
-            std::floor (1.f / emissionFrequency [channel] * frameArgs.osSampleRate - 1) * frameArgs.osSampleTime
+            std::floor (frameArgs.osSampleRate / emissionFrequency [channel] - 1) * frameArgs.osSampleTime
         ));
+
         frameArgs.pulsars = &pulsars;
         frameArgs.wavetables = args.wavetables;
 
@@ -740,24 +786,31 @@ namespace OuroborosModules::Modules::Pulsar {
                 continue;
 
             auto slotBankBaseIdx = slotBankIdx * SlotBankSize;
-            for (uint32_t i = 0; i < SlotBankSize / 4; i++) {
-                frameArgs.slotMask = (slotBank >> (i * 4)) & 0x0F;
+            for (uint32_t i = 0; i < SlotBankSize / SIMDBankSize; i++) {
+                frameArgs.slotMask = (slotBank >> (i * SIMDBankSize)) & 0x0F;
                 if (frameArgs.slotMask == 0)
                     continue;
 
-                frameArgs.baseIndex = slotBankBaseIdx + i * 4;
+                frameArgs.baseIndex = slotBankBaseIdx + i * SIMDBankSize;
                 processPulsarQuad (frameArgs);
 
-                slotBank &= ~(0x0F << (i * 4));
-                slotBank |= frameArgs.slotMask << (i * 4);
+                slotBank &= ~(0x0F << (i * SIMDBankSize));
+                slotBank |= frameArgs.slotMask << (i * SIMDBankSize);
             }
 
             pulsars.slotUsed [slotBankIdx] = slotBank;
         }
 
         for (int i = 0; i < osFactor; i++) {
-            pulsarOut.mainSignal [i] [bankIdx] = softClip (Math::hsum (frameArgs.mainSignal [i]));
-            pulsarOut.restSignal [i] [bankIdx] = softClip (Math::hsum (frameArgs.restSignal [i]));
+            auto mainSignal = Math::hsum (frameArgs.mainSignal [i]);
+            auto restSignal = Math::hsum (frameArgs.restSignal [i]);
+
+            /*if (dcFilterOn) {
+
+            }*/
+
+            pulsarOut.mainSignal [i] [bankIdx] = softClip (mainSignal);
+            pulsarOut.restSignal [i] [bankIdx] = softClip (restSignal);
         }
     }
 
@@ -778,38 +831,47 @@ namespace OuroborosModules::Modules::Pulsar {
     [[gnu::hot]]
     void PulsarEngine::processEmission (PulsarProcessArgs& args) {
         auto triggeredModeMask = !triggeredMode ? VectorT::mask () : VectorT::zero ();
-        auto syncEnabledMask = args.syncEnabled ? VectorT::mask () : VectorT::zero ();
+        auto osSampleTime = 1.f / (args.sampleRate * oversampleFactor);
+        VectorT syncBuffer [MaxOversample];
 
         for (uint32_t bank = 0, baseChannel = 0; baseChannel < channelCount; bank++, baseChannel += SIMDBankSize) {
-            int emitMask = 0;
+            if (args.syncEnabled)
+                syncUpsampler [bank].process (syncBuffer, VectorT::load (args.syncVoltages + baseChannel));
 
-            auto deltaPhase = VectorT::load (emissionFrequency + baseChannel) * args.sampleTime;
-            auto phase = VectorT::load (emissionPhase + baseChannel);
+            for (int sampleIdx = 0; sampleIdx < oversampleFactor; sampleIdx++) {
+                auto emitMask = VectorT::zero ();
 
-            phase += deltaPhase & triggeredModeMask;
-            emitMask |= rack::simd::movemask ((phase & triggeredModeMask) >= 1.f);
-            phase -= rack::simd::floor (phase) & triggeredModeMask;
+                auto deltaPhase = VectorT::load (emissionFrequency + baseChannel) * osSampleTime;
+                auto phase = VectorT::load (emissionPhase + baseChannel);
 
-            auto syncValue = VectorT::load (args.syncVoltages + baseChannel);
-            auto deltaSync = syncValue - lastSyncValues [bank];
-            auto syncCrossing = -lastSyncValues [bank] / deltaSync;
-            lastSyncValues [bank] = syncValue;
+                phase += deltaPhase & triggeredModeMask;
+                emitMask |= (phase >= 1.f) & triggeredModeMask;
 
-            auto sync = (0.f < syncCrossing) & (syncCrossing <= 1.f) & (syncValue >= 0.f) & syncEnabledMask;
-            phase = rack::simd::ifelse (sync, (1.f - syncCrossing) * deltaPhase, phase);
-            emitMask |= rack::simd::movemask (sync);
+                if (args.syncEnabled) {
+                    auto syncValue = syncBuffer [sampleIdx];
+                    auto deltaSync = syncValue - lastSyncValues [bank];
+                    auto syncCrossing = -lastSyncValues [bank] / deltaSync;
+                    lastSyncValues [bank] = syncValue;
 
-            phase.store (emissionPhase + baseChannel);
+                    auto sync = (syncCrossing > 0.f) & (syncCrossing <= 1.f) & (syncValue >= 0.f);
+                    phase = rack::simd::ifelse (sync, (1.f - syncCrossing) * deltaPhase, phase);
+                    emitMask |= sync;
+                }
 
-            auto bankSize = std::min (channelCount - baseChannel, SIMDBankSize);
-            for (uint32_t i = 0; i < bankSize; i++) {
-                if (!(emitMask & (1 << i)))
-                    continue;
+                phase -= rack::simd::floor (phase);
+                phase.store (emissionPhase + baseChannel);
+                auto emitMaskInt = rack::simd::movemask (emitMask);
 
-                auto channel = baseChannel + i;
-                auto mask = maskingData [channel].process ();
-                if (mask != PulsarMask::None)
-                    emitPulsar (channel, parameters [channel], mask == PulsarMask::Rest, phase [i]);
+                auto bankSize = std::min (channelCount - baseChannel, SIMDBankSize);
+                for (uint32_t bankIdx = 0; bankIdx < bankSize; bankIdx++) {
+                    if (!(emitMaskInt & (1 << bankIdx)))
+                        continue;
+
+                    auto channel = baseChannel + bankIdx;
+                    auto mask = maskingData [channel].process ();
+                    if (mask != PulsarMask::None)
+                        emitPulsar (args, channel, mask == PulsarMask::Rest, sampleIdx);
+                }
             }
         }
     }
