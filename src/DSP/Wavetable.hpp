@@ -119,6 +119,7 @@ namespace OuroborosModules::DSP {
         bool setSamples (
             const float* newSamples,
             uint32_t waveLength, uint32_t frameCount,
-            uint32_t maxOctaves = std::numeric_limits<uint32_t>::max ());
+            uint32_t maxOctaves = std::numeric_limits<uint32_t>::max (),
+            bool removeDC = true);
     };
 }

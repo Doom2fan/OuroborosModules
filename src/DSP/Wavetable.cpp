@@ -67,7 +67,7 @@ namespace OuroborosModules::DSP {
         getSampler (frameIndex, octave).sampleRange (outSamples, firstSample, sampleCount);
     }
 
-    bool Wavetable::setSamples (const float* newSamples, uint32_t waveLength, uint32_t frameCount, uint32_t maxOctaves) {
+    bool Wavetable::setSamples (const float* newSamples, uint32_t waveLength, uint32_t frameCount, uint32_t maxOctaves, bool removeDC) {
         using rack::dsp::RealFFT;
 
         static constexpr auto InterpSamples = WavetableInterpolators::MaxSampleCount;
@@ -101,6 +101,8 @@ namespace OuroborosModules::DSP {
             fft.rfft (inSpace, frameFFT);
 
             // Remove highest harmonic
+            if (removeDC)
+                frameFFT [0] = 0.f;
             frameFFT [1] = 0.f;
 
             // Find the highest harmonic
