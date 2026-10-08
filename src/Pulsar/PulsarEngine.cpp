@@ -303,13 +303,10 @@ namespace OuroborosModules::Modules::Pulsar {
             json_array_append_new (slotUsedJ, json_integer (slotUsed [i]));
         json_object_set_new (rootJ, "slotUsed", slotUsedJ);
 
-        auto isRestJ = json_array ();
         auto pulsarsJ = json_array ();
-        for (size_t i = 0; i < MaxPulsars; i++) {
-            json_array_append_new (isRestJ, json_boolean (isRest [i]));
+        for (size_t i = 0; i < MaxPulsars; i++)
             json_array_append_new (pulsarsJ, slotToParams (i).dataToJson ());
-        }
-        json_object_set_new (rootJ, "isRest", isRestJ);
+
         json_object_set_new (rootJ, "pulsars", pulsarsJ);
 
         return rootJ;
@@ -322,10 +319,6 @@ namespace OuroborosModules::Modules::Pulsar {
         // Fetch the arrays
         auto slotUsedJ = json_object_get (rootJ, "slotUsed");
         if (!json_is_array (slotUsedJ))
-            return false;
-
-        auto isRestJ = json_object_get (rootJ, "isRest");
-        if (!json_is_array (isRestJ))
             return false;
 
         auto pulsarsJ = json_object_get (rootJ, "pulsars");
@@ -351,11 +344,7 @@ namespace OuroborosModules::Modules::Pulsar {
             std::fill (std::begin (slotUsed) + slotUsedLength, std::end (slotUsed), 0);
 
         for (size_t i = 0; i < pulsarsLength; i++) {
-            auto restValJ = json_array_get (isRestJ, i);
             auto pulsarJ = json_array_get (pulsarsJ, i);
-
-            if (!json_is_boolean (restValJ))
-                return false;
 
             PulsarParameters pulsar;
             if (!pulsar.dataFromJson (pulsarJ))
