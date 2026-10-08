@@ -40,12 +40,6 @@ namespace OuroborosModules::Modules::Pulsar {
     /*
      * Wavetables
      */
-    struct PulsarWavetables {
-        DSP::Wavetable waves [WavesCount] = { };
-
-        DSP::Wavetable windows [WindowsCount] = { };
-    };
-
     static std::weak_ptr<PulsarWavetables> wavetablesList = { };
 
     void loadWavetable (std::string path, DSP::Wavetable& table, bool removeDC) {
@@ -108,23 +102,6 @@ namespace OuroborosModules::Modules::Pulsar {
     inline uint32_t calcOctave (const DSP::Wavetable& wavetable, float phaseIncrement, bool oversampled) {
         auto value = wavetable.calculateOctave (phaseIncrement);
         return static_cast<uint32_t> (oversampled ? std::floor (value) : std::ceil (value));
-    }
-
-    [[using gnu: always_inline, hot]]
-    inline DSP::WavetableSampler getSampler (const DSP::Wavetable* wavetable, float frame, uint32_t octave) {
-        auto frameCount = wavetable->getFrameCount ();
-        auto frameIndex = std::min (static_cast<uint32_t> (frame * (frameCount - 1)), frameCount - 1);
-
-        return wavetable->getSampler (frameIndex, octave);
-    }
-
-    [[using gnu: always_inline, hot]]
-    inline void calcSampleIndex (float phase, uint32_t& sampleIndexInt, float& sampleFrac) {
-        auto sampleIndex = phase * WavetableLength;
-
-        sampleIndexInt = static_cast<uint32_t> (sampleIndex);
-        sampleFrac = sampleIndex - sampleIndexInt;
-        sampleIndexInt &= (WavetableLength - 1u);
     }
 
     /*

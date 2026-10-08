@@ -35,6 +35,36 @@ namespace OuroborosModules::Modules::Pulsar {
     static constexpr uint8_t DefaultOversampleRate = 4;
     static constexpr uint8_t MaxOversample = 16;
 
+    /*
+     * Wavetables
+     */
+    struct PulsarWavetables {
+        DSP::Wavetable waves [WavesCount] = { };
+        DSP::Wavetable windows [WindowsCount] = { };
+    };
+
+    std::shared_ptr<PulsarWavetables> getWavetables ();
+
+    [[using gnu: always_inline, hot]]
+    inline DSP::WavetableSampler getSampler (const DSP::Wavetable* wavetable, float frame, uint32_t octave) {
+        auto frameCount = wavetable->getFrameCount ();
+        auto frameIndex = std::min (static_cast<uint32_t> (frame * (frameCount - 1)), frameCount - 1);
+
+        return wavetable->getSampler (frameIndex, octave);
+    }
+
+    [[using gnu: always_inline, hot]]
+    inline void calcSampleIndex (float phase, uint32_t& sampleIndexInt, float& sampleFrac) {
+        auto sampleIndex = phase * WavetableLength;
+
+        sampleIndexInt = static_cast<uint32_t> (sampleIndex);
+        sampleFrac = sampleIndex - sampleIndexInt;
+        sampleIndexInt &= (WavetableLength - 1u);
+    }
+
+    /*
+     * Masking
+     */
     enum class PulsarMaskingMode {
         Invalid, // Not used for anything, it's here to catch errors
         Burst,
@@ -45,24 +75,6 @@ namespace OuroborosModules::Modules::Pulsar {
         None,
         Pulse,
         Rest,
-    };
-
-    struct PulsarWavetables;
-
-    struct PulsarProcessArgs {
-        float sampleRate = 0.f;
-        float sampleTime = 0.f;
-
-        float edgeFactor = 0.f;
-
-        bool syncEnabled = false;
-        float syncVoltages [Constants::MaxPolyphony] = { };
-
-        float* mainOut = nullptr;
-        float* restOut = nullptr;
-
-        // Internal state
-        PulsarWavetables* wavetables = nullptr;
     };
 
     struct PulsarMaskingData {
@@ -99,6 +111,25 @@ namespace OuroborosModules::Modules::Pulsar {
         PulsarMask process ();
     };
 
+    /*
+     * Pulsar data
+     */
+    struct PulsarProcessArgs {
+        float sampleRate = 0.f;
+        float sampleTime = 0.f;
+
+        float edgeFactor = 0.f;
+
+        bool syncEnabled = false;
+        float syncVoltages [Constants::MaxPolyphony] = { };
+
+        float* mainOut = nullptr;
+        float* restOut = nullptr;
+
+        // Internal state
+        PulsarWavetables* wavetables = nullptr;
+    };
+
     struct PulsarParameters {
         // Parameters
         bool isRest = false;
@@ -127,6 +158,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // Parameters
         alignas (16) float isRest [MaxPulsars] = { };
+
         float frequency [MaxPulsars] = { };
         float cluster [MaxPulsars] = { };
 
@@ -178,6 +210,9 @@ namespace OuroborosModules::Modules::Pulsar {
         void readCount (float* outBuffer, uint32_t count);
     };
 
+    /*
+     * Engine
+     */
     struct PulsarEngine {
         using VectorT = rack::simd::float_4;
 
@@ -250,10 +285,12 @@ namespace OuroborosModules::Modules::Pulsar {
         void setTriggeredMode (bool enable);
 
         void setEmissionFrequency (uint32_t channel, float freq);
+        const PulsarParameters& getParams (uint32_t channel) const { return parameters [channel]; }
         void setParams (uint32_t channel, const PulsarParameters& params);
         void setMaskingBurst (uint32_t channel, uint32_t burstCount, uint32_t restCount);
         void setMaskingStochastic (uint32_t channel, float restProbability, float noneProbability);
 
+        uint32_t getChannelCount () const { return channelCount; }
         void setChannelCount (uint32_t count);
         void setActiveOutputs (bool main, bool rest);
 
