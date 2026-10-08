@@ -527,11 +527,12 @@ namespace OuroborosModules::Modules::Pulsar {
                 formantFreq = rack::simd::fmin (formantFreq, maxFreq);
             }
 
+            PulsarParameters pulsarParams { };
             pulsarParams.frequency = formantFreq;
             pulsarParams.cluster = clusterKnob.process (getInputPoly (INPUT_CLUSTER_CV, channel));
 
             pulsarParams.shapeIndex = waveIndexKnob.process (getInputPoly (INPUT_WAVEINDEX_CV, channel));
-            pulsarParams.shaperAmount = waveshaperKnob.process (getInputPoly (INPUT_WAVESHAPER_CV, channel));
+            pulsarParams.shaperAmount = rack::simd::pow (waveshaperKnob.process (getInputPoly (INPUT_WAVESHAPER_CV, channel)), 2);
 
             pulsarParams.windowIndex = windowIndexKnob.process (getInputPoly (INPUT_WINDOWINDEX_CV, channel));
             pulsarParams.windowSkew = windowSkewKnob.process (getInputPoly (INPUT_WINDOWSKEW_CV, channel));

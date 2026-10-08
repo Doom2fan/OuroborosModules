@@ -141,7 +141,6 @@ namespace OuroborosModules::Modules::Pulsar {
         PulsarFormantMode formantMode = PulsarFormantMode::Coupled;
 
         PulsarEngine engine;
-        PulsarParameters pulsarParams;
 
         // Clock dividers
         DSP::ClockDivider clockOversample;
