@@ -48,7 +48,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
     static std::weak_ptr<PulsarWavetables> wavetablesList = { };
 
-    void loadWavetable (std::string path, DSP::Wavetable& table) {
+    void loadWavetable (std::string path, DSP::Wavetable& table, bool removeDC) {
         table = { };
 
         // Get the absolute path
@@ -77,7 +77,7 @@ namespace OuroborosModules::Modules::Pulsar {
         }
 
         auto frameCount = rawBuffer.getSampleCount () / WavetableLength;
-        table.setSamples (rawBuffer.getSamples ().data (), WavetableLength, frameCount);
+        table.setSamples (rawBuffer.getSamples ().data (), WavetableLength, frameCount, 50000, removeDC);
     }
 
     std::shared_ptr<PulsarWavetables> getWavetables () {
@@ -86,19 +86,19 @@ namespace OuroborosModules::Modules::Pulsar {
 
         auto wavetables = std::make_shared<PulsarWavetables> ();
         // Waves
-        loadWavetable ("res/wavetables/PulsarSine.wav",     wavetables->waves [0]);
-        loadWavetable ("res/wavetables/PulsarTriangle.wav", wavetables->waves [1]);
-        loadWavetable ("res/wavetables/PulsarSaw.wav",      wavetables->waves [2]);
-        loadWavetable ("res/wavetables/PulsarSquare.wav",   wavetables->waves [3]);
+        loadWavetable ("res/wavetables/PulsarSine.wav",     wavetables->waves [0], true);
+        loadWavetable ("res/wavetables/PulsarTriangle.wav", wavetables->waves [1], true);
+        loadWavetable ("res/wavetables/PulsarSaw.wav",      wavetables->waves [2], true);
+        loadWavetable ("res/wavetables/PulsarSquare.wav",   wavetables->waves [3], true);
         // Last wave shape is "noise", for simplicitly we just make it an empty wavetable.
         float emptySamples [WavetableLength] = { };
         wavetables->waves [4].setSamples (emptySamples, WavetableLength, 1, 1);
 
         // Windows
-        loadWavetable ("res/wavetables/PulsarWindowCosine.wav", wavetables->windows [0]);
-        loadWavetable ("res/wavetables/PulsarWindowLinear.wav", wavetables->windows [1]);
-        loadWavetable ("res/wavetables/PulsarWindowExp.wav",    wavetables->windows [2]);
-        loadWavetable ("res/wavetables/PulsarWindowLog.wav",    wavetables->windows [3]);
+        loadWavetable ("res/wavetables/PulsarWindowCosine.wav", wavetables->windows [0], false);
+        loadWavetable ("res/wavetables/PulsarWindowLinear.wav", wavetables->windows [1], false);
+        loadWavetable ("res/wavetables/PulsarWindowExp.wav",    wavetables->windows [2], false);
+        loadWavetable ("res/wavetables/PulsarWindowLog.wav",    wavetables->windows [3], false);
 
         wavetablesList = wavetables;
         return wavetables;
