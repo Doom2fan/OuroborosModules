@@ -50,10 +50,10 @@ namespace OuroborosModules::Modules::Pulsar {
             // Frequency
             PARAM_FREQUENCY,
             PARAM_FORMANT,
-            PARAM_CLUSTER,
 
             // Wave shape
             PARAM_WAVEINDEX,
+            PARAM_CLUSTER,
             PARAM_WAVESHAPER,
 
             // Windowing
@@ -65,16 +65,20 @@ namespace OuroborosModules::Modules::Pulsar {
             PARAM_BURSTCOUNT,
             PARAM_RESTCOUNT,
 
+            // Overlap parameters
+            PARAM_EDGE_FACTOR,
+
             // Mode switches
             PARAM_MASKINGMODE,
             PARAM_FREQUENCY_MODE,
             PARAM_FORMANT_MODE,
+            PARAM_OVERLAP_MODE,
 
             // CV attenuverters
             PARAM_FORMANT_CV_ATTEN,
-            PARAM_CLUSTER_CV_ATTEN,
 
             PARAM_WAVEINDEX_CV_ATTEN,
+            PARAM_CLUSTER_CV_ATTEN,
             PARAM_WAVESHAPER_CV_ATTEN,
 
             PARAM_WINDOWINDEX_CV_ATTEN,
@@ -87,8 +91,6 @@ namespace OuroborosModules::Modules::Pulsar {
             // Settings
             PARAM_OVERSAMPLE,
             PARAM_CHANNEL_COUNT,
-            PARAM_OVERLAP_MODE,
-            PARAM_EDGE_FACTOR,
 
             NUM_PARAMS
         };

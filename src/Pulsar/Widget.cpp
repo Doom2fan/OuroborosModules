@@ -138,22 +138,5 @@ namespace OuroborosModules::Modules::Pulsar {
                 ));
             }
         }));
-
-        // Overlap mode options
-        menu->addChild (new rack::ui::MenuSeparator);
-        menu->addChild (rack::createMenuLabel ("Overlap mode"));
-        menu->addChild (rack::createBoolMenuItem ("Enable", "",
-            [=] { return moduleT->getParam (PulsarModule::PARAM_OVERLAP_MODE) > .5f; },
-            [=] (bool enable) {
-                createContextMenuHistory<bool> ("Set Pulsar overlap mode", [=] (PulsarModule* module, bool enable) {
-                    APP->engine->setParamValue (module, PulsarModule::PARAM_OVERLAP_MODE, enable ? 1.f : 0.f);
-                }, !enable, enable);
-            }
-        ));
-
-        auto edgeFactorSlider = new rack::ui::Slider ();
-        edgeFactorSlider->quantity = moduleT->getParamQuantity (PulsarModule::PARAM_EDGE_FACTOR);
-        edgeFactorSlider->box.size.x = 200.f;
-        menu->addChild (edgeFactorSlider);
     }
 }

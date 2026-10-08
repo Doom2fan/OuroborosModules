@@ -176,10 +176,10 @@ namespace OuroborosModules::Modules::Pulsar {
         // Frequency
         configParamVOct<FrequencyQuantity> (PARAM_FREQUENCY, -4, 6, 0, "Emission frequency");
         configParam<FormantQuantity> (PARAM_FORMANT, 0.f, 1.f, 0.f, "Formant", "%", 0, 100);
-        configParam (PARAM_CLUSTER, 1.f, 6.f, 1.f, "Cluster", "", 0, 1);
 
         // Wave shape
         configParam (PARAM_WAVEINDEX, 0.f, WavesCount - 1.f, 0.f, "Waveform index", "", 0, 1, 1);
+        configParam (PARAM_CLUSTER, 1.f, 6.f, 1.f, "Cluster", "", 0, 1);
         configParam (PARAM_WAVESHAPER, 0.f, 1.f, 0.f, "Waveshaper", "", 0, 100);
 
         // Windowing
@@ -191,10 +191,14 @@ namespace OuroborosModules::Modules::Pulsar {
         configParam<BurstCountQuantity> (PARAM_BURSTCOUNT, 0.f, 1.f, 0.f, "", "");
         configParam<BurstCountQuantity> (PARAM_RESTCOUNT, 0.f, 1.f, 0.f, "", "");
 
+        // Overlap parameters
+        configParam (PARAM_EDGE_FACTOR, 0.f, 15 / 1000.f, 2 / 1000.f, "Edge factor", " ms", 0, 1000);
+
         // Mode switches
         configSwitch (PARAM_MASKINGMODE, 0, 1, 0, "Masking mode", { "Burst/Channel", "Probability" });
         configSwitch (PARAM_FREQUENCY_MODE, 0, 3, 0, "Frequency mode", { "Audio rate", "Low frequency", "Triggered", "Triggered low frequency" });
         configSwitch (PARAM_FORMANT_MODE, 0, 2, 0, "Frequency decoupling", { "Off", "Audio rate formant", "Low frequency formant" });
+        configSwitch (PARAM_OVERLAP_MODE, 0, 1, 0, "Overlap mode", { "Off", "On" });
 
         // CV attenuverters
         configParamAttenuverter (PARAM_FORMANT_CV_ATTEN, "Formant CV attenuverter");
@@ -213,8 +217,6 @@ namespace OuroborosModules::Modules::Pulsar {
         // Settings
         configParam (PARAM_OVERSAMPLE, 1.f, MaxOversample, DefaultOversampleRate, "Oversample", "x", 0, 1);
         configParam (PARAM_CHANNEL_COUNT, 0.f, Constants::MaxPolyphony, 0.f, "Channel count");
-        configParam (PARAM_OVERLAP_MODE, 0.f, 1.f, 0.f, "Overlap mode");
-        configParam (PARAM_EDGE_FACTOR, 0.f, 15 / 1000.f, 2 / 1000.f, "Edge factor", " ms", 0, 1000);
 
         // Disable randomization for relevant params
         getParamQuantity (PARAM_OVERSAMPLE)->randomizeEnabled = false;
