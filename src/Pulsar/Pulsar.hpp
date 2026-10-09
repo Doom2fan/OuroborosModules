@@ -142,6 +142,10 @@ namespace OuroborosModules::Modules::Pulsar {
 
         PulsarEngine engine;
 
+        // Options
+        bool dcBlockerAudio = true;
+        bool dcBlockerLFO = false;
+
         // Clock dividers
         DSP::ClockDivider clockOversample;
         DSP::ClockDivider clockParams;

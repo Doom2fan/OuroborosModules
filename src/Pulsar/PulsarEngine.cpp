@@ -537,6 +537,9 @@ namespace OuroborosModules::Modules::Pulsar {
             syncUpsampler [bank].setParams (factor);
             outputMain.decimator [bank].setParams (factor);
             outputRest.decimator [bank].setParams (factor);
+
+            outputMain.dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, curSampleRate * factor);
+            outputRest.dcBlocker [bank].setCutoffFreq (Constants::DefaultDCBlockerCutoff, curSampleRate * factor);
         }
 
         updatePulsarOctaves (curSampleRate);
@@ -811,10 +814,18 @@ namespace OuroborosModules::Modules::Pulsar {
 
     PulsarEngine::VectorT PulsarEngine::processSampleBlock (VectorT* buffer, uint32_t simdBank, bool isRest) {
         auto& output = !isRest ? outputMain : outputRest;
+        auto& dcBlocker = output.dcBlocker [simdBank];
+        auto dcBlockerOn = this->dcBlockerOn;
 
         auto osFactor = oversampleFactor;
-        for (int i = 0; i < osFactor; i++)
-            buffer [i] = softClip (buffer [i]);
+        for (int i = 0; i < osFactor; i++) {
+            auto signal = buffer [i];
+
+            if (dcBlockerOn)
+                signal = dcBlocker.process (signal);
+
+            buffer [i] = softClip (signal);
+        }
 
         return output.decimator [simdBank].process (buffer) * 5.f;
     }
@@ -935,6 +946,6 @@ namespace OuroborosModules::Modules::Pulsar {
             return;
 
         curSampleRate = newSampleRate;
-        updatePulsarOctaves (newSampleRate);
+        setOversampling (oversampleFactor, true);
     }
 }

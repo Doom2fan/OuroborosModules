@@ -259,7 +259,12 @@ namespace OuroborosModules::Modules::Pulsar {
     json_t* PulsarModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
+        // State
         json_object_set_new_struct (rootJ, "pulsarEngine", engine);
+
+        // Options
+        json_object_set_new_bool (rootJ, "dcBlockerAudio", dcBlockerAudio);
+        json_object_set_new_bool (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
         return rootJ;
     }
@@ -267,7 +272,12 @@ namespace OuroborosModules::Modules::Pulsar {
     void PulsarModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
 
+        // State
         json_object_try_get_struct (rootJ, "pulsarEngine", engine);
+
+        // Options
+        json_object_try_get_bool (rootJ, "dcBlockerAudio", dcBlockerAudio);
+        json_object_try_get_bool (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
         // Initialize module
         initializeModule ();
@@ -435,6 +445,9 @@ namespace OuroborosModules::Modules::Pulsar {
     }
 
     void PulsarModule::onReset (const ResetEvent& e) {
+        dcBlockerAudio = true;
+        dcBlockerLFO = false;
+
         // Perform the reset twice to ensure everything gets reset properly
         for (int i = 0; i < 2; i++) {
             ModuleBase::onReset (e);
@@ -471,6 +484,25 @@ namespace OuroborosModules::Modules::Pulsar {
         setOverlapMode (getParam (PARAM_OVERLAP_MODE) > .5f);
         setFrequencyMode (frequencyModeFromParam (getParam (PARAM_FREQUENCY_MODE)));
         setFormantMode (formantModeFromParam (getParam (PARAM_FORMANT_MODE)));
+
+        auto isLFO = false;
+        switch (formantMode) {
+            default:
+            case PulsarFormantMode::Coupled:
+                switch (frequencyMode) {
+                    default:
+                    case PulsarFrequencyMode::Triggered:
+                    case PulsarFrequencyMode::Audio: isLFO = false; break;
+
+                    case PulsarFrequencyMode::TriggeredLFO:
+                    case PulsarFrequencyMode::LFO : isLFO = true; break;
+                }
+                break;
+
+            case PulsarFormantMode::AudioRate: isLFO = false; break;
+            case PulsarFormantMode::LFO: isLFO = true; break;
+        }
+        engine.setDCBlocker (isLFO ? dcBlockerLFO : dcBlockerAudio);
 
         // Fetch CV attenuverters
         auto formantKnob = AutoAttenuverter (this, PARAM_FORMANT, PARAM_FORMANT_CV_ATTEN, 10);

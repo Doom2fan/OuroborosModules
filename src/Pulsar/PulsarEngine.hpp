@@ -274,6 +274,8 @@ namespace OuroborosModules::Modules::Pulsar {
 
         uint32_t channelCount = 1;
 
+        bool dcBlockerOn = false;
+
         // State
         float curSampleRate = 0.f;
         PulsarDataStore pulsars [Constants::MaxPolyphony];
@@ -301,6 +303,7 @@ namespace OuroborosModules::Modules::Pulsar {
         bool dataFromJson (json_t* rootJ);
 
         void setOversampling (uint8_t factor, bool force);
+        void setDCBlocker (bool enable) { dcBlockerOn = enable; }
 
         void setOverlapMode (bool overlap) { overlapMode = overlap; }
         void setTriggeredMode (bool enable);

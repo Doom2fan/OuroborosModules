@@ -138,5 +138,18 @@ namespace OuroborosModules::Modules::Pulsar {
                 ));
             }
         }));
+
+        // DC blocker options
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "DC blocker (Audio rate)", "",
+            "Toggle Pulsar \"DC blocker (Audio rate)\"",
+            &PulsarModule::dcBlockerAudio
+        ));
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "DC blocker (LFO)", "",
+            "Toggle Pulsar \"DC blocker (LFO)\"",
+            &PulsarModule::dcBlockerLFO
+        ));
     }
 }
