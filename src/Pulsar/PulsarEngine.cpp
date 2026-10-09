@@ -431,6 +431,9 @@ namespace OuroborosModules::Modules::Pulsar {
     json_t* PulsarEngine::channelToJson (uint32_t channel) const {
         auto rootJ = json_object ();
 
+        auto simdBank = channel / SIMDBankSize;
+        auto simdSlot = channel % SIMDBankSize;
+
         // Parameters
         json_object_set_new_struct (rootJ, "params", parameters [channel]);
 
@@ -440,6 +443,7 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_set_new_struct (rootJ, "pulsars", pulsars [channel]);
         json_object_set_new_struct (rootJ, "maskingData", maskingData [channel]);
 
+        json_object_set_new_float (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
         json_object_set_new_float (rootJ, "emissionPhase", emissionPhase [channel]);
 
         return rootJ;
@@ -450,6 +454,8 @@ namespace OuroborosModules::Modules::Pulsar {
             return false;
 
         auto failed = false;
+        auto simdBank = channel / SIMDBankSize;
+        auto simdSlot = channel % SIMDBankSize;
 
         // Parameters
         failed |= !json_object_try_get_struct (rootJ, "params", parameters [channel]);
@@ -460,6 +466,7 @@ namespace OuroborosModules::Modules::Pulsar {
         failed |= !json_object_try_get_struct (rootJ, "pulsars", pulsars [channel]);
         failed |= !json_object_try_get_struct (rootJ, "maskingData", maskingData [channel]);
 
+        failed |= !json_object_try_get_float (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
         failed |= !json_object_try_get_float (rootJ, "emissionPhase", emissionPhase [channel]);
 
         if (failed)
@@ -475,6 +482,10 @@ namespace OuroborosModules::Modules::Pulsar {
         for (int channel = 0; channel < Constants::MaxPolyphony; channel++)
             json_array_append (channelsJ, channelToJson (channel));
         json_object_set_new (rootJ, "channels", channelsJ);
+
+        json_object_set_new_bool (rootJ, "overlapMode", overlapMode);
+        json_object_set_new_bool (rootJ, "triggeredMode", triggeredMode);
+        json_object_set_new_bool (rootJ, "dcBlockerOn", dcBlockerOn);
 
         return rootJ;
     }
@@ -494,12 +505,11 @@ namespace OuroborosModules::Modules::Pulsar {
             uint32_t channel = 0;
             for (; channel < channelCount; channel++)
                 failed |= !channelFromJson (json_array_get (channelsJ, channel), channel);
-
-            for (; channel < Constants::MaxPolyphony; channel++) {
-                parameters [channel] = PulsarParameters ();
-                maskingData [channel] = PulsarMaskingData ();
-            }
         }
+
+        failed |= json_object_try_get_bool (rootJ, "overlapMode", overlapMode);
+        failed |= json_object_try_get_bool (rootJ, "triggeredMode", triggeredMode);
+        failed |= json_object_try_get_bool (rootJ, "dcBlockerOn", dcBlockerOn);
 
         if (failed) {
             auto sampleRate = curSampleRate;
