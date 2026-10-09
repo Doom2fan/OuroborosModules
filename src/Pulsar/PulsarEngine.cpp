@@ -746,7 +746,7 @@ namespace OuroborosModules::Modules::Pulsar {
             }
 
             // Load and crossfade signals
-            auto wave1 = rack::simd::ifelse (noiseMask, noiseVec, VectorT::load (wave1Arr));
+            auto wave1 = VectorT::load (wave1Arr) + (noiseVec & noiseMask);
             auto signal = Math::lerp (VectorT::load (wave0Arr), wave1, waveIndexFrac);
             auto windowSignal = Math::lerp (VectorT::load (window0Arr), VectorT::load (window1Arr), windowIndexFrac);
 
