@@ -525,15 +525,11 @@ namespace OuroborosModules::Modules::Pulsar {
         oversampleFactor = factor;
         for (uint32_t bank = 0; bank < SIMDBankCount; bank++) {
             syncUpsampler [bank].setParams (factor);
-            decimatorMain [bank].setParams (factor);
-            decimatorRest [bank].setParams (factor);
+            outputMain.decimator [bank].setParams (factor);
+            outputRest.decimator [bank].setParams (factor);
         }
 
         updatePulsarOctaves (curSampleRate);
-    }
-
-    void PulsarEngine::setOverlapMode (bool overlap) {
-        overlapMode = overlap;
     }
 
     void PulsarEngine::setTriggeredMode (bool enable) {
@@ -543,14 +539,6 @@ namespace OuroborosModules::Modules::Pulsar {
         }
 
         triggeredMode = enable;
-    }
-
-    void PulsarEngine::setEmissionFrequency (uint32_t channel, float freq) {
-        emissionFrequency [channel] = freq;
-    }
-
-    void PulsarEngine::setParams (uint32_t channel, const PulsarParameters& params) {
-        parameters [channel] = params;
     }
 
     void PulsarEngine::setMaskingBurst (uint32_t channel, uint32_t burstCount, uint32_t restCount) {
@@ -566,14 +554,14 @@ namespace OuroborosModules::Modules::Pulsar {
     }
 
     void PulsarEngine::setActiveOutputs (bool main, bool rest) {
-        outputActiveMain = main;
-        outputActiveRest = rest;
+        outputMain.outputActive = main;
+        outputRest.outputActive = rest;
     }
 
     [[gnu::hot]]
     void PulsarEngine::emitPulsar (PulsarProcessArgs& args, uint32_t channel, bool isRest, int curSample) {
         // Don't emit pulsars if the respective outputs aren't active
-        if ((!isRest && !outputActiveMain) || (isRest && !outputActiveRest))
+        if ((!isRest && !outputMain.outputActive) || (isRest && !outputRest.outputActive))
             return;
 
         auto& pulsars = this->pulsars [channel];
@@ -781,11 +769,6 @@ namespace OuroborosModules::Modules::Pulsar {
         frameArgs.osSampleRate = args.sampleRate * osFactor;
         frameArgs.osSampleTime = 1.f / frameArgs.osSampleRate;
 
-        frameArgs.edgeFrequency = 1.f / std::max (0.f, std::min (
-            args.edgeFactor,
-            std::floor (frameArgs.osSampleRate / emissionFrequency [channel] - 1) * frameArgs.osSampleTime
-        ));
-
         frameArgs.pulsars = &pulsars;
         frameArgs.wavetables = args.wavetables;
 
@@ -811,16 +794,19 @@ namespace OuroborosModules::Modules::Pulsar {
         }
 
         for (int i = 0; i < osFactor; i++) {
-            auto mainSignal = Math::hsum (frameArgs.mainSignal [i]);
-            auto restSignal = Math::hsum (frameArgs.restSignal [i]);
-
-            /*if (dcFilterOn) {
-
-            }*/
-
-            pulsarOut.mainSignal [i] [bankIdx] = softClip (mainSignal);
-            pulsarOut.restSignal [i] [bankIdx] = softClip (restSignal);
+            pulsarOut.mainSignal [i] [bankIdx] = Math::hsum (frameArgs.mainSignal [i]);
+            pulsarOut.restSignal [i] [bankIdx] = Math::hsum (frameArgs.restSignal [i]);
         }
+    }
+
+    PulsarEngine::VectorT PulsarEngine::processSampleBlock (VectorT* buffer, uint32_t simdBank, bool isRest) {
+        auto& output = !isRest ? outputMain : outputRest;
+
+        auto osFactor = oversampleFactor;
+        for (int i = 0; i < osFactor; i++)
+            buffer [i] = softClip (buffer [i]);
+
+        return output.decimator [simdBank].process (buffer) * 5.f;
     }
 
     [[gnu::hot]]
@@ -832,8 +818,10 @@ namespace OuroborosModules::Modules::Pulsar {
             for (uint32_t bankIndex = 0; bankIndex < bankSize; bankIndex++)
                 processPulsars (args, output, channel + bankIndex, bankIndex);
 
-            (decimatorMain [simdBank].process (output.mainSignal) * 5.f).store (args.mainOut + channel);
-            (decimatorRest [simdBank].process (output.restSignal) * 5.f).store (args.restOut + channel);
+            if (outputMain.outputActive)
+                processSampleBlock (output.mainSignal, simdBank, false).store (args.mainOut + channel);
+            if (outputRest.outputActive)
+                processSampleBlock (output.restSignal, simdBank, true).store (args.restOut + channel);
         }
     }
 

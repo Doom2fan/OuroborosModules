@@ -240,8 +240,6 @@ namespace OuroborosModules::Modules::Pulsar {
             float osSampleRate = 0.f;
             float osSampleTime = 0.f;
 
-            float edgeFrequency = 0.f;
-
             PulsarDataStore* pulsars = nullptr;
             PulsarWavetables* wavetables = nullptr;
 
@@ -258,6 +256,13 @@ namespace OuroborosModules::Modules::Pulsar {
             VectorT restSignal [MaxOversample] = { };
         };
 
+        struct OutputData {
+            bool outputActive = false;
+
+            DSP::DCBlocker<VectorT> dcBlocker [SIMDBankCount] = { };
+            DSP::OptimizedHalfBandDecimator<VectorT> decimator [SIMDBankCount] = { };
+        };
+
       private:
         // Parameters
         PulsarParameters parameters [Constants::MaxPolyphony];
@@ -268,13 +273,14 @@ namespace OuroborosModules::Modules::Pulsar {
         bool triggeredMode = false;
 
         uint32_t channelCount = 1;
-        bool outputActiveMain = false;
-        bool outputActiveRest = false;
 
         // State
         float curSampleRate = 0.f;
         PulsarDataStore pulsars [Constants::MaxPolyphony];
         PulsarMaskingData maskingData [Constants::MaxPolyphony];
+
+        OutputData outputMain = { };
+        OutputData outputRest = { };
 
         VectorT lastSyncValues [SIMDBankCount] = { };
         float emissionPhase [Constants::MaxPolyphony] = { };
@@ -284,8 +290,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         uint8_t oversampleFactor = 1;
         DSP::OptimizedHalfBandInterpolator<VectorT> syncUpsampler [SIMDBankCount];
-        DSP::OptimizedHalfBandDecimator<VectorT> decimatorMain [SIMDBankCount];
-        DSP::OptimizedHalfBandDecimator<VectorT> decimatorRest [SIMDBankCount];
 
       public:
         PulsarEngine ();
@@ -298,12 +302,14 @@ namespace OuroborosModules::Modules::Pulsar {
 
         void setOversampling (uint8_t factor, bool force);
 
-        void setOverlapMode (bool overlap);
+        void setOverlapMode (bool overlap) { overlapMode = overlap; }
         void setTriggeredMode (bool enable);
 
-        void setEmissionFrequency (uint32_t channel, float freq);
+        void setEmissionFrequency (uint32_t channel, float freq) { emissionFrequency [channel] = freq; }
+
         const PulsarParameters& getParams (uint32_t channel) const { return parameters [channel]; }
-        void setParams (uint32_t channel, const PulsarParameters& params);
+        void setParams (uint32_t channel, const PulsarParameters& params) { parameters [channel] = params; }
+
         void setMaskingBurst (uint32_t channel, uint32_t burstCount, uint32_t restCount);
         void setMaskingStochastic (uint32_t channel, float restProbability, float noneProbability);
 
@@ -314,6 +320,7 @@ namespace OuroborosModules::Modules::Pulsar {
         void emitPulsar (PulsarProcessArgs& args, uint32_t channel, bool isRest, int curSample);
 
         inline void processPulsarQuad (PulsarFrameArgs& args);
+        VectorT processSampleBlock (VectorT* buffer, uint32_t simdBank, bool isRest);
         void processPulsars (PulsarProcessArgs& args, PulsarOutput& pulsarOut, uint32_t channel, uint32_t bankIdx);
         void processPulsars (PulsarProcessArgs& args);
         void processEmission (PulsarProcessArgs& args);
