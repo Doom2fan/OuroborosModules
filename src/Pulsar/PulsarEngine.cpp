@@ -617,10 +617,9 @@ namespace OuroborosModules::Modules::Pulsar {
         setPulsarOctave (channel, pulsarIndex);
 
         if (!overlapMode) {
-            auto oneSampleHz = args.sampleRate;
-            auto baseEdgeFreq = std::max (args.edgeFactor, emissionFrequency);
-
+            auto baseEdgeFreq = 1.f / std::fmax (args.edgeFactor, args.sampleTime);
             auto restMask = isRest ? VectorT::mask () : VectorT::zero ();
+
             for (uint32_t baseIndex = 0; baseIndex < MaxPulsars; baseIndex += SIMDBankSize) {
                 auto slot = baseIndex + VectorT (0, 1, 2, 3);
 
@@ -628,15 +627,17 @@ namespace OuroborosModules::Modules::Pulsar {
                 auto isRest = VectorT::load (pulsars.isRest + baseIndex) >= .5f;
                 auto edgeFrequency = VectorT::load (pulsars.edgeFrequency + baseIndex);
                 auto edgePhase = VectorT::load (pulsars.edgePhase + baseIndex);
+                auto pulsarFreq = VectorT::load (pulsars.frequency + baseIndex);
 
                 // Calculate slot mask
                 auto slotMask = (slot != pulsarIndex) & (isRest == restMask) & (edgeFrequency <= 0.f);
 
                 // Calculate and set edge frequency and phase
-                auto phaseLeft = 1 - rack::simd::clamp (VectorT::load (pulsars.pulsarPhase + baseIndex), 0, 1);
-                auto phaseFrequency = 1.f / rack::simd::fmin (1e-15f, phaseLeft);
+                auto pulsarDelta = pulsarFreq * args.sampleTime;
+                auto pulsarPhase = rack::simd::clamp (VectorT::load (pulsars.pulsarPhase + baseIndex), 0, 1);
+                auto phaseFrequency = rack::simd::fmax (pulsarDelta / pulsarPhase, pulsarDelta) * args.sampleRate;
 
-                auto newEdgeFreq = rack::simd::fmin (oneSampleHz, rack::simd::fmax (baseEdgeFreq, phaseFrequency));
+                auto newEdgeFreq = rack::simd::fmax (baseEdgeFreq, phaseFrequency);
                 auto edgeDelta = newEdgeFreq * args.sampleTime;
                 auto newEdgePhase = -sampleOffset * edgeDelta + emissionPhase * newEdgeFreq * emissionFrequencyInv;
 
