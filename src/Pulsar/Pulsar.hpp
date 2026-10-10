@@ -157,7 +157,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         void initializeModule ();
 
-        void updateOversampleRate ();
+        void updateOversampleRate (bool force = false);
         void setMaskingMode (PulsarMaskingMode mode, bool force = false);
         void setOverlapMode (bool overlap, bool force = false);
         void setFrequencyMode (PulsarFrequencyMode mode, bool force = false);

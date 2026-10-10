@@ -291,15 +291,15 @@ namespace OuroborosModules::Modules::Pulsar {
         setFrequencyMode (frequencyModeFromParam (getParam (PARAM_FREQUENCY_MODE)), true);
         setFormantMode (formantModeFromParam (getParam (PARAM_FORMANT_MODE)), true);
 
-        updateOversampleRate ();
+        updateOversampleRate (true);
         updateParams ();
     }
 
-    void PulsarModule::updateOversampleRate () {
+    void PulsarModule::updateOversampleRate (bool force) {
         auto factor = static_cast<uint8_t> (getParam (PARAM_OVERSAMPLE));
         factor = std::clamp (Math::nextPowerOfTwo (factor), 1_u8, MaxOversample);
 
-        engine.setOversampling (factor, false);
+        engine.setOversampling (factor, force);
     }
 
     void PulsarModule::setMaskingMode (PulsarMaskingMode mode, bool force) {
