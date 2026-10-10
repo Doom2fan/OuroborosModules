@@ -23,9 +23,13 @@
 #include "ImageWidget.hpp"
 
 #include <rack_themer.hpp>
+#include <sst/rackhelpers/ui.h>
 #include <sst/rackhelpers/module_connector.h>
 
 namespace OuroborosModules::Widgets {
+    using BufferedDrawFunctionWidget = sst::rackhelpers::ui::BufferedDrawFunctionWidget;
+    using BufferedDrawFunctionWidgetOnLayer = sst::rackhelpers::ui::BufferedDrawFunctionWidgetOnLayer;
+
     struct ScrewWidget : rack_themer::widgets::SvgScrew {
         ScrewWidget () {
             setSvg (Theme::getThemedSvg ("components/Screw", nullptr));
@@ -301,4 +305,58 @@ namespace OuroborosModules::Widgets {
         }
     };
     using RedBlueLight = TRedBlueLight<>;
+
+    template<typename TBase = rack::componentlibrary::GrayModuleLightWidget>
+    struct TRGBLight : TBase {
+        TRGBLight () {
+            this->addBaseColor (nvgRGB (255, 0, 0));
+            this->addBaseColor (nvgRGB (0, 255, 0));
+            this->addBaseColor (nvgRGB (0, 0, 255));
+        }
+    };
+    using RGBLight = TRGBLight<>;
+
+    static inline void setRGBLight (rack::Module* module, int firstLightId, float red, float green, float blue, float brightness) {
+        if (module == nullptr)
+            return;
+
+        module->getLight (firstLightId + 0).setBrightness (red * red * brightness);
+        module->getLight (firstLightId + 1).setBrightness (green * green * brightness);
+        module->getLight (firstLightId + 2).setBrightness (blue * blue * brightness);
+    }
+
+    static inline void setRGBLight (rack::Module* module, int firstLightId, RGBColor color, float brightness) {
+        setRGBLight (module, firstLightId, color.r, color.g, color.b, brightness);
+    }
+    static inline void setRGBLight (rack::Module* module, int firstLightId, NVGcolor color, float brightness) {
+        setRGBLight (module, firstLightId, color.r, color.g, color.b, brightness);
+    }
+
+    static inline void setRGBLightSmooth (
+        rack::Module* module, int firstLightId,
+        float red, float green, float blue, float brightness,
+        float deltaTime, float lambda = 30.f
+    ) {
+        if (module == nullptr)
+            return;
+
+        module->getLight (firstLightId + 0).setBrightnessSmooth (red * red * brightness, deltaTime, lambda);
+        module->getLight (firstLightId + 1).setBrightnessSmooth (green * green * brightness, deltaTime, lambda);
+        module->getLight (firstLightId + 2).setBrightnessSmooth (blue * blue * brightness, deltaTime, lambda);
+    }
+
+    static inline void setRGBLightSmooth (
+        rack::Module* module, int firstLightId,
+        RGBColor color, float brightness,
+        float deltaTime, float lambda = 30.f
+    ) {
+        setRGBLightSmooth (module, firstLightId, color.r, color.g, color.b, brightness, deltaTime, lambda);
+    }
+    static inline void setRGBLightSmooth (
+        rack::Module* module, int firstLightId,
+        NVGcolor color, float brightness,
+        float deltaTime, float lambda = 30.f
+    ) {
+        setRGBLightSmooth (module, firstLightId, color.r, color.g, color.b, brightness, deltaTime, lambda);
+    }
 }
