@@ -45,6 +45,16 @@ namespace OuroborosModules::Modules::Pulsar {
     static const float BaseFrequencyAudio = rack::dsp::FREQ_C4;
     static constexpr float BaseFrequencyLFO = 2.f;
 
+    template<typename T>
+    T voctToFrequency (T vOct, float baseFreq) {
+        return baseFreq * rack::dsp::exp2_taylor5 (vOct);
+    }
+
+    template<typename T>
+    T frequencyToVOct (T freq, float baseFreq) {
+        return rack::simd::log2 (freq / baseFreq);
+    }
+
     struct PulsarModule : ModuleBase {
         enum ParamIds {
             // Frequency

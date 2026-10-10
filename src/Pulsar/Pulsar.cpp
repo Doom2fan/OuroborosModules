@@ -62,13 +62,17 @@ namespace OuroborosModules::Modules::Pulsar {
      * Frequency helpers
      */
     struct FrequencyQuantity : rack::engine::ParamQuantity {
-        float getDisplayValue () override {
+        float getCenterFreq () {
             auto module = reinterpret_cast<PulsarModule*> (this->module);
+            return module != nullptr ? module->centerMainFreq : rack::dsp::FREQ_C4;
+        }
 
-            if (module != nullptr)
-                displayMultiplier = module->centerMainFreq;
+        float getDisplayValue () override {
+            return voctToFrequency (ParamQuantity::getDisplayValue (), getCenterFreq ());
+        }
 
-            return ParamQuantity::getDisplayValue ();
+        void setDisplayValue (float displayValue) override {
+            ParamQuantity::setDisplayValue (frequencyToVOct (displayValue, getCenterFreq ()));
         }
     };
 
@@ -77,56 +81,34 @@ namespace OuroborosModules::Modules::Pulsar {
      */
     static const float FormantMinVOct = -4;
     static const float FormantMaxVOct = 6;
-    template<typename T>
-    T decoupledFormantFromParam (T paramVal, T vOct, float baseFreq) {
-        vOct += Math::rescale1 (paramVal, T (FormantMinVOct), T (FormantMaxVOct));
-        return baseFreq * rack::dsp::exp2_taylor5 (vOct);
-    }
-
-    template<typename T>
-    T decoupledFormantToParam (T freqVal, float baseFreq) {
-        auto vOct = rack::simd::log2 (freqVal / baseFreq);
-        auto normalized = rack::math::rescale (vOct, T (FormantMinVOct), T (FormantMaxVOct), 0, 1);
-        return normalized;
-    }
 
     struct FormantQuantity : rack::engine::ParamQuantity {
         float getDisplayValue () override {
+            auto displayValue = ParamQuantity::getDisplayValue ();
             auto module = reinterpret_cast<PulsarModule*> (this->module);
 
             if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled)
-                return decoupledFormantFromParam (ParamQuantity::getDisplayValue (), 0.f, module->centerFormantFreq);
+                return voctToFrequency (displayValue, module->centerFormantFreq);
 
-            return ParamQuantity::getDisplayValue ();
+            return displayValue;
         }
 
         void setDisplayValue (float displayValue) override {
             auto module = reinterpret_cast<PulsarModule*> (this->module);
 
-            if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled) {
-                ParamQuantity::setDisplayValue (decoupledFormantToParam (displayValue, module->centerFormantFreq));
-                return;
-            }
+            if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled)
+                displayValue = frequencyToVOct (displayValue, module->centerFormantFreq);
 
             ParamQuantity::setDisplayValue (displayValue);
-        }
-
-        float getDefaultValue () override {
-            auto module = reinterpret_cast<PulsarModule*> (this->module);
-
-            if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled) {
-                return decoupledFormantToParam (module->centerFormantFreq, module->centerFormantFreq);
-            } else
-                return defaultValue;
         }
 
         std::string getUnit () override {
             auto module = reinterpret_cast<PulsarModule*> (this->module);
 
-            if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled) {
+            if (module != nullptr && module->formantMode != PulsarFormantMode::Coupled)
                 return " Hz";
-            } else
-                return "%";
+
+            return "V";
         }
     };
 
@@ -174,8 +156,8 @@ namespace OuroborosModules::Modules::Pulsar {
 
         /* Configure parameters */
         // Frequency
-        configParamVOct<FrequencyQuantity> (PARAM_FREQUENCY, -4, 6, 0, "Emission frequency");
-        configParam<FormantQuantity> (PARAM_FORMANT, 0.f, 1.f, 0.f, "Formant", "%", 0, 100);
+        configParam<FrequencyQuantity> (PARAM_FREQUENCY, -4, 6, 0, "Emission frequency", " Hz");
+        configParam<FormantQuantity> (PARAM_FORMANT, FormantMinVOct, FormantMaxVOct, 0.f, "Formant", "", 0, 1);
 
         // Wave shape
         configParam (PARAM_WAVEINDEX, 0.f, WavesCount - 1.f, 0.f, "Waveform index", "", 0, 1, 1);
@@ -399,36 +381,26 @@ namespace OuroborosModules::Modules::Pulsar {
         if (!force && mode == formantMode)
             return;
 
-        auto decoupled = false;
         switch (mode) {
             default:
             case PulsarFormantMode::Coupled: {
                 formantMode = PulsarFormantMode::Coupled;
                 centerFormantFreq = BaseFrequencyAudio;
-                decoupled = false;
                 break;
             }
 
             case PulsarFormantMode::AudioRate: {
                 formantMode = PulsarFormantMode::AudioRate;
                 centerFormantFreq = BaseFrequencyAudio;
-                decoupled = true;
                 break;
             }
 
             case PulsarFormantMode::LFO: {
                 formantMode = PulsarFormantMode::LFO;
                 centerFormantFreq = BaseFrequencyLFO;
-                decoupled = true;
                 break;
             }
         }
-
-        auto formantQuantity = getParamQuantity (PARAM_FORMANT);
-        if (decoupled)
-            formantQuantity->displayMultiplier = 1.f;
-        else
-            formantQuantity->displayMultiplier = 100.f;
     }
 
     void PulsarModule::onSampleRateChange (const SampleRateChangeEvent& e) {
@@ -505,7 +477,7 @@ namespace OuroborosModules::Modules::Pulsar {
         engine.setDCBlocker (isLFO ? dcBlockerLFO : dcBlockerAudio);
 
         // Fetch CV attenuverters
-        auto formantKnob = AutoAttenuverter (this, PARAM_FORMANT, PARAM_FORMANT_CV_ATTEN, 10);
+        auto formantKnob = AutoAttenuverter<false> (this, PARAM_FORMANT, PARAM_FORMANT_CV_ATTEN, 1, 1);
         auto clusterKnob = AutoAttenuverter (this, PARAM_CLUSTER, PARAM_CLUSTER_CV_ATTEN, 10);
 
         auto waveIndexKnob = AutoAttenuverter (this, PARAM_WAVEINDEX, PARAM_WAVEINDEX_CV_ATTEN, 10);
@@ -517,8 +489,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         auto burstCountKnob = AutoAttenuverter (this, PARAM_BURSTCOUNT, PARAM_BURSTCOUNT_CV_ATTEN, 10);
         auto restCountKnob = AutoAttenuverter (this, PARAM_RESTCOUNT, PARAM_RESTCOUNT_CV_ATTEN, 10);
-
-        auto formantCVAtten = getParam (PARAM_FORMANT_CV_ATTEN);
 
         auto channelCount = getChannelCount ();
         setOutputChannels (OUTPUT_MAIN, channelCount);
@@ -543,21 +513,15 @@ namespace OuroborosModules::Modules::Pulsar {
 
             // Calculate the frequencies
             auto vOct = getParam (PARAM_FREQUENCY) + fpClean (getInputPoly (INPUT_VOCT, channel));
-            auto mainFreq = rack::simd::fmin (centerMainFreq * rack::dsp::exp2_taylor5 (vOct), maxFreq);
+            auto mainFreq = rack::simd::fmin (voctToFrequency (vOct, centerMainFreq), maxFreq);
 
             // Emission parameters
             engine.setEmissionFrequency (channel, mainFreq);
 
             // Pulsar parameters
-            auto formantFreq = mainFreq;
-            auto formantCV = getInputPoly (INPUT_FORMANT_CV, channel);
-            if (formantMode == PulsarFormantMode::Coupled) {
-                auto formant = formantKnob.process (formantCV);
-                formantFreq = rack::simd::fmin (mainFreq / Math::rescale1 (formant, 1.f, 1e-4f), maxFreq);
-            } else {
-                formantFreq = decoupledFormantFromParam (formantKnob.getParamValue (), formantCV * formantCVAtten, centerFormantFreq);
-                formantFreq = rack::simd::fmin (formantFreq, maxFreq);
-            }
+            auto formantVOct = formantKnob.process (getInputPoly (INPUT_FORMANT_CV, channel));
+            auto formantCenterFreq = formantMode != PulsarFormantMode::Coupled ? centerFormantFreq : mainFreq;
+            auto formantFreq = rack::simd::fmin (voctToFrequency (formantVOct, formantCenterFreq), maxFreq);
 
             PulsarParameters pulsarParams { };
             pulsarParams.frequency = formantFreq;
