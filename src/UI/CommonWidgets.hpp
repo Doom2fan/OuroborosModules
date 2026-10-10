@@ -23,9 +23,13 @@
 #include "ImageWidget.hpp"
 
 #include <rack_themer.hpp>
+#include <sst/rackhelpers/ui.h>
 #include <sst/rackhelpers/module_connector.h>
 
 namespace OuroborosModules::Widgets {
+    using BufferedDrawFunctionWidget = sst::rackhelpers::ui::BufferedDrawFunctionWidget;
+    using BufferedDrawFunctionWidgetOnLayer = sst::rackhelpers::ui::BufferedDrawFunctionWidgetOnLayer;
+
     struct ScrewWidget : rack_themer::widgets::SvgScrew {
         ScrewWidget () {
             setSvg (Theme::getThemedSvg ("components/Screw", nullptr));
