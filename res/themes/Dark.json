@@ -32,8 +32,16 @@
             "fill": "#ebebeb"
         },
 
+        "silkscreenStroke": {
+            "stroke": "#ebebeb"
+        },
+
         "silkscreen-out": {
             "fill": "#1f1f1f"
+        },
+
+        "silkscreenStroke-out": {
+            "stroke": "#1f1f1f"
         },
 
         "cable-color-display-background": {
