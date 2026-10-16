@@ -149,6 +149,18 @@ namespace OuroborosModules::Modules::Pulsar {
         PulsarWavetables* wavetables = nullptr;
     };
 
+    struct PulsarParametersUpdate {
+        rack::simd::float_4 frequency = 0.f;
+        rack::simd::float_4 cluster = 0.f;
+
+        rack::simd::float_4 shapeIndex = 0.f;
+        rack::simd::float_4 shaperAmount = 0.f;
+
+        rack::simd::float_4 windowIndex = 0.f;
+        rack::simd::float_4 windowSkew = 0.f;
+        rack::simd::float_4 windowAmount = 0.f;
+    };
+
     struct PulsarParameters {
         // Parameters
         bool isRest = false;
@@ -320,6 +332,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         const PulsarParameters& getParams (uint32_t channel) const { return parameters [channel]; }
         void setParams (uint32_t channel, const PulsarParameters& params) { parameters [channel] = params; }
+        void setParams (uint32_t firstChannel, const PulsarParametersUpdate& params);
 
         void setMaskingModeBurst () { maskingData.setBurstMode (); }
         void setMaskingModeStochastic () { maskingData.setStochasticMode (); }

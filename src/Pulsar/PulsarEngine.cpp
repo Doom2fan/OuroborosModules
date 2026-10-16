@@ -566,6 +566,22 @@ namespace OuroborosModules::Modules::Pulsar {
         triggeredMode = enable;
     }
 
+    void PulsarEngine::setParams (uint32_t firstChannel, const PulsarParametersUpdate& params) {
+        for (uint32_t bankIdx = 0; bankIdx < SIMDBankSize; bankIdx++) {
+            auto channel = firstChannel + bankIdx;
+
+            parameters [channel].frequency = params.frequency [bankIdx];
+            parameters [channel].cluster = params.cluster [bankIdx];
+
+            parameters [channel].shapeIndex = params.shapeIndex [bankIdx];
+            parameters [channel].shaperAmount = params.shaperAmount [bankIdx];
+
+            parameters [channel].windowIndex = params.windowIndex [bankIdx];
+            parameters [channel].windowSkew = params.windowSkew [bankIdx];
+            parameters [channel].windowAmount = params.windowAmount [bankIdx];
+        }
+    }
+
     void PulsarEngine::setMaskingBurst (uint32_t firstChannel, rack::simd::int32_4 burstCount, rack::simd::int32_4 restCount) {
         maskingData.setBurst (firstChannel, burstCount, restCount);
     }
