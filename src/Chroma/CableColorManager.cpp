@@ -105,8 +105,8 @@ namespace OuroborosModules::Modules::Chroma {
         json_object_set_new_auto (colorJ, "color::A", color.a);
 
         json_object_set_new_auto (colorJ, "key", key);
-
         json_object_set_new_auto (colorJ, "label", label);
+        json_object_set_new_auto (colorJ, "skipOnCycle", skipOnCycle);
 
         return colorJ;
     }
@@ -122,8 +122,8 @@ namespace OuroborosModules::Modules::Chroma {
 
         if (!json_object_try_get_auto (colorJ, "key", key))
             return false;
-
         json_object_try_get_auto (colorJ, "label", label);
+        json_object_try_get_auto (colorJ, "skipOnCycle", skipOnCycle);
 
         return true;
     }
@@ -365,9 +365,18 @@ namespace OuroborosModules::Modules::Chroma {
             cablesToModify.push_back (heldCable);
             replacePatchCableColor (cablesToModify, curColorIndex);
 
-            if (!pluginSettings.chroma_Latch) {
-                if (++curColorIndex >= colorCollection.count ())
-                    curColorIndex = 0;
+            if (!pluginSettings.chroma_Latch && colorCollection.count () > 0) {
+                auto startingColor = curColorIndex++;
+                while (curColorIndex != startingColor) {
+                    if (curColorIndex >= colorCollection.count ())
+                        curColorIndex = 0;
+
+                    auto color = colorCollection [curColorIndex];
+                    if (!color.skipOnCycle)
+                        break;
+
+                    curColorIndex++;
+                }
             }
         }
     }
@@ -558,6 +567,18 @@ namespace OuroborosModules::Modules::Chroma {
         auto newColor = oldColor;
         newColor.key = key;
         APP->history->push (new ChangeColorHistory ("change cable color key mapping", index, oldColor, newColor));
+
+        colorCollection.setColor (index, newColor);
+    }
+
+    void CableColorManager::toggleColorSkipOnCycle (uint32_t index) {
+        if (index >= colorCollection.count ())
+            return;
+
+        auto oldColor = colorCollection [index];
+        auto newColor = oldColor;
+        newColor.skipOnCycle = !newColor.skipOnCycle;
+        APP->history->push (new ChangeColorHistory ("toggle cable color skip when cycling", index, oldColor, newColor));
 
         colorCollection.setColor (index, newColor);
     }

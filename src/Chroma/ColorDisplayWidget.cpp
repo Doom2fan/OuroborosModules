@@ -286,21 +286,25 @@ namespace OuroborosModules::Modules::Chroma {
             keyName = fmt::format (FMT_STRING ("cable color #{}"), index + 1);
 
         menu->addChild (rack::createMenuItem (
-            "Set key mapping",
-            color.key.keyText (),
+            "Set key mapping", color.key.keyText (),
             [=] { getColorManager ()->setLearnMode (keyName, index); },
             false, true
         ));
         menu->addChild (rack::createMenuItem (
-            "Unset key mapping",
-            "",
+            "Unset key mapping", "",
             [=] { getColorManager ()->unsetColorKey (index); },
             !color.key.isMapped ()
         ));
         menu->addChild (rack::createMenuItem (
-            "Delete color",
-            "",
+            "Delete color", "",
             [=] { getColorManager ()->removeColor (index); }
+        ));
+
+        menu->addChild (new rack::MenuSeparator);
+        menu->addChild (rack::createCheckMenuItem (
+            "Skip when cycling", "",
+            [=] { return color.skipOnCycle; },
+            [=] { getColorManager ()->toggleColorSkipOnCycle (index); }
         ));
     }
 }
