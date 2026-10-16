@@ -159,59 +159,78 @@ namespace OuroborosModules::Modules::Pulsar {
         }
 
         // Ensure the struct is valid
-        if (modeInvalid)
-            mode = PulsarMaskingMode::Invalid;
-        if (mode == PulsarMaskingMode::Invalid)
-            setBurst (1, 0);
+        if (mode == PulsarMaskingMode::Invalid || modeInvalid)
+            setBurstMode ();
 
         return true;
     }
 
-    inline void PulsarMaskingData::setBurst (uint32_t burstCount, uint32_t restCount) {
-        // Parameters
-        burstData.burstCount = burstCount;
-        burstData.restCount = restCount;
-
-        // State
-        if (mode != PulsarMaskingMode::Burst) {
-            burstData.curCount = 0;
-            burstData.isRest = false;
-        }
+    void PulsarMaskingData::setBurstMode () {
+        if (mode == PulsarMaskingMode::Burst)
+            return;
 
         mode = PulsarMaskingMode::Burst;
+
+        // Parameters
+        std::fill_n (burstData.burstCount, Constants::MaxPolyphony, 0u);
+        std::fill_n (burstData.restCount, Constants::MaxPolyphony, 0u);
+
+        // State
+        std::fill_n (burstData.curCount, Constants::MaxPolyphony, 0u);
+        std::fill_n (burstData.isRest, Constants::MaxPolyphony, false);
     }
 
-    inline void PulsarMaskingData::setStochastic (float restProb, float noneProb) {
-        // Parameters
-        stochasticData.restProbability = restProb;
-        stochasticData.skipProbability = noneProb;
+    void PulsarMaskingData::setStochasticMode () {
+        if (mode == PulsarMaskingMode::Stochastic)
+            return;
 
         mode = PulsarMaskingMode::Stochastic;
+
+        // Parameters
+        std::fill_n (stochasticData.restProbability, Constants::MaxPolyphony, 0u);
+        std::fill_n (stochasticData.skipProbability, Constants::MaxPolyphony, 0u);
+    }
+
+    inline void PulsarMaskingData::setBurst (uint32_t firstChannel, int32_4 burstCount, int32_4 restCount) {
+        burstCount.store (burstData.burstCount + firstChannel);
+        restCount.store (burstData.restCount + firstChannel);
+    }
+
+    inline void PulsarMaskingData::setStochastic (uint32_t firstChannel, float_4 restProb, float_4 noneProb) {
+        restProb.store (stochasticData.restProbability + firstChannel);
+        noneProb.store (stochasticData.skipProbability + firstChannel);
     }
 
     [[using gnu: always_inline, hot]]
-    inline PulsarMask PulsarMaskingData::process () {
+    inline PulsarMask PulsarMaskingData::process (uint32_t channel) {
         switch (mode) {
             case PulsarMaskingMode::Burst: {
-                auto maxCount = (burstData.isRest ? burstData.restCount : burstData.burstCount);
+                auto isRest = burstData.isRest [channel];
+                auto curCount = burstData.curCount [channel];
 
-                if (maxCount == 0)
-                    burstData.isRest = !burstData.isRest;
+                auto maxCount = (isRest ? burstData.restCount [channel] : burstData.burstCount [channel]);
 
-                auto ret = burstData.isRest ? PulsarMask::Rest : PulsarMask::Pulse;
-                burstData.curCount++;
-                if (burstData.curCount >= maxCount) {
-                    burstData.curCount = 0;
-                    burstData.isRest = !burstData.isRest;
+                isRest ^= (maxCount == 0);
+
+                auto ret = isRest ? PulsarMask::Rest : PulsarMask::Pulse;
+                curCount++;
+                if (curCount >= maxCount) {
+                    curCount = 0;
+                    isRest = !isRest;
                 }
+
+                burstData.isRest [channel] = isRest;
+                burstData.curCount [channel] = curCount;
 
                 return ret;
             }
 
             case PulsarMaskingMode::Stochastic:
-                if (rack::random::uniform () > stochasticData.skipProbability)
+                if (rack::random::uniform () > stochasticData.skipProbability [channel])
                     return PulsarMask::None;
-                return (rack::random::uniform () <= stochasticData.restProbability) ? PulsarMask::Pulse : PulsarMask::Rest;
+                return (rack::random::uniform () <= stochasticData.restProbability [channel])
+                    ? PulsarMask::Pulse
+                    : PulsarMask::Rest;
 
             default: return PulsarMask::None; // Mode is invalid, do nothing (accessing any data could be UB)
         }
@@ -434,7 +453,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // State
         json_object_set_new_auto (rootJ, "pulsars", pulsars [channel]);
-        json_object_set_new_auto (rootJ, "maskingData", maskingData [channel]);
 
         json_object_set_new_auto (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
         json_object_set_new_auto (rootJ, "emissionPhase", emissionPhase [channel]);
@@ -457,7 +475,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // State
         failed |= !json_object_try_get_auto (rootJ, "pulsars", pulsars [channel]);
-        failed |= !json_object_try_get_auto (rootJ, "maskingData", maskingData [channel]);
 
         failed |= !json_object_try_get_auto (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
         failed |= !json_object_try_get_auto (rootJ, "emissionPhase", emissionPhase [channel]);
@@ -476,6 +493,7 @@ namespace OuroborosModules::Modules::Pulsar {
             json_array_append (channelsJ, channelToJson (channel));
         json_object_set_new (rootJ, "channels", channelsJ);
 
+        json_object_set_new_auto (rootJ, "maskingData", maskingData);
         json_object_set_new_auto (rootJ, "overlapMode", overlapMode);
         json_object_set_new_auto (rootJ, "triggeredMode", triggeredMode);
         json_object_set_new_auto (rootJ, "dcBlockerOn", dcBlockerOn);
@@ -500,6 +518,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 failed |= !channelFromJson (json_array_get (channelsJ, channel), channel);
         }
 
+        failed |= !json_object_try_get_auto (rootJ, "maskingData", maskingData);
         failed |= !json_object_try_get_auto (rootJ, "overlapMode", overlapMode);
         failed |= !json_object_try_get_auto (rootJ, "triggeredMode", triggeredMode);
         failed |= !json_object_try_get_auto (rootJ, "dcBlockerOn", dcBlockerOn);
@@ -547,12 +566,12 @@ namespace OuroborosModules::Modules::Pulsar {
         triggeredMode = enable;
     }
 
-    void PulsarEngine::setMaskingBurst (uint32_t channel, uint32_t burstCount, uint32_t restCount) {
-        maskingData [channel].setBurst (burstCount, restCount);
+    void PulsarEngine::setMaskingBurst (uint32_t firstChannel, rack::simd::int32_4 burstCount, rack::simd::int32_4 restCount) {
+        maskingData.setBurst (firstChannel, burstCount, restCount);
     }
 
-    void PulsarEngine::setMaskingStochastic (uint32_t channel, float restProbability, float noneProbability) {
-        maskingData [channel].setStochastic (restProbability, noneProbability);
+    void PulsarEngine::setMaskingStochastic (uint32_t firstChannel, VectorT restProbability, VectorT noneProbability) {
+        maskingData.setStochastic (firstChannel, restProbability, noneProbability);
     }
 
     void PulsarEngine::setChannelCount (uint32_t count) {
@@ -880,7 +899,7 @@ namespace OuroborosModules::Modules::Pulsar {
                         continue;
 
                     auto channel = baseChannel + bankIdx;
-                    auto mask = maskingData [channel].process ();
+                    auto mask = maskingData.process (channel);
                     if (mask != PulsarMask::None)
                         emitPulsar (args, channel, mask == PulsarMask::Rest, sampleIdx);
                 }

@@ -46,12 +46,12 @@ namespace OuroborosModules::Modules::Pulsar {
     static constexpr float BaseFrequencyLFO = 2.f;
 
     template<typename T>
-    T voctToFrequency (T vOct, float baseFreq) {
+    T voctToFrequency (T vOct, T baseFreq) {
         return baseFreq * rack::dsp::exp2_taylor5 (vOct);
     }
 
     template<typename T>
-    T frequencyToVOct (T freq, float baseFreq) {
+    T frequencyToVOct (T freq, T baseFreq) {
         return rack::simd::log2 (freq / baseFreq);
     }
 

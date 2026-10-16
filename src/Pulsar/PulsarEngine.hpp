@@ -93,36 +93,41 @@ namespace OuroborosModules::Modules::Pulsar {
 
     struct PulsarMaskingData {
       private:
+        using int32_4 = rack::simd::int32_4;
+        using float_4 = rack::simd::float_4;
+
         PulsarMaskingMode mode = PulsarMaskingMode::Invalid;
         union {
             struct {
                 // Parameters
-                uint32_t burstCount;
-                uint32_t restCount;
+                int32_t burstCount [Constants::MaxPolyphony];
+                int32_t restCount [Constants::MaxPolyphony];
 
                 // State
-                uint32_t curCount;
-                bool isRest;
+                int32_t curCount [Constants::MaxPolyphony];
+                int32_t isRest [Constants::MaxPolyphony];
             } burstData;
 
             struct {
                 // Parameters
-                float restProbability;
-                float skipProbability;
+                float restProbability [Constants::MaxPolyphony];
+                float skipProbability [Constants::MaxPolyphony];
             } stochasticData;
         };
 
       public:
-        PulsarMaskingData () { setBurst (1, 0); }
+        PulsarMaskingData () { setBurstMode (); }
+
+        PulsarMaskingMode getMode () { return mode; }
+        void setBurstMode ();
+        void setStochasticMode ();
+        void setBurst (uint32_t firstChannel, int32_4 burstCount, int32_4 restCount);
+        void setStochastic (uint32_t firstChannel, float_4 restProb, float_4 noneProb);
+
+        PulsarMask process (uint32_t channel);
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);
-
-        PulsarMaskingMode getMode () { return mode; }
-        void setBurst (uint32_t burstCount, uint32_t restCount);
-        void setStochastic (float restProb, float noneProb);
-
-        PulsarMask process ();
     };
 
     /*
@@ -280,7 +285,7 @@ namespace OuroborosModules::Modules::Pulsar {
         // State
         float curSampleRate = 0.f;
         PulsarDataStore pulsars [Constants::MaxPolyphony];
-        PulsarMaskingData maskingData [Constants::MaxPolyphony];
+        PulsarMaskingData maskingData;
 
         OutputData outputMain = { };
         OutputData outputRest = { };
@@ -309,13 +314,17 @@ namespace OuroborosModules::Modules::Pulsar {
         void setOverlapMode (bool overlap) { overlapMode = overlap; }
         void setTriggeredMode (bool enable);
 
+        float getEmissionFrequency (uint32_t channel) { return emissionFrequency [channel]; }
+        void setEmissionFrequency (uint32_t firstChannel, VectorT freq) { freq.store (emissionFrequency + firstChannel); }
         void setEmissionFrequency (uint32_t channel, float freq) { emissionFrequency [channel] = freq; }
 
         const PulsarParameters& getParams (uint32_t channel) const { return parameters [channel]; }
         void setParams (uint32_t channel, const PulsarParameters& params) { parameters [channel] = params; }
 
-        void setMaskingBurst (uint32_t channel, uint32_t burstCount, uint32_t restCount);
-        void setMaskingStochastic (uint32_t channel, float restProbability, float noneProbability);
+        void setMaskingModeBurst () { maskingData.setBurstMode (); }
+        void setMaskingModeStochastic () { maskingData.setStochasticMode (); }
+        void setMaskingBurst (uint32_t firstChannel, rack::simd::int32_4 burstCount, rack::simd::int32_4 restCount);
+        void setMaskingStochastic (uint32_t firstChannel, VectorT restProbability, VectorT noneProbability);
 
         uint32_t getChannelCount () const { return channelCount; }
         void setChannelCount (uint32_t count);

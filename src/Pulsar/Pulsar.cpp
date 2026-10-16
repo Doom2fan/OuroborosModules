@@ -34,6 +34,10 @@ namespace OuroborosModules::Modules::Pulsar {
         return static_cast<uint32_t> (std::round (v));
     }
 
+    rack::simd::int32_4 burstToInt (rack::simd::float_4 v) {
+        return static_cast<rack::simd::int32_4> (rack::simd::round (v));
+    }
+
     struct BurstCountQuantity : rack::engine::ParamQuantity {
         float getDisplayValue () override {
             auto module = reinterpret_cast<PulsarModule*> (this->module);
@@ -447,6 +451,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
     void PulsarModule::updateParams () {
         using Math::fpClean;
+        using rack::simd::float_4;
 
         auto maxFreq = curSampleRate / 2.f;
 
@@ -475,6 +480,12 @@ namespace OuroborosModules::Modules::Pulsar {
         }
         engine.setDCBlocker (isLFO ? dcBlockerLFO : dcBlockerAudio);
 
+        switch (maskingMode) {
+            case PulsarMaskingMode::Burst: engine.setMaskingModeBurst (); break;
+            case PulsarMaskingMode::Stochastic: engine.setMaskingModeStochastic (); break;
+            default: break;
+        }
+
         // Fetch CV attenuverters
         auto formantKnob = AutoAttenuverter<false> (this, PARAM_FORMANT, PARAM_FORMANT_CV_ATTEN, 1, 1);
         auto clusterKnob = AutoAttenuverter (this, PARAM_CLUSTER, PARAM_CLUSTER_CV_ATTEN, 10);
@@ -494,10 +505,10 @@ namespace OuroborosModules::Modules::Pulsar {
         setOutputChannels (OUTPUT_REST, channelCount);
         engine.setChannelCount (channelCount);
 
-        for (uint8_t channel = 0; channel < channelCount; channel++) {
+        for (uint32_t channel = 0; channel < channelCount; channel += PulsarEngine::SIMDBankSize) {
             // Masking mode
-            auto burstCount = burstCountKnob.process (getInputPoly (INPUT_BURSTCOUNT_CV, channel));
-            auto restCount = restCountKnob.process (getInputPoly (INPUT_RESTCOUNT_CV, channel));
+            auto burstCount = burstCountKnob.process (getInputPolySimd<float_4> (INPUT_BURSTCOUNT_CV, channel));
+            auto restCount = restCountKnob.process (getInputPolySimd<float_4> (INPUT_RESTCOUNT_CV, channel));
             switch (maskingMode) {
                 case PulsarMaskingMode::Burst:
                     engine.setMaskingBurst (channel, burstToInt (burstCount * 6) + 1, burstToInt (restCount * 7));
@@ -511,29 +522,40 @@ namespace OuroborosModules::Modules::Pulsar {
             }
 
             // Calculate the frequencies
-            auto vOct = getParam (PARAM_FREQUENCY) + fpClean (getInputPoly (INPUT_VOCT, channel));
-            auto mainFreq = rack::simd::fmin (voctToFrequency (vOct, centerMainFreq), maxFreq);
+            auto vOct = getParam (PARAM_FREQUENCY) + fpClean (getInputPolySimd<float_4> (INPUT_VOCT, channel));
+            auto mainFreq = rack::simd::fmin (voctToFrequency (vOct, float_4 (centerMainFreq)), maxFreq);
 
             // Emission parameters
             engine.setEmissionFrequency (channel, mainFreq);
 
             // Pulsar parameters
-            auto formantVOct = formantKnob.process (getInputPoly (INPUT_FORMANT_CV, channel));
+            auto formantVOct = formantKnob.process (getInputPolySimd<float_4> (INPUT_FORMANT_CV, channel));
             auto formantCenterFreq = formantMode != PulsarFormantMode::Coupled ? centerFormantFreq : mainFreq;
             auto formantFreq = rack::simd::fmin (voctToFrequency (formantVOct, formantCenterFreq), maxFreq);
 
-            PulsarParameters pulsarParams { };
-            pulsarParams.frequency = formantFreq;
-            pulsarParams.cluster = clusterKnob.process (getInputPoly (INPUT_CLUSTER_CV, channel));
+            auto cluster = clusterKnob.process (getInputPolySimd<float_4> (INPUT_CLUSTER_CV, channel));
 
-            pulsarParams.shapeIndex = waveIndexKnob.process (getInputPoly (INPUT_WAVEINDEX_CV, channel));
-            pulsarParams.shaperAmount = rack::simd::pow (waveshaperKnob.process (getInputPoly (INPUT_WAVESHAPER_CV, channel)), 2);
+            auto shapeIndex = waveIndexKnob.process (getInputPolySimd<float_4> (INPUT_WAVEINDEX_CV, channel));
+            auto shaperAmount = rack::simd::pow (waveshaperKnob.process (getInputPolySimd<float_4> (INPUT_WAVESHAPER_CV, channel)), 2);
 
-            pulsarParams.windowIndex = windowIndexKnob.process (getInputPoly (INPUT_WINDOWINDEX_CV, channel));
-            pulsarParams.windowSkew = windowSkewKnob.process (getInputPoly (INPUT_WINDOWSKEW_CV, channel));
-            pulsarParams.windowAmount = windowAmountKnob.process (getInputPoly (INPUT_WINDOWAMOUNT_CV, channel));
+            auto windowIndex = windowIndexKnob.process (getInputPolySimd<float_4> (INPUT_WINDOWINDEX_CV, channel));
+            auto windowSkew = windowSkewKnob.process (getInputPolySimd<float_4> (INPUT_WINDOWSKEW_CV, channel));
+            auto windowAmount = windowAmountKnob.process (getInputPolySimd<float_4> (INPUT_WINDOWAMOUNT_CV, channel));
 
-            engine.setParams (channel, pulsarParams);
+            for (uint32_t bankIdx = 0; bankIdx < PulsarEngine::SIMDBankSize; bankIdx++) {
+                PulsarParameters pulsarParams { };
+                pulsarParams.frequency = formantFreq [bankIdx];
+                pulsarParams.cluster = cluster [bankIdx];
+
+                pulsarParams.shapeIndex = shapeIndex [bankIdx];
+                pulsarParams.shaperAmount = shaperAmount [bankIdx];
+
+                pulsarParams.windowIndex = windowIndex [bankIdx];
+                pulsarParams.windowSkew = windowSkew [bankIdx];
+                pulsarParams.windowAmount = windowAmount [bankIdx];
+
+                engine.setParams (channel + bankIdx, pulsarParams);
+            }
         }
     }
 
