@@ -93,6 +93,12 @@ namespace OuroborosModules::Modules::Chroma {
         return true;
     }
 
+    bool CableColorKey::operator== (const CableColorKey& rhs) const {
+        return button == rhs.button &&
+               key == rhs.key &&
+               mods == rhs.mods;
+    }
+
     /*
      * CableColor
      */
@@ -564,6 +570,9 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto oldColor = colorCollection [index];
+        if (oldColor.key == key)
+            return;
+
         auto newColor = oldColor;
         newColor.key = key;
         APP->history->push (new ChangeColorHistory ("change cable color key mapping", index, oldColor, newColor));

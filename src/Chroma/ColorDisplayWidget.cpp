@@ -293,11 +293,12 @@ namespace OuroborosModules::Modules::Chroma {
         menu->addChild (rack::createMenuItem (
             "Unset key mapping", "",
             [=] { getColorManager ()->unsetColorKey (index); },
-            !color.key.isMapped ()
+            !color.key.isMapped (), true
         ));
         menu->addChild (rack::createMenuItem (
             "Delete color", "",
-            [=] { getColorManager ()->removeColor (index); }
+            [=] { getColorManager ()->removeColor (index); },
+            false, true
         ));
 
         menu->addChild (new rack::MenuSeparator);

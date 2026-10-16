@@ -46,6 +46,8 @@ namespace OuroborosModules::Modules::Chroma {
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* keyJ);
+
+        bool operator== (const CableColorKey& rhs) const;
     };
 
     struct CableColor {
