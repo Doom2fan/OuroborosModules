@@ -25,6 +25,7 @@ Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosMo
 * Discussions
   * [VCV Community announcements thread](https://community.vcvrack.com/t/ouroboros-industries-releases/24105)
   * [VCV Community development thread](https://community.vcvrack.com/t/ouroboros-industries-development-thread/22234)
+* [Licenses and credits](./LICENSE.md)
 
 ## Built with
 * [fmt](https://github.com/fmtlib/fmt)
