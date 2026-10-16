@@ -242,11 +242,11 @@ namespace OuroborosModules::Modules::Pulsar {
         auto rootJ = ModuleBase::dataToJson ();
 
         // State
-        json_object_set_new_struct (rootJ, "pulsarEngine", engine);
+        json_object_set_new_auto (rootJ, "pulsarEngine", engine);
 
         // Options
-        json_object_set_new_bool (rootJ, "dcBlockerAudio", dcBlockerAudio);
-        json_object_set_new_bool (rootJ, "dcBlockerLFO", dcBlockerLFO);
+        json_object_set_new_auto (rootJ, "dcBlockerAudio", dcBlockerAudio);
+        json_object_set_new_auto (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
         return rootJ;
     }
@@ -255,11 +255,11 @@ namespace OuroborosModules::Modules::Pulsar {
         ModuleBase::dataFromJson (rootJ);
 
         // State
-        json_object_try_get_struct (rootJ, "pulsarEngine", engine);
+        json_object_try_get_auto (rootJ, "pulsarEngine", engine);
 
         // Options
-        json_object_try_get_bool (rootJ, "dcBlockerAudio", dcBlockerAudio);
-        json_object_try_get_bool (rootJ, "dcBlockerLFO", dcBlockerLFO);
+        json_object_try_get_auto (rootJ, "dcBlockerAudio", dcBlockerAudio);
+        json_object_try_get_auto (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
         // Initialize module
         initializeModule ();

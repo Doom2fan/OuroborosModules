@@ -200,6 +200,7 @@ namespace OuroborosModules::Modules::Pulsar {
         json_t* dataToJson () const;
         bool dataFromJson (json_t* rootJ);
 
+        bool getSlot (uint32_t index) const;
         void setSlot (uint32_t index, bool used);
         void copyToSlot (uint32_t index, const PulsarParameters& params);
         void slotToParams (uint32_t index, PulsarParameters& params) const;

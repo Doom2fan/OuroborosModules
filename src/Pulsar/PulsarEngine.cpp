@@ -110,20 +110,20 @@ namespace OuroborosModules::Modules::Pulsar {
     json_t* PulsarMaskingData::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_enum (rootJ, "mode", mode);
+        json_object_set_new_auto (rootJ, "mode", mode);
         switch (mode) {
             case PulsarMaskingMode::Burst:
-                json_object_set_new_int (rootJ, "burstCount", burstData.burstCount);
-                json_object_set_new_int (rootJ, "restCount", burstData.restCount);
+                json_object_set_new_auto (rootJ, "burstCount", burstData.burstCount);
+                json_object_set_new_auto (rootJ, "restCount", burstData.restCount);
 
-                json_object_set_new_int (rootJ, "curCount", burstData.curCount);
-                json_object_set_new_bool (rootJ, "isRest", burstData.isRest);
+                json_object_set_new_auto (rootJ, "curCount", burstData.curCount);
+                json_object_set_new_auto (rootJ, "isRest", burstData.isRest);
 
                 break;
 
             case PulsarMaskingMode::Stochastic:
-                json_object_set_new_float (rootJ, "restProbability", stochasticData.restProbability);
-                json_object_set_new_float (rootJ, "skipProbability", stochasticData.skipProbability);
+                json_object_set_new_auto (rootJ, "restProbability", stochasticData.restProbability);
+                json_object_set_new_auto (rootJ, "skipProbability", stochasticData.skipProbability);
                 break;
 
             default: break;
@@ -136,23 +136,23 @@ namespace OuroborosModules::Modules::Pulsar {
         if (!json_is_object (rootJ))
             return false;
 
-        if (!json_object_try_get_enum (rootJ, "mode", mode))
+        if (!json_object_try_get_auto (rootJ, "mode", mode))
             mode = PulsarMaskingMode::Invalid;
 
         auto modeInvalid = false;
         switch (mode) {
             case PulsarMaskingMode::Burst:
-                modeInvalid |= !json_object_try_get_int (rootJ, "burstCount", burstData.burstCount);
-                modeInvalid |= !json_object_try_get_int (rootJ, "restCount", burstData.restCount);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "burstCount", burstData.burstCount);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "restCount", burstData.restCount);
 
-                modeInvalid |= !json_object_try_get_int (rootJ, "curCount", burstData.curCount);
-                modeInvalid |= !json_object_try_get_bool (rootJ, "isRest", burstData.isRest);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "curCount", burstData.curCount);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "isRest", burstData.isRest);
 
                 break;
 
             case PulsarMaskingMode::Stochastic:
-                modeInvalid |= !json_object_try_get_float (rootJ, "restProbability", stochasticData.restProbability);
-                modeInvalid |= !json_object_try_get_float (rootJ, "skipProbability", stochasticData.skipProbability);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "restProbability", stochasticData.restProbability);
+                modeInvalid |= !json_object_try_get_auto (rootJ, "skipProbability", stochasticData.skipProbability);
                 break;
 
             default: break;
@@ -224,23 +224,23 @@ namespace OuroborosModules::Modules::Pulsar {
         auto rootJ = json_object ();
 
         // Parameters
-        json_object_set_new_bool (rootJ, "isRest", isRest);
+        json_object_set_new_auto (rootJ, "isRest", isRest);
 
-        json_object_set_new_float (rootJ, "frequency", frequency);
-        json_object_set_new_float (rootJ, "cluster", cluster);
+        json_object_set_new_auto (rootJ, "frequency", frequency);
+        json_object_set_new_auto (rootJ, "cluster", cluster);
 
-        json_object_set_new_float (rootJ, "shapeIndex", shapeIndex);
-        json_object_set_new_float (rootJ, "shaperAmount", shaperAmount);
+        json_object_set_new_auto (rootJ, "shapeIndex", shapeIndex);
+        json_object_set_new_auto (rootJ, "shaperAmount", shaperAmount);
 
-        json_object_set_new_float (rootJ, "windowIndex", windowIndex);
-        json_object_set_new_float (rootJ, "windowSkew", windowSkew);
-        json_object_set_new_float (rootJ, "windowAmount", windowAmount);
+        json_object_set_new_auto (rootJ, "windowIndex", windowIndex);
+        json_object_set_new_auto (rootJ, "windowSkew", windowSkew);
+        json_object_set_new_auto (rootJ, "windowAmount", windowAmount);
 
         // State
-        json_object_set_new_float (rootJ, "edgeFrequency", edgeFrequency);
+        json_object_set_new_auto (rootJ, "edgeFrequency", edgeFrequency);
 
-        json_object_set_new_float (rootJ, "pulsarPhase", pulsarPhase);
-        json_object_set_new_float (rootJ, "edgePhase", edgePhase);
+        json_object_set_new_auto (rootJ, "pulsarPhase", pulsarPhase);
+        json_object_set_new_auto (rootJ, "edgePhase", edgePhase);
 
         return rootJ;
     }
@@ -250,23 +250,23 @@ namespace OuroborosModules::Modules::Pulsar {
             return false;
 
         // Parameters
-        json_object_try_get_bool (rootJ, "isRest", isRest);
+        json_object_try_get_auto (rootJ, "isRest", isRest);
 
-        json_object_try_get_float (rootJ, "frequency", frequency);
-        json_object_try_get_float (rootJ, "cluster", cluster);
+        json_object_try_get_auto (rootJ, "frequency", frequency);
+        json_object_try_get_auto (rootJ, "cluster", cluster);
 
-        json_object_try_get_float (rootJ, "shapeIndex", shapeIndex);
-        json_object_try_get_float (rootJ, "shaperAmount", shaperAmount);
+        json_object_try_get_auto (rootJ, "shapeIndex", shapeIndex);
+        json_object_try_get_auto (rootJ, "shaperAmount", shaperAmount);
 
-        json_object_try_get_float (rootJ, "windowIndex", windowIndex);
-        json_object_try_get_float (rootJ, "windowSkew", windowSkew);
-        json_object_try_get_float (rootJ, "windowAmount", windowAmount);
+        json_object_try_get_auto (rootJ, "windowIndex", windowIndex);
+        json_object_try_get_auto (rootJ, "windowSkew", windowSkew);
+        json_object_try_get_auto (rootJ, "windowAmount", windowAmount);
 
         // State
-        json_object_try_get_float (rootJ, "edgeFrequency", edgeFrequency);
+        json_object_try_get_auto (rootJ, "edgeFrequency", edgeFrequency);
 
-        json_object_try_get_float (rootJ, "pulsarPhase", pulsarPhase);
-        json_object_try_get_float (rootJ, "edgePhase", edgePhase);
+        json_object_try_get_auto (rootJ, "pulsarPhase", pulsarPhase);
+        json_object_try_get_auto (rootJ, "edgePhase", edgePhase);
 
         return true;
     }
@@ -277,16 +277,15 @@ namespace OuroborosModules::Modules::Pulsar {
     json_t* PulsarDataStore::dataToJson () const {
         auto rootJ = json_object ();
 
-        auto slotUsedJ = json_array ();
-        for (size_t i = 0; i < SlotBankCount; i++)
-            json_array_append_new (slotUsedJ, json_integer (slotUsed [i]));
-        json_object_set_new (rootJ, "slotUsed", slotUsedJ);
+        bool slotUsed [MaxPulsars];
+        PulsarParameters pulsars [MaxPulsars];
+        for (size_t index = 0; index < MaxPulsars; index++) {
+            slotUsed [index] = getSlot (index);
+            pulsars [index] = slotToParams (index);
+        }
 
-        auto pulsarsJ = json_array ();
-        for (size_t i = 0; i < MaxPulsars; i++)
-            json_array_append_new (pulsarsJ, slotToParams (i).dataToJson ());
-
-        json_object_set_new (rootJ, "pulsars", pulsarsJ);
+        json_object_set_new_array (rootJ, "slotUsed", slotUsed);
+        json_object_set_new_array (rootJ, "pulsars", pulsars);
 
         return rootJ;
     }
@@ -296,42 +295,36 @@ namespace OuroborosModules::Modules::Pulsar {
             return false;
 
         // Fetch the arrays
-        auto slotUsedJ = json_object_get (rootJ, "slotUsed");
-        if (!json_is_array (slotUsedJ))
-            return false;
+        bool slotUsed [MaxPulsars] = { };
+        PulsarParameters pulsars [MaxPulsars] = { };
 
+        auto slotUsedJ = json_object_get (rootJ, "slotUsed");
         auto pulsarsJ = json_object_get (rootJ, "pulsars");
-        if (!json_is_array (pulsarsJ))
+        if (!json_try_get_array (slotUsedJ, slotUsed) ||
+            !json_try_get_array (pulsarsJ, pulsars))
             return false;
 
         // Fail if the arrays aren't the same size
-        auto slotUsedLength = json_array_size (slotUsedJ);
         auto pulsarsLength = json_array_size (pulsarsJ);
-        if (slotUsedLength * SlotBankSize != pulsarsLength)
+        if (json_array_size (slotUsedJ) != pulsarsLength)
             return false;
 
-        for (size_t i = 0; i < slotUsedLength; i++) {
-            auto slotJ = json_array_get (slotUsedJ, i);
-            if (!json_is_integer (slotJ))
-                return false;
-
-            if (i < SlotBankCount)
-                slotUsed [i] = json_integer_value (slotJ);
-        }
-
-        if (slotUsedLength < SlotBankCount)
-            std::fill (std::begin (slotUsed) + slotUsedLength, std::end (slotUsed), 0);
-
-        for (size_t i = 0; i < pulsarsLength; i++) {
-            auto pulsarJ = json_array_get (pulsarsJ, i);
-
-            PulsarParameters pulsar;
-            if (!pulsar.dataFromJson (pulsarJ))
-                return false;
-            copyToSlot (i, pulsar);
+        for (size_t index = 0; index < MaxPulsars; index++) {
+            setSlot (index, slotUsed [index]);
+            copyToSlot (index, pulsars [index]);
         }
 
         return true;
+    }
+
+    bool PulsarDataStore::getSlot (uint32_t index) const {
+        assert (index < MaxPulsars);
+        if (index >= MaxPulsars)
+            return false;
+
+        auto bank = index / SlotBankSize;
+        auto bit = 1 << (index % SlotBankSize);
+        return slotUsed [bank] & bit;
     }
 
     [[gnu::hot]]
@@ -435,16 +428,16 @@ namespace OuroborosModules::Modules::Pulsar {
         auto simdSlot = channel % SIMDBankSize;
 
         // Parameters
-        json_object_set_new_struct (rootJ, "params", parameters [channel]);
+        json_object_set_new_auto (rootJ, "params", parameters [channel]);
 
-        json_object_set_new_float (rootJ, "emissionFrequency", emissionFrequency [channel]);
+        json_object_set_new_auto (rootJ, "emissionFrequency", emissionFrequency [channel]);
 
         // State
-        json_object_set_new_struct (rootJ, "pulsars", pulsars [channel]);
-        json_object_set_new_struct (rootJ, "maskingData", maskingData [channel]);
+        json_object_set_new_auto (rootJ, "pulsars", pulsars [channel]);
+        json_object_set_new_auto (rootJ, "maskingData", maskingData [channel]);
 
-        json_object_set_new_float (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
-        json_object_set_new_float (rootJ, "emissionPhase", emissionPhase [channel]);
+        json_object_set_new_auto (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
+        json_object_set_new_auto (rootJ, "emissionPhase", emissionPhase [channel]);
 
         return rootJ;
     }
@@ -458,16 +451,16 @@ namespace OuroborosModules::Modules::Pulsar {
         auto simdSlot = channel % SIMDBankSize;
 
         // Parameters
-        failed |= !json_object_try_get_struct (rootJ, "params", parameters [channel]);
+        failed |= !json_object_try_get_auto (rootJ, "params", parameters [channel]);
 
-        failed |= !json_object_try_get_float (rootJ, "emissionFrequency", emissionFrequency [channel]);
+        failed |= !json_object_try_get_auto (rootJ, "emissionFrequency", emissionFrequency [channel]);
 
         // State
-        failed |= !json_object_try_get_struct (rootJ, "pulsars", pulsars [channel]);
-        failed |= !json_object_try_get_struct (rootJ, "maskingData", maskingData [channel]);
+        failed |= !json_object_try_get_auto (rootJ, "pulsars", pulsars [channel]);
+        failed |= !json_object_try_get_auto (rootJ, "maskingData", maskingData [channel]);
 
-        failed |= !json_object_try_get_float (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
-        failed |= !json_object_try_get_float (rootJ, "emissionPhase", emissionPhase [channel]);
+        failed |= !json_object_try_get_auto (rootJ, "lastSyncValue", lastSyncValues [simdBank] [simdSlot]);
+        failed |= !json_object_try_get_auto (rootJ, "emissionPhase", emissionPhase [channel]);
 
         if (failed)
             return false;
@@ -483,9 +476,9 @@ namespace OuroborosModules::Modules::Pulsar {
             json_array_append (channelsJ, channelToJson (channel));
         json_object_set_new (rootJ, "channels", channelsJ);
 
-        json_object_set_new_bool (rootJ, "overlapMode", overlapMode);
-        json_object_set_new_bool (rootJ, "triggeredMode", triggeredMode);
-        json_object_set_new_bool (rootJ, "dcBlockerOn", dcBlockerOn);
+        json_object_set_new_auto (rootJ, "overlapMode", overlapMode);
+        json_object_set_new_auto (rootJ, "triggeredMode", triggeredMode);
+        json_object_set_new_auto (rootJ, "dcBlockerOn", dcBlockerOn);
 
         return rootJ;
     }
@@ -507,9 +500,9 @@ namespace OuroborosModules::Modules::Pulsar {
                 failed |= !channelFromJson (json_array_get (channelsJ, channel), channel);
         }
 
-        failed |= json_object_try_get_bool (rootJ, "overlapMode", overlapMode);
-        failed |= json_object_try_get_bool (rootJ, "triggeredMode", triggeredMode);
-        failed |= json_object_try_get_bool (rootJ, "dcBlockerOn", dcBlockerOn);
+        failed |= json_object_try_get_auto (rootJ, "overlapMode", overlapMode);
+        failed |= json_object_try_get_auto (rootJ, "triggeredMode", triggeredMode);
+        failed |= json_object_try_get_auto (rootJ, "dcBlockerOn", dcBlockerOn);
 
         if (failed) {
             auto sampleRate = curSampleRate;
