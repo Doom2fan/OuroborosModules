@@ -413,7 +413,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // Clock dividers
         clockOversample = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 128)), rack::random::u32 ());
-        clockParams = DSP::ClockDivider (static_cast<uint32_t> (e.sampleRate / (48000.f / 32)), rack::random::u32 ());
     }
 
     void PulsarModule::onReset (const ResetEvent& e) {
@@ -547,8 +546,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // Update parameters
         engine.setActiveOutputs (mainOutput.isConnected (), restOutput.isConnected ());
-        if (clockParams.process ())
-            updateParams ();
+        updateParams ();
 
         // Process the engine
         PulsarProcessArgs engineArgs;

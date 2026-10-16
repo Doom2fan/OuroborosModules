@@ -158,7 +158,6 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // Clock dividers
         DSP::ClockDivider clockOversample;
-        DSP::ClockDivider clockParams;
 
         PulsarModule ();
 
