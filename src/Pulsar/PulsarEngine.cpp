@@ -500,9 +500,9 @@ namespace OuroborosModules::Modules::Pulsar {
                 failed |= !channelFromJson (json_array_get (channelsJ, channel), channel);
         }
 
-        failed |= json_object_try_get_auto (rootJ, "overlapMode", overlapMode);
-        failed |= json_object_try_get_auto (rootJ, "triggeredMode", triggeredMode);
-        failed |= json_object_try_get_auto (rootJ, "dcBlockerOn", dcBlockerOn);
+        failed |= !json_object_try_get_auto (rootJ, "overlapMode", overlapMode);
+        failed |= !json_object_try_get_auto (rootJ, "triggeredMode", triggeredMode);
+        failed |= !json_object_try_get_auto (rootJ, "dcBlockerOn", dcBlockerOn);
 
         if (failed) {
             auto sampleRate = curSampleRate;
