@@ -18,6 +18,7 @@
 
 #include "Warp.hpp"
 
+#include "../JsonUtils.hpp"
 #include "../Math.hpp"
 #include "../ModuleHelpers.hpp"
 
@@ -112,6 +113,9 @@ namespace OuroborosModules::Modules::Warp {
             auto amount = amountKnob.process (getInputNormalPolySimd<float_4> (INPUT_AMOUNT_CV, 0.f, channel));
             auto bias = biasKnob.process (getInputNormalPolySimd<float_4> (INPUT_BIAS_CV, 0.f, channel)) / MaxBias * M_PI;
 
+            if (amountIsExponential)
+                amount = rack::simd::pow (amount, 2);
+
             // Get the signals
             auto signal = rack::simd::clamp (fpClean (getInputPolySimd<float_4> (INPUT_SIGNAL, channel)), -100.f, 100.f);
 
@@ -165,5 +169,26 @@ namespace OuroborosModules::Modules::Warp {
             modulatorUpsampler [bank].setParams (newOversampleRate);
             downsamplerFilter [bank].setParams (newOversampleRate);
         }
+    }
+
+    void WarpModule::onReset (const ResetEvent& e) {
+        ModuleBase::onReset (e);
+
+        amountIsExponential = true;
+    }
+
+    json_t* WarpModule::dataToJson () {
+        auto rootJ = ModuleBase::dataToJson ();
+
+        json_object_set_new_auto (rootJ, "amountIsExponential", amountIsExponential);
+
+        return rootJ;
+    }
+
+    void WarpModule::dataFromJson (json_t* rootJ) {
+        ModuleBase::dataFromJson (rootJ);
+
+        if (!json_object_try_get_auto (rootJ, "amountIsExponential", amountIsExponential))
+            amountIsExponential = false;
     }
 }

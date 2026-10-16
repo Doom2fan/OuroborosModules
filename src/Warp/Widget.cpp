@@ -93,5 +93,12 @@ namespace OuroborosModules::Modules::Warp {
                 ));
             }
         }));
+
+        // Use exponential curve for amount
+        menu->addChild (new rack::ui::MenuSeparator);
+        menu->addChild (createBoolPtrMenuItemWithHistory (
+            "Use exponential curve for amount", "", "toggle Warp \"Use exponential curve for amount\"",
+            &WarpModule::amountIsExponential
+        ));
     }
 }
