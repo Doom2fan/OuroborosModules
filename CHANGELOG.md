@@ -4,15 +4,24 @@
   * New modules:
     * Crush
     * Diffuse
-  * Optimizations to Warp
-  * Added cable glow option to Meta
-  * Added cable lights option to Meta
+  * Automata:
+    * Added display colour options
+    * Initializing the module now resets the trigger options
+  * Chroma:
+    * Added an option to make the colour list glow in the dark (On by default)
+    * Added an option to skip a colour when cycling
+  * Conductor system:
+    * Added display colour options
+  * Conductor - Grid:
+    * Fixed the page buttons not being initialized
+  * Meta:
+    * Added cable glow option
+    * Added cable lights option
+  * Warp:
+    * Added an option to use an exponential curve for the amount control (On by default for new instances)
+    * Optimizations
   * Added some hardening against NaNs in some modules
-  * Added an option to make Chroma's colour list glow in the dark (On by default)
   * Added a global default display colour option
-  * Added display colour options to Automata and the Conductor modules
-  * Resetting Automata now resets the trigger options
-  * Fixed Conductor - Grid's page buttons not being initialized
   * Misc optimizations, improvements and fixes
 
 ## v2.2.3 (2026-05-02)
@@ -22,8 +31,9 @@
   * Made Conductor - Grid's title look a bit nicer
 
 ## v2.2.1 (2026-04-02)
+  * Chroma:
+    * Fixed the key input popup sometimes not displaying
   * Fixed the emblems breaking with UI scales higher than 150%
-  * Fixed Chroma's key input popup not displaying sometimes
 
 ## v2.2.0 (2026-03-27)
   * New modules:
@@ -46,11 +56,11 @@
   * New modules:
     * Junction
     * Branch
-  * Bernoulli
+  * Bernoulli:
     * Added randomization options
-  * Median
+  * Median:
     * Fixed the panel having some incorrectly-coloured text
-  * Meta
+  * Meta:
     * Play cable plugging and unplugging sounds when undoing, redoing, removing all cables, etc.
   * Panel design updates
   * Slightly changed how the "Black and Gold" theme looks
