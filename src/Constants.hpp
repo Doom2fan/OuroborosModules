@@ -181,5 +181,9 @@ namespace OuroborosModules {
         inline const std::string InconsolataCondensed_Medium () { return getFont ("res/fonts/Inconsolata_Condensed-Medium.ttf"); }
         inline const std::string RobotoCondensed () { return getFont ("res/fonts/RobotoCondensed.ttf"); }
         inline const std::string DSEG7ClassicMini_BoldItalic () { return getFontSystem ("res/fonts/DSEG7ClassicMini-BoldItalic.ttf"); }
+
+        namespace Dot {
+            inline const std::string nic7pin () { return getFont ("res/fonts/dot/nic7pin.json"); }
+        }
     }
 }
