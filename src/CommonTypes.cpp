@@ -28,10 +28,10 @@ namespace OuroborosModules {
     json_t* RGBColor::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_float (rootJ, "R", r);
-        json_object_set_new_float (rootJ, "G", g);
-        json_object_set_new_float (rootJ, "B", b);
-        json_object_set_new_float (rootJ, "A", a);
+        json_object_set_new_auto (rootJ, "R", r);
+        json_object_set_new_auto (rootJ, "G", g);
+        json_object_set_new_auto (rootJ, "B", b);
+        json_object_set_new_auto (rootJ, "A", a);
 
         return rootJ;
     }
@@ -41,10 +41,10 @@ namespace OuroborosModules {
             return false;
 
         auto failed = false;
-        failed |= !json_object_try_get_float (rootJ, "R", r);
-        failed |= !json_object_try_get_float (rootJ, "G", g);
-        failed |= !json_object_try_get_float (rootJ, "B", b);
-        failed |= !json_object_try_get_float (rootJ, "A", a);
+        failed |= !json_object_try_get_auto (rootJ, "R", r);
+        failed |= !json_object_try_get_auto (rootJ, "G", g);
+        failed |= !json_object_try_get_auto (rootJ, "B", b);
+        failed |= !json_object_try_get_auto (rootJ, "A", a);
 
         return !failed;
     }
@@ -59,9 +59,9 @@ namespace OuroborosModules {
     json_t* SoundSettings::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_string (rootJ, "Path", path);
-        json_object_set_new_bool (rootJ, "Enabled", enabled);
-        json_object_set_new_float (rootJ, "Volume", volume);
+        json_object_set_new_auto (rootJ, "Path", path);
+        json_object_set_new_auto (rootJ, "Enabled", enabled);
+        json_object_set_new_auto (rootJ, "Volume", volume);
 
         return rootJ;
     }
@@ -70,9 +70,9 @@ namespace OuroborosModules {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_string (rootJ, "Path", path);
-        json_object_try_get_bool (rootJ, "Enabled", enabled);
-        json_object_try_get_float (rootJ, "Volume", volume);
+        json_object_try_get_auto (rootJ, "Path", path);
+        json_object_try_get_auto (rootJ, "Enabled", enabled);
+        json_object_try_get_auto (rootJ, "Volume", volume);
 
         return true;
     }
@@ -83,9 +83,9 @@ namespace OuroborosModules {
     json_t* DisplayColor::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_bool (rootJ, "isDefault", isDefault);
-        json_object_set_new_bool (rootJ, "isGlobal", isGlobal);
-        json_object_set_new_struct (rootJ, "localColor", localColor);
+        json_object_set_new_auto (rootJ, "isDefault", isDefault);
+        json_object_set_new_auto (rootJ, "isGlobal", isGlobal);
+        json_object_set_new_auto (rootJ, "localColor", localColor);
 
         return rootJ;
     }
@@ -95,9 +95,9 @@ namespace OuroborosModules {
             return false;
 
         auto failed = false;
-        failed |= !json_object_try_get_bool (rootJ, "isDefault", isDefault);
-        failed |= !json_object_try_get_bool (rootJ, "isGlobal", isGlobal);
-        failed |= !json_object_try_get_struct (rootJ, "localColor", localColor);
+        failed |= !json_object_try_get_auto (rootJ, "isDefault", isDefault);
+        failed |= !json_object_try_get_auto (rootJ, "isGlobal", isGlobal);
+        failed |= !json_object_try_get_auto (rootJ, "localColor", localColor);
 
         return !failed;
     }

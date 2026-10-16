@@ -33,12 +33,10 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* ChromaModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_bool (rootJ, "wasMaster", isMaster);
-        json_object_set_new_enum (rootJ, "centerEmblem", centerEmblem);
-        json_object_set_new_enum (rootJ, "glowInTheDark", glowInTheDark);
-
-        auto colorManagerJ = colorManager->dataToJson ();
-        json_object_set_new (rootJ, "colorManager", colorManagerJ);
+        json_object_set_new_auto (rootJ, "wasMaster", isMaster);
+        json_object_set_new_auto (rootJ, "centerEmblem", centerEmblem);
+        json_object_set_new_auto (rootJ, "glowInTheDark", glowInTheDark);
+        json_object_set_new_auto (rootJ, "colorManager", *colorManager);
 
         return rootJ;
     }
@@ -49,15 +47,13 @@ namespace OuroborosModules::Modules::Chroma {
         if (!json_is_object (rootJ))
             return;
 
-        json_object_try_get_enum (rootJ, "centerEmblem", centerEmblem);
-        json_object_try_get_enum (rootJ, "glowInTheDark", glowInTheDark);
+        json_object_try_get_auto (rootJ, "centerEmblem", centerEmblem);
+        json_object_try_get_auto (rootJ, "glowInTheDark", glowInTheDark);
 
         if (!json_is_true (json_object_get (rootJ, "wasMaster")))
             return;
 
-        if (colorManager != nullptr) {
-            auto colorManagerJ = json_object_get (rootJ, "colorManager");
-            colorManager->dataFromJson (colorManagerJ);
-        }
+        if (colorManager != nullptr)
+            json_object_try_get_auto (rootJ, "colorManager", *colorManager);
     }
 }

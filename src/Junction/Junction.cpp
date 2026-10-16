@@ -53,8 +53,8 @@ namespace OuroborosModules::Modules::Junction {
     json_t* JunctionModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_bool (rootJ, "polyOnDemand", polyOnDemand);
-        json_object_set_new_bool (rootJ, "clampWhileSumming", clampWhileSumming);
+        json_object_set_new_auto (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_set_new_auto (rootJ, "clampWhileSumming", clampWhileSumming);
 
         return rootJ;
     }
@@ -62,8 +62,8 @@ namespace OuroborosModules::Modules::Junction {
     void JunctionModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
 
-        json_object_try_get_bool (rootJ, "polyOnDemand", polyOnDemand);
-        json_object_try_get_bool (rootJ, "clampWhileSumming", clampWhileSumming);
+        json_object_try_get_auto (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_try_get_auto (rootJ, "clampWhileSumming", clampWhileSumming);
     }
 
     void JunctionModule::process (const ProcessArgs& args) {

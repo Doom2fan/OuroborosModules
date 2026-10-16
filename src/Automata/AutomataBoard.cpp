@@ -29,7 +29,7 @@ namespace OuroborosModules::Modules::Automata {
     json_t* AutomataBoard::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_bool (rootJ, "boardFlip", boardFlip);
+        json_object_set_new_auto (rootJ, "boardFlip", boardFlip);
 
         auto dataJ = json_array ();
         for (int y = 0; y < BoardHeight; y++) {
@@ -48,7 +48,7 @@ namespace OuroborosModules::Modules::Automata {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_bool (rootJ, "boardFlip", boardFlip);
+        json_object_try_get_auto (rootJ, "boardFlip", boardFlip);
 
         auto dataJ = json_object_get (rootJ, "dataArray");
         if (!json_is_array (dataJ) || json_array_size (dataJ) != BoardHeight)

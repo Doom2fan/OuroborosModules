@@ -130,8 +130,8 @@ namespace OuroborosModules::Modules::Automata {
     json_t* AutomataLife::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_struct (rootJ, "rules", rules);
-        json_object_set_new_struct (rootJ, "board", board);
+        json_object_set_new_auto (rootJ, "rules", rules);
+        json_object_set_new_auto (rootJ, "board", board);
 
         return rootJ;
     }
@@ -140,8 +140,8 @@ namespace OuroborosModules::Modules::Automata {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_struct (rootJ, "rules", rules);
-        json_object_try_get_struct (rootJ, "board", board);
+        json_object_try_get_auto (rootJ, "rules", rules);
+        json_object_try_get_auto (rootJ, "board", board);
 
         markUpdated ();
 

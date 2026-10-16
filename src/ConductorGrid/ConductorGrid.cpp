@@ -50,10 +50,10 @@ namespace OuroborosModules::Modules::Conductor {
         auto rootJ = ConductorExpander::dataToJson ();
 
         // State
-        json_object_set_new_int (rootJ, "curPage", curPage);
+        json_object_set_new_auto (rootJ, "curPage", curPage);
 
         // Options
-        json_object_set_new_struct (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -62,10 +62,10 @@ namespace OuroborosModules::Modules::Conductor {
         ConductorExpander::dataFromJson (rootJ);
 
         // State
-        json_object_try_get_int (rootJ, "curPage", curPage);
+        json_object_try_get_auto (rootJ, "curPage", curPage);
 
         // Options
-        json_object_try_get_struct (rootJ, "displayColor", displayColor);
+        json_object_try_get_auto (rootJ, "displayColor", displayColor);
     }
 
     void ConductorGridModule::onReset (const ResetEvent& e) {

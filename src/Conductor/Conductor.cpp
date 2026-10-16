@@ -149,15 +149,15 @@ namespace OuroborosModules::Modules::Conductor {
         auto rootJ = ConductorCore::dataToJson ();
 
         // State
-        json_object_set_new_int (rootJ, "currentPattern", currentPattern);
-        json_object_set_new_int (rootJ, "queuedPattern", queuedPattern);
+        json_object_set_new_auto (rootJ, "currentPattern", currentPattern);
+        json_object_set_new_auto (rootJ, "queuedPattern", queuedPattern);
 
-        json_object_set_new_bool (rootJ, "resetQueuedOn", resetQueuedOn);
-        json_object_set_new_bool (rootJ, "resetPatternOn", resetPatternOn);
-        json_object_set_new_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
+        json_object_set_new_auto (rootJ, "resetQueuedOn", resetQueuedOn);
+        json_object_set_new_auto (rootJ, "resetPatternOn", resetPatternOn);
+        json_object_set_new_auto (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
         // Options
-        json_object_set_new_struct (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -166,15 +166,15 @@ namespace OuroborosModules::Modules::Conductor {
         ConductorCore::dataFromJson (rootJ);
 
         // State
-        json_object_try_get_int (rootJ, "currentPattern", currentPattern);
-        json_object_try_get_int (rootJ, "queuedPattern", queuedPattern);
+        json_object_try_get_auto (rootJ, "currentPattern", currentPattern);
+        json_object_try_get_auto (rootJ, "queuedPattern", queuedPattern);
 
-        json_object_try_get_bool (rootJ, "resetQueuedOn", resetQueuedOn);
-        json_object_try_get_bool (rootJ, "resetPatternOn", resetPatternOn);
-        json_object_try_get_bool (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
+        json_object_try_get_auto (rootJ, "resetQueuedOn", resetQueuedOn);
+        json_object_try_get_auto (rootJ, "resetPatternOn", resetPatternOn);
+        json_object_try_get_auto (rootJ, "resetIgnoreFirstClock", resetIgnoreFirstClock);
 
         // Options
-        json_object_try_get_struct (rootJ, "displayColor", displayColor);
+        json_object_try_get_auto (rootJ, "displayColor", displayColor);
 
         calculatePatternInfo ();
     }

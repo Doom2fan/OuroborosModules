@@ -43,7 +43,7 @@ namespace OuroborosModules::Modules::Branch {
     json_t* BranchModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_bool (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_set_new_auto (rootJ, "polyOnDemand", polyOnDemand);
 
         return rootJ;
     }
@@ -51,7 +51,7 @@ namespace OuroborosModules::Modules::Branch {
     void BranchModule::dataFromJson (json_t* rootJ) {
         ModuleBase::dataFromJson (rootJ);
 
-        json_object_try_get_bool (rootJ, "polyOnDemand", polyOnDemand);
+        json_object_try_get_auto (rootJ, "polyOnDemand", polyOnDemand);
     }
 
     void BranchModule::process (const ProcessArgs& args) {

@@ -101,7 +101,7 @@ namespace OuroborosModules::Modules::Bernoulli {
     json_t* BernoulliGate::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_bool (rootJ, "selectedOutput", selectedOutput);
+        json_object_set_new_auto (rootJ, "selectedOutput", selectedOutput);
         int schmittTriggerState;
         switch (schmittTrigger.s) {
             default:
@@ -109,7 +109,7 @@ namespace OuroborosModules::Modules::Bernoulli {
             case rack::dsp::SchmittTrigger::LOW:  schmittTriggerState = 0; break;
             case rack::dsp::SchmittTrigger::HIGH: schmittTriggerState = 1; break;
         }
-        json_object_set_new_int (rootJ, "schmittTrigger", schmittTriggerState);
+        json_object_set_new_auto (rootJ, "schmittTrigger", schmittTriggerState);
 
         return rootJ;
     }
@@ -118,9 +118,9 @@ namespace OuroborosModules::Modules::Bernoulli {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_bool (rootJ, "selectedOutput", selectedOutput);
+        json_object_try_get_auto (rootJ, "selectedOutput", selectedOutput);
         int schmittTriggerState = -1;
-        json_object_try_get_int (rootJ, "schmittTrigger", schmittTriggerState);
+        json_object_try_get_auto (rootJ, "schmittTrigger", schmittTriggerState);
         switch (schmittTriggerState) {
             default:
             case -1: schmittTrigger.s = rack::dsp::SchmittTrigger::UNINITIALIZED; break;
@@ -137,11 +137,11 @@ namespace OuroborosModules::Modules::Bernoulli {
         auto rootJ = ModuleBase::dataToJson ();
 
         for (int i = 0; i < GatesCount; i++)
-            json_object_set_new_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
+            json_object_set_new_auto (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
 
-        json_object_set_new_int (rootJ, "randomizeProbability", randomizeProbability);
-        json_object_set_new_int (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
-        json_object_set_new_int (rootJ, "randomizeModes", randomizeModes);
+        json_object_set_new_auto (rootJ, "randomizeProbability", randomizeProbability);
+        json_object_set_new_auto (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
+        json_object_set_new_auto (rootJ, "randomizeModes", randomizeModes);
 
         return rootJ;
     }
@@ -150,11 +150,11 @@ namespace OuroborosModules::Modules::Bernoulli {
         ModuleBase::dataFromJson (rootJ);
 
         for (int i = 0; i < GatesCount; i++)
-            json_object_try_get_struct (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
+            json_object_try_get_auto (rootJ, getGateJsonName (i).c_str (), bernoulliGates [i]);
 
-        json_object_try_get_int (rootJ, "randomizeProbability", randomizeProbability);
-        json_object_try_get_int (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
-        json_object_try_get_int (rootJ, "randomizeModes", randomizeModes);
+        json_object_try_get_auto (rootJ, "randomizeProbability", randomizeProbability);
+        json_object_try_get_auto (rootJ, "randomizeProbabilityCV", randomizeProbabilityCV);
+        json_object_try_get_auto (rootJ, "randomizeModes", randomizeModes);
     }
 
     void BernoulliModule::process (const ProcessArgs& args) {

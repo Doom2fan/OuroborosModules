@@ -312,18 +312,15 @@ namespace OuroborosModules::Modules::Automata {
     json_t* AutomataModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_struct (rootJ, "boardData", lifeBoard);
-        json_object_set_new_bool (rootJ, "lengthEnabled", lengthEnabled);
-        json_object_set_new_bool (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
-        json_object_set_new_bool (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
-        json_object_set_new_bool (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
-        json_object_set_new_struct (rootJ, "displayColor", displayColor);
-        json_object_set_new_int (rootJ, "stepCount", stepCount);
+        json_object_set_new_auto (rootJ, "boardData", lifeBoard);
+        json_object_set_new_auto (rootJ, "lengthEnabled", lengthEnabled);
+        json_object_set_new_auto (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
+        json_object_set_new_auto (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
+        json_object_set_new_auto (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "stepCount", stepCount);
 
-        auto triggerInfoJ = json_array ();
-        for (int i = 0; i < TriggerCount; i++)
-            json_array_append_new (triggerInfoJ, triggerInfo [i].dataToJson ());
-        json_object_set_new (rootJ, "triggerInfo", triggerInfoJ);
+        json_object_set_new_array (rootJ, "triggerInfo", triggerInfo);
 
         return rootJ;
     }
@@ -333,23 +330,15 @@ namespace OuroborosModules::Modules::Automata {
 
         commandQueue.clear ();
 
-        json_object_try_get_struct (rootJ, "boardData", lifeBoard);
-        json_object_try_get_bool (rootJ, "lengthEnabled", lengthEnabled);
-        json_object_try_get_bool (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
-        json_object_try_get_bool (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
-        json_object_try_get_bool (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
-        json_object_try_get_struct (rootJ, "displayColor", displayColor);
-        json_object_try_get_int (rootJ, "stepCount", stepCount);
+        json_object_try_get_auto (rootJ, "boardData", lifeBoard);
+        json_object_try_get_auto (rootJ, "lengthEnabled", lengthEnabled);
+        json_object_try_get_auto (rootJ, "randomizeOnManualReset", randomizeOnManualReset);
+        json_object_try_get_auto (rootJ, "randomizeOnAutoReset", randomizeOnAutoReset);
+        json_object_try_get_auto (rootJ, "momentaryLengthEnable", momentaryLengthEnable);
+        json_object_try_get_auto (rootJ, "displayColor", displayColor);
+        json_object_try_get_auto (rootJ, "stepCount", stepCount);
 
-        auto triggerInfoJ = json_object_get (rootJ, "triggerInfo");
-        if (json_is_array (triggerInfoJ)) {
-            auto arrayLength = static_cast<int> (json_array_size (triggerInfoJ));
-            for (int i = 0; i < TriggerCount; i++) {
-                auto triggerInfoElementJ = json_array_get (triggerInfoJ, i);
-
-                if (i >= arrayLength || !triggerInfo [i].dataFromJson (triggerInfoElementJ))
-                    triggerInfo [i] = AutomataTriggerInfo ();
-            }
-        }
+        json_object_try_get_array (rootJ, "triggerInfo", triggerInfo,
+            [=] (size_t index) { triggerInfo [index] = AutomataTriggerInfo (); }, true);
     }
 }

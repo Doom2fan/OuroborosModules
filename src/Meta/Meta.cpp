@@ -46,7 +46,7 @@ namespace OuroborosModules::Modules::Meta {
         auto rootJ = ModuleBase::dataToJson ();
 
         // Premuter
-        json_object_set_new_float (rootJ, "premuter_SelectedTime", premuter_SelectedTime);
+        json_object_set_new_auto (rootJ, "premuter_SelectedTime", premuter_SelectedTime);
 
         return rootJ;
     }
@@ -55,7 +55,7 @@ namespace OuroborosModules::Modules::Meta {
         ModuleBase::dataFromJson (rootJ);
 
         // Premuter
-        json_object_try_get_float (rootJ, "premuter_SelectedTime", premuter_SelectedTime);
+        json_object_try_get_auto (rootJ, "premuter_SelectedTime", premuter_SelectedTime);
     }
 
     void MetaModule::premuter_Process (float sampleTime, float& audioLeft, float& audioRight) {
