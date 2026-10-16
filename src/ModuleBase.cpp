@@ -24,15 +24,15 @@ namespace OuroborosModules {
         auto rootJ = json_object ();
 
         // Theming
-        json_object_set_new_struct (rootJ, "theme_Override", theme_Override);
-        json_object_set_new_struct (rootJ, "theme_Emblem", theme_Emblem);
+        json_object_set_new_auto (rootJ, "theme_Override", theme_Override);
+        json_object_set_new_auto (rootJ, "theme_Emblem", theme_Emblem);
 
         return rootJ;
     }
 
     void ModuleBase::dataFromJson (json_t* rootJ) {
         // Theming
-        json_object_try_get_struct (rootJ, "theme_Override", theme_Override);
-        json_object_try_get_struct (rootJ, "theme_Emblem", theme_Emblem);
+        json_object_try_get_auto (rootJ, "theme_Override", theme_Override);
+        json_object_try_get_auto (rootJ, "theme_Emblem", theme_Emblem);
     }
 }

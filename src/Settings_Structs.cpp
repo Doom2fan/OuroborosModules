@@ -28,12 +28,12 @@ namespace OuroborosModules {
     json_t* CableGlowSettings::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_bool (rootJ, "Glow::Enabled", glow_Enabled);
-        json_object_set_new_float (rootJ, "Glow::Intensity", glow_Intensity);
-        json_object_set_new_bool (rootJ, "Glow::FollowSignal", glow_FollowSignal);
+        json_object_set_new_auto (rootJ, "Glow::Enabled", glow_Enabled);
+        json_object_set_new_auto (rootJ, "Glow::Intensity", glow_Intensity);
+        json_object_set_new_auto (rootJ, "Glow::FollowSignal", glow_FollowSignal);
 
-        json_object_set_new_bool (rootJ, "Lights::Enabled", lights_Enabled);
-        json_object_set_new_float (rootJ, "Lights::Intensity", lights_Intensity);
+        json_object_set_new_auto (rootJ, "Lights::Enabled", lights_Enabled);
+        json_object_set_new_auto (rootJ, "Lights::Intensity", lights_Intensity);
 
         return rootJ;
     }
@@ -42,12 +42,12 @@ namespace OuroborosModules {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_bool (rootJ, "Glow::Enabled", glow_Enabled);
-        json_object_try_get_float (rootJ, "Glow::Intensity", glow_Intensity);
-        json_object_try_get_bool (rootJ, "Glow::FollowSignal", glow_FollowSignal);
+        json_object_try_get_auto (rootJ, "Glow::Enabled", glow_Enabled);
+        json_object_try_get_auto (rootJ, "Glow::Intensity", glow_Intensity);
+        json_object_try_get_auto (rootJ, "Glow::FollowSignal", glow_FollowSignal);
 
-        json_object_try_get_bool (rootJ, "Lights::Enabled", lights_Enabled);
-        json_object_try_get_float (rootJ, "Lights::Intensity", lights_Intensity);
+        json_object_try_get_auto (rootJ, "Lights::Enabled", lights_Enabled);
+        json_object_try_get_auto (rootJ, "Lights::Intensity", lights_Intensity);
 
         return true;
     }

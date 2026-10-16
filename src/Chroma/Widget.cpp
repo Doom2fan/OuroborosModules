@@ -561,11 +561,11 @@ namespace OuroborosModules::Modules::Chroma {
         menu->addChild (createMenuItem (
             "Add new color", "",
             [=] {
-                moduleT->colorManager->addNewColor (
+                moduleT->colorManager->addNewColor (CableColor (
                     nvgHSL (rack::random::uniform (), 1, .5 + rack::random::normal () / 2.),
                     CableColorKey (),
                     ""
-                );
+                ));
             },
             false, true
         ));

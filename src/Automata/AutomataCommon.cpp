@@ -168,8 +168,8 @@ namespace OuroborosModules::Modules::Automata {
     json_t* AutomataRules::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_int (rootJ, "birthMask", birthMask);
-        json_object_set_new_int (rootJ, "survivalMask", survivalMask);
+        json_object_set_new_auto (rootJ, "birthMask", birthMask);
+        json_object_set_new_auto (rootJ, "survivalMask", survivalMask);
 
         return rootJ;
     }
@@ -178,8 +178,8 @@ namespace OuroborosModules::Modules::Automata {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_int (rootJ, "birthMask", birthMask);
-        json_object_try_get_int (rootJ, "survivalMask", survivalMask);
+        json_object_try_get_auto (rootJ, "birthMask", birthMask);
+        json_object_try_get_auto (rootJ, "survivalMask", survivalMask);
 
         return true;
     }
@@ -190,8 +190,8 @@ namespace OuroborosModules::Modules::Automata {
     json_t* AutomataTriggerInfo::dataToJson () const {
         auto rootJ = json_object ();
 
-        json_object_set_new_enum (rootJ, "countMode", countMode);
-        json_object_set_new_enum (rootJ, "outputMode", outputMode);
+        json_object_set_new_auto (rootJ, "countMode", countMode);
+        json_object_set_new_auto (rootJ, "outputMode", outputMode);
 
         return rootJ;
     }
@@ -200,8 +200,8 @@ namespace OuroborosModules::Modules::Automata {
         if (!json_is_object (rootJ))
             return false;
 
-        json_object_try_get_enum (rootJ, "countMode", countMode);
-        json_object_try_get_enum (rootJ, "outputMode", outputMode);
+        json_object_try_get_auto (rootJ, "countMode", countMode);
+        json_object_try_get_auto (rootJ, "outputMode", outputMode);
 
         return true;
     }

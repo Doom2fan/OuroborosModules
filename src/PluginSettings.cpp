@@ -72,13 +72,13 @@ namespace OuroborosModules {
 
     void OuroborosSettings::saveInternal (json_t* rootJ) {
 #define DEFINE_NONSETTING(varType, varName, defaultValue)
-#define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_set_new_bool (rootJ, jsonName, varName);
-#define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_set_new_int<varType> (rootJ, jsonName, varName);
-#define DEFINE_ENUM(varType, varName, jsonName, defaultValue) json_object_set_new_enum<varType> (rootJ, jsonName, varName);
-#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_set_new_float<varType> (rootJ, jsonName, varName);
-#define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_set_new_string (rootJ, jsonName, varName);
-#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_set_new_string (rootJ, jsonName, varName);
-#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) json_object_set_new_struct (rootJ, jsonName, varName);
+#define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_set_new_auto (rootJ, jsonName, varName);
+#define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_set_new_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_ENUM(varType, varName, jsonName, defaultValue) json_object_set_new_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_set_new_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_set_new_auto (rootJ, jsonName, varName);
+#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_set_new_auto (rootJ, jsonName, varName);
+#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) json_object_set_new_auto (rootJ, jsonName, varName);
 
 #include "Settings_Def.x"
 
@@ -94,13 +94,13 @@ namespace OuroborosModules {
 
     void OuroborosSettings::readInternal (json_t* rootJ) {
 #define DEFINE_NONSETTING(varType, varName, defaultValue)
-#define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_try_get_bool (rootJ, jsonName, varName);
-#define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_try_get_int<varType> (rootJ, jsonName, varName);
-#define DEFINE_ENUM(varType, varName, jsonName, defaultValue) json_object_try_get_enum<varType> (rootJ, jsonName, varName);
-#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_try_get_float<varType> (rootJ, jsonName, varName);
-#define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_try_get_string (rootJ, jsonName, varName);
-#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_try_get_string (rootJ, jsonName, varName);
-#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) json_object_try_get_struct (rootJ, jsonName, varName);
+#define DEFINE_BOOL(varName, jsonName, defaultValue) json_object_try_get_auto (rootJ, jsonName, varName);
+#define DEFINE_INT(varType, varName, jsonName, defaultValue) json_object_try_get_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_ENUM(varType, varName, jsonName, defaultValue) json_object_try_get_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_FLOAT(varType, varName, jsonName, defaultValue) json_object_try_get_auto<varType> (rootJ, jsonName, varName);
+#define DEFINE_STD_STRING(varName, jsonName, defaultValue) json_object_try_get_auto (rootJ, jsonName, varName);
+#define DEFINE_CHAR_STRING(varName, jsonName, defaultValue) json_object_try_get_auto (rootJ, jsonName, varName);
+#define DEFINE_STRUCT(varType, varName, jsonName, defaultValue) json_object_try_get_auto (rootJ, jsonName, varName);
 
 #include "Settings_Def.x"
 

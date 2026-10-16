@@ -75,9 +75,9 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* CableColorKey::dataToJson () const {
         auto keyJ = json_object ();
 
-        json_object_set_new_int (keyJ, "button", button);
-        json_object_set_new_int (keyJ, "key", key);
-        json_object_set_new_int (keyJ, "mods", mods);
+        json_object_set_new_auto (keyJ, "button", button);
+        json_object_set_new_auto (keyJ, "key", key);
+        json_object_set_new_auto (keyJ, "mods", mods);
 
         return keyJ;
     }
@@ -86,11 +86,17 @@ namespace OuroborosModules::Modules::Chroma {
         if (!json_is_object (keyJ))
             return false;
 
-        json_object_try_get_int (keyJ, "button", button);
-        json_object_try_get_int (keyJ, "key", key);
-        json_object_try_get_int (keyJ, "mods", mods);
+        json_object_try_get_auto (keyJ, "button", button);
+        json_object_try_get_auto (keyJ, "key", key);
+        json_object_try_get_auto (keyJ, "mods", mods);
 
         return true;
+    }
+
+    bool CableColorKey::operator== (const CableColorKey& rhs) const {
+        return button == rhs.button &&
+               key == rhs.key &&
+               mods == rhs.mods;
     }
 
     /*
@@ -99,14 +105,14 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* CableColor::dataToJson () const {
         auto colorJ = json_object ();
 
-        json_object_set_new_float (colorJ, "color::R", color.r);
-        json_object_set_new_float (colorJ, "color::G", color.g);
-        json_object_set_new_float (colorJ, "color::B", color.b);
-        json_object_set_new_float (colorJ, "color::A", color.a);
+        json_object_set_new_auto (colorJ, "color::R", color.r);
+        json_object_set_new_auto (colorJ, "color::G", color.g);
+        json_object_set_new_auto (colorJ, "color::B", color.b);
+        json_object_set_new_auto (colorJ, "color::A", color.a);
 
-        json_object_set_new (colorJ, "key", key.dataToJson ());
-
-        json_object_set_new_string (colorJ, "label", label);
+        json_object_set_new_auto (colorJ, "key", key);
+        json_object_set_new_auto (colorJ, "label", label);
+        json_object_set_new_auto (colorJ, "skipOnCycle", skipOnCycle);
 
         return colorJ;
     }
@@ -115,16 +121,15 @@ namespace OuroborosModules::Modules::Chroma {
         if (!json_is_object (colorJ))
             return false;
 
-        json_object_try_get_float (colorJ, "color::R", color.r);
-        json_object_try_get_float (colorJ, "color::G", color.g);
-        json_object_try_get_float (colorJ, "color::B", color.b);
-        json_object_try_get_float (colorJ, "color::A", color.a);
+        json_object_try_get_auto (colorJ, "color::R", color.r);
+        json_object_try_get_auto (colorJ, "color::G", color.g);
+        json_object_try_get_auto (colorJ, "color::B", color.b);
+        json_object_try_get_auto (colorJ, "color::A", color.a);
 
-        auto keyJ = json_object_get (colorJ, "key");
-        if (!key.dataFromJson (keyJ))
+        if (!json_object_try_get_auto (colorJ, "key", key))
             return false;
-
-        json_object_try_get_string (colorJ, "label", label);
+        json_object_try_get_auto (colorJ, "label", label);
+        json_object_try_get_auto (colorJ, "skipOnCycle", skipOnCycle);
 
         return true;
     }
@@ -146,13 +151,8 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* CableColorCollection::dataToJson () const {
         auto collectionJ = json_object ();
 
-        json_object_set_new_string (collectionJ, "name", name);
-
-        auto colorsJ = json_array ();
-        for (auto color : colors)
-            json_array_append_new (colorsJ, color.dataToJson ());
-
-        json_object_set_new (collectionJ, "colors", colorsJ);
+        json_object_set_new_auto (collectionJ, "name", name);
+        json_object_set_new_auto (collectionJ, "colors", colors);
 
         return collectionJ;
     }
@@ -162,20 +162,8 @@ namespace OuroborosModules::Modules::Chroma {
             return false;
 
         name = "";
-        json_object_try_get_string (collectionJ, "name", name);
-
-        colors.clear ();
-        auto colorsJ = json_object_get (collectionJ, "colors");
-        if (json_is_array (colorsJ)) {
-            size_t colorIdx;
-            json_t* colorJ;
-            json_array_foreach (colorsJ, colorIdx, colorJ) {
-                auto color = CableColor ();
-
-                if (color.dataFromJson (colorJ))
-                    colors.push_back (color);
-            }
-        }
+        json_object_try_get_auto (collectionJ, "name", name);
+        json_object_try_get_auto (collectionJ, "colors", colors);
 
         return true;
     }
@@ -266,7 +254,7 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* CollectionsStorage::dataToJson () const {
         auto storageJ = json_object ();
 
-        json_object_set_new_string (storageJ, "defaultCollectionName", defaultCollectionName);
+        json_object_set_new_auto (storageJ, "defaultCollectionName", defaultCollectionName);
 
         auto collectionsJ = json_array ();
         for (auto& collection : collections)
@@ -285,7 +273,7 @@ namespace OuroborosModules::Modules::Chroma {
         if (!json_is_array (collectionsJ))
             return false;
 
-        json_object_try_get_string (storageJ, "defaultCollectionName", defaultCollectionName);
+        json_object_try_get_auto (storageJ, "defaultCollectionName", defaultCollectionName);
 
         collections.clear ();
 
@@ -383,9 +371,18 @@ namespace OuroborosModules::Modules::Chroma {
             cablesToModify.push_back (heldCable);
             replacePatchCableColor (cablesToModify, curColorIndex);
 
-            if (!pluginSettings.chroma_Latch) {
-                if (++curColorIndex >= colorCollection.count ())
-                    curColorIndex = 0;
+            if (!pluginSettings.chroma_Latch && colorCollection.count () > 0) {
+                auto startingColor = curColorIndex++;
+                while (curColorIndex != startingColor) {
+                    if (curColorIndex >= colorCollection.count ())
+                        curColorIndex = 0;
+
+                    auto color = colorCollection [curColorIndex];
+                    if (!color.skipOnCycle)
+                        break;
+
+                    curColorIndex++;
+                }
             }
         }
     }
@@ -573,9 +570,24 @@ namespace OuroborosModules::Modules::Chroma {
             return;
 
         auto oldColor = colorCollection [index];
+        if (oldColor.key == key)
+            return;
+
         auto newColor = oldColor;
         newColor.key = key;
         APP->history->push (new ChangeColorHistory ("change cable color key mapping", index, oldColor, newColor));
+
+        colorCollection.setColor (index, newColor);
+    }
+
+    void CableColorManager::toggleColorSkipOnCycle (uint32_t index) {
+        if (index >= colorCollection.count ())
+            return;
+
+        auto oldColor = colorCollection [index];
+        auto newColor = oldColor;
+        newColor.skipOnCycle = !newColor.skipOnCycle;
+        APP->history->push (new ChangeColorHistory ("toggle cable color skip when cycling", index, oldColor, newColor));
 
         colorCollection.setColor (index, newColor);
     }
@@ -655,8 +667,8 @@ namespace OuroborosModules::Modules::Chroma {
     json_t* CableColorManager::dataToJson () const {
         auto managerJ = json_object ();
 
-        json_object_set_new_int (managerJ, "curColorIndex", curColorIndex);
-        json_object_set_new (managerJ, "colorCollection", colorCollection.dataToJson ());
+        json_object_set_new_auto (managerJ, "curColorIndex", curColorIndex);
+        json_object_set_new_auto (managerJ, "colorCollection", colorCollection);
 
         return managerJ;
     }
@@ -665,11 +677,8 @@ namespace OuroborosModules::Modules::Chroma {
         if (!json_is_object (managerJ))
             return false;
 
-        json_object_try_get_int (managerJ, "curColorIndex", curColorIndex);
-
-        auto collectionJ = json_object_get (managerJ, "colorCollection");
-        if (!colorCollection.dataFromJson (collectionJ))
-            return false;
+        json_object_try_get_auto (managerJ, "curColorIndex", curColorIndex);
+        json_object_try_get_auto (managerJ, "colorCollection", colorCollection);
 
         updateCurrentColor ();
 

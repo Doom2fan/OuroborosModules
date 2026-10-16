@@ -49,8 +49,8 @@ namespace OuroborosModules::Modules::STVCA {
     json_t* STVCAModule::dataToJson () {
         auto rootJ = ModuleBase::dataToJson ();
 
-        json_object_set_new_int (rootJ, "version", 2_u32);
-        json_object_set_new_struct (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "version", 2_u32);
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -59,18 +59,18 @@ namespace OuroborosModules::Modules::STVCA {
         ModuleBase::dataFromJson (rootJ);
 
         auto dataVersion = 1_u32;
-        json_object_try_get_int (rootJ, "version", dataVersion);
+        json_object_try_get_auto (rootJ, "version", dataVersion);
 
         if (dataVersion == 1) {
             auto compat_DisplayColorUseDefault = false;
             auto compat_DisplayColor = RGBColor ();
 
-            if (json_object_try_get_struct (rootJ, "displayColor", compat_DisplayColor))
+            if (json_object_try_get_auto (rootJ, "displayColor", compat_DisplayColor))
                 displayColor = DisplayColor::createLocal (compat_DisplayColor);
-            if (json_object_try_get_bool (rootJ, "displayColor::UseDefault", compat_DisplayColorUseDefault) && compat_DisplayColorUseDefault)
+            if (json_object_try_get_auto (rootJ, "displayColor::UseDefault", compat_DisplayColorUseDefault) && compat_DisplayColorUseDefault)
                 displayColor = DisplayColor::createDefault ();
         } else
-            json_object_try_get_struct (rootJ, "displayColor", displayColor);
+            json_object_try_get_auto (rootJ, "displayColor", displayColor);
     }
 
     void STVCAModule::process (const ProcessArgs& args) {

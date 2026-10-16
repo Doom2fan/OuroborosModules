@@ -46,6 +46,8 @@ namespace OuroborosModules::Modules::Chroma {
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* keyJ);
+
+        bool operator== (const CableColorKey& rhs) const;
     };
 
     struct CableColor {
@@ -53,10 +55,11 @@ namespace OuroborosModules::Modules::Chroma {
         NVGcolor color = rack::color::WHITE;
         CableColorKey key;
         std::string label;
+        bool skipOnCycle = false;
 
         CableColor () : color (), key (), label () { }
-        CableColor (NVGcolor newColor, CableColorKey newKey, std::string newLabel)
-            : color (newColor), key (newKey), label (newLabel) { }
+        CableColor (NVGcolor newColor, CableColorKey newKey, std::string newLabel, bool skipOnCycle = false)
+            : color (newColor), key (newKey), label (newLabel), skipOnCycle (skipOnCycle) { }
 
         json_t* dataToJson () const;
         bool dataFromJson (json_t* colorJ);
@@ -80,10 +83,11 @@ namespace OuroborosModules::Modules::Chroma {
         void clear () { colors.clear (); }
         void removeColor (uint32_t index);
         void addColor (CableColor color) { colors.push_back (color); }
-        void addColor (NVGcolor color, CableColorKey key, std::string label) { addColor (CableColor (color, key, label)); }
+        void addColor (NVGcolor color, CableColorKey key, std::string label, bool skipOnCycle = false)
+            { addColor (CableColor (color, key, label, skipOnCycle)); }
         void addColor (uint32_t index, CableColor color);
-        void addColor (uint32_t index, NVGcolor color, CableColorKey key, std::string label)
-            { addColor (index, CableColor (color, key, label)); }
+        void addColor (uint32_t index, NVGcolor color, CableColorKey key, std::string label, bool skipOnCycle = false)
+            { addColor (index, CableColor (color, key, label, skipOnCycle)); }
         void setColor (uint32_t index, CableColor color) { colors [index] = color; }
 
         void resetToDefaults ();
@@ -161,10 +165,10 @@ namespace OuroborosModules::Modules::Chroma {
         void setLearnMode (std::string keyName, CableColorKey* key);
 
         void addNewColor (CableColor color);
-        void addNewColor (NVGcolor color, CableColorKey key, std::string label) { addNewColor (CableColor (color, key, label)); }
         void removeColor (uint32_t index);
         void setColor (uint32_t index, NVGcolor color);
         void setColorLabel (uint32_t index, std::string label);
+        void toggleColorSkipOnCycle (uint32_t index);
         void unsetColorKey (uint32_t index) { return setColorKey (index, CableColorKey ()); }
 
         bool handleKey (CableColorKey key);

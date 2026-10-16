@@ -69,6 +69,9 @@ namespace OuroborosModules::Modules::Warp {
         // State
         uint32_t oversampleRate;
 
+        // Options
+        bool amountIsExponential = true;
+
         // Oversampling
         DSP::OptimizedHalfBandInterpolator<rack::simd::float_4> signalReUpsampler [SIMDBankCount];
         DSP::OptimizedHalfBandInterpolator<rack::simd::float_4> signalImUpsampler [SIMDBankCount];
@@ -88,6 +91,10 @@ namespace OuroborosModules::Modules::Warp {
         void process (const ProcessArgs& args) override;
 
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
+        void onReset (const ResetEvent& e) override;
+
+        json_t* dataToJson () override;
+        void dataFromJson (json_t* rootJ) override;
 
       private:
         void setOversampleRate (uint32_t newOversampleRate);

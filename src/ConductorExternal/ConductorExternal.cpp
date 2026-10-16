@@ -39,7 +39,7 @@ namespace OuroborosModules::Modules::Conductor {
 
         auto mappingsJ = json_object ();
         for (auto kvp : mappings)
-            json_object_set_new_int (mappingsJ, std::to_string (kvp.first).c_str (), kvp.second);
+            json_object_set_new_auto (mappingsJ, std::to_string (kvp.first).c_str (), kvp.second);
 
         json_object_set_new (rootJ, "mappings", mappingsJ);
 
@@ -133,11 +133,11 @@ namespace OuroborosModules::Modules::Conductor {
         auto rootJ = ConductorExpander::dataToJson ();
 
         // State
-        json_object_set_new_int (rootJ, "selectedPattern", selectedPattern);
-        json_object_set_new_struct (rootJ, "noteMapState", noteMapState);
+        json_object_set_new_auto (rootJ, "selectedPattern", selectedPattern);
+        json_object_set_new_auto (rootJ, "noteMapState", noteMapState);
 
         // Options
-        json_object_set_new_struct (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
 
         return rootJ;
     }
@@ -146,11 +146,11 @@ namespace OuroborosModules::Modules::Conductor {
         ConductorExpander::dataFromJson (rootJ);
 
         // State
-        json_object_try_get_int (rootJ, "selectedPattern", selectedPattern);
-        json_object_try_get_struct (rootJ, "noteMapState", noteMapState);
+        json_object_try_get_auto (rootJ, "selectedPattern", selectedPattern);
+        json_object_try_get_auto (rootJ, "noteMapState", noteMapState);
 
         // Options
-        json_object_try_get_struct (rootJ, "displayColor", displayColor);
+        json_object_try_get_auto (rootJ, "displayColor", displayColor);
 
         checkMode ();
     }
