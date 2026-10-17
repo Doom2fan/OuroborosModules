@@ -42,8 +42,15 @@ namespace OuroborosModules::Modules::Pulsar {
         LFO,
     };
 
+    enum class FormantFreqDisplayMode {
+        Auto,
+        AbsoluteFreq,
+        RelativeVOct,
+    };
+
     static const float BaseFrequencyAudio = rack::dsp::FREQ_C4;
     static constexpr float BaseFrequencyLFO = 2.f;
+    static constexpr float ModeLightLevel = .75f;
 
     template<typename T>
     T voctToFrequency (T vOct, T baseFreq) {
@@ -135,6 +142,11 @@ namespace OuroborosModules::Modules::Pulsar {
             NUM_OUTPUTS
         };
         enum LightIds {
+            ENUMS (LIGHT_MASKINGMODE, 3),
+            ENUMS (LIGHT_FREQUENCYMODE, 3),
+            ENUMS (LIGHT_FORMANTMODE, 3),
+            ENUMS (LIGHT_OVERLAPMODE, 3),
+
             NUM_LIGHTS
         };
 
@@ -153,6 +165,11 @@ namespace OuroborosModules::Modules::Pulsar {
         PulsarEngine engine;
 
         // Options
+        DisplayColor displayColor = DisplayColor::createDefault ();
+        uint32_t displayChannel = 0;
+
+        FormantFreqDisplayMode formantFreqDisplayMode = FormantFreqDisplayMode::Auto;
+
         bool dcBlockerAudio = true;
         bool dcBlockerLFO = false;
 
@@ -172,6 +189,8 @@ namespace OuroborosModules::Modules::Pulsar {
         void setFrequencyMode (PulsarFrequencyMode mode, bool force = false);
         void setFormantMode (PulsarFormantMode mode, bool force = false);
 
+        FormantFreqDisplayMode getFormantFreqDisplayMode () const;
+
         uint8_t getChannelCount ();
         void updateParams ();
 
@@ -182,17 +201,26 @@ namespace OuroborosModules::Modules::Pulsar {
         void onRandomize (const RandomizeEvent& e) override;
     };
 
+    struct ScreenWidget;
     struct PulsarWidget : Widgets::ModuleWidgetBase<PulsarModule> {
       private:
         Widgets::EmblemWidget* emblemWidget = nullptr;
+        ScreenWidget* screenWidget = nullptr;
 
       public:
         PulsarWidget (PulsarModule* module);
+
+        PulsarModule* getPulsar () const { return moduleT; }
+        RGBColor getDisplayColor () const;
 
       protected:
         void initializeWidget () override;
 
         void onChangeEmblem (EmblemId emblemId) override;
         void appendContextMenu (rack::ui::Menu* menu) override;
+        void createLocalStyleMenu (rack::ui::Menu* menu) override;
+        void createPluginSettingsMenu (rack::ui::Menu* menu) override;
     };
+
+    ScreenWidget* createScreenWidget (rack::Vec pos, PulsarWidget* panelWidget);
 }

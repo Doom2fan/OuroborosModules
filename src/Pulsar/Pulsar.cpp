@@ -249,6 +249,11 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_set_new_auto (rootJ, "pulsarEngine", engine);
 
         // Options
+        json_object_set_new_auto (rootJ, "displayColor", displayColor);
+        json_object_set_new_auto (rootJ, "displayChannel", displayChannel);
+
+        json_object_set_new_auto (rootJ, "formantFreqDisplayMode", formantFreqDisplayMode);
+
         json_object_set_new_auto (rootJ, "dcBlockerAudio", dcBlockerAudio);
         json_object_set_new_auto (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
@@ -262,6 +267,11 @@ namespace OuroborosModules::Modules::Pulsar {
         json_object_try_get_auto (rootJ, "pulsarEngine", engine);
 
         // Options
+        json_object_try_get_auto (rootJ, "displayColor", displayColor);
+        json_object_try_get_auto (rootJ, "displayChannel", displayChannel);
+
+        json_object_try_get_auto (rootJ, "formantFreqDisplayMode", formantFreqDisplayMode);
+
         json_object_try_get_auto (rootJ, "dcBlockerAudio", dcBlockerAudio);
         json_object_try_get_auto (rootJ, "dcBlockerLFO", dcBlockerLFO);
 
@@ -292,6 +302,7 @@ namespace OuroborosModules::Modules::Pulsar {
         if (!force && mode == maskingMode)
             return;
 
+        RGBColor buttonColor;
         auto burstCountQuantity = getParamQuantity (PARAM_BURSTCOUNT);
         auto restCountQuantity = getParamQuantity (PARAM_RESTCOUNT);
         switch (mode) {
@@ -314,6 +325,8 @@ namespace OuroborosModules::Modules::Pulsar {
                 getParamQuantity (PARAM_BURSTCOUNT_CV_ATTEN)->name = "Burst count CV attenuverter";
                 getParamQuantity (PARAM_RESTCOUNT_CV_ATTEN)->name = "Rest count CV attenuverter";
 
+                Widgets::setRGBLight (this, LIGHT_MASKINGMODE, rack::componentlibrary::SCHEME_GREEN, ModeLightLevel);
+
                 break;
             }
 
@@ -333,6 +346,8 @@ namespace OuroborosModules::Modules::Pulsar {
                 getParamQuantity (PARAM_BURSTCOUNT_CV_ATTEN)->name = "Rest probability CV attenuverter";
                 getParamQuantity (PARAM_RESTCOUNT_CV_ATTEN)->name = "Skip probability CV attenuverter";
 
+                Widgets::setRGBLight (this, LIGHT_MASKINGMODE, rack::componentlibrary::SCHEME_BLUE, ModeLightLevel);
+
                 break;
             }
         }
@@ -347,6 +362,7 @@ namespace OuroborosModules::Modules::Pulsar {
         overlapMode = overlap;
 
         engine.setOverlapMode (overlap);
+        Widgets::setRGBLight (this, LIGHT_OVERLAPMODE, rack::componentlibrary::SCHEME_GREEN, overlap ? ModeLightLevel : 0.f);
     }
 
     void PulsarModule::setFrequencyMode (PulsarFrequencyMode mode, bool force) {
@@ -359,6 +375,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 frequencyMode = PulsarFrequencyMode::Audio;
                 centerMainFreq = BaseFrequencyAudio;
                 engine.setTriggeredMode (false);
+                Widgets::setRGBLight (this, LIGHT_FREQUENCYMODE, rack::componentlibrary::SCHEME_GREEN, ModeLightLevel);
                 break;
             }
 
@@ -366,6 +383,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 frequencyMode = PulsarFrequencyMode::LFO;
                 centerMainFreq = BaseFrequencyLFO;
                 engine.setTriggeredMode (false);
+                Widgets::setRGBLight (this, LIGHT_FREQUENCYMODE, rack::componentlibrary::SCHEME_BLUE, ModeLightLevel);
                 break;
             }
 
@@ -373,6 +391,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 frequencyMode = PulsarFrequencyMode::Triggered;
                 centerMainFreq = BaseFrequencyAudio;
                 engine.setTriggeredMode (true);
+                Widgets::setRGBLight (this, LIGHT_FREQUENCYMODE, rack::componentlibrary::SCHEME_YELLOW, ModeLightLevel);
                 break;
             }
 
@@ -380,6 +399,7 @@ namespace OuroborosModules::Modules::Pulsar {
                 frequencyMode = PulsarFrequencyMode::TriggeredLFO;
                 centerMainFreq = BaseFrequencyLFO;
                 engine.setTriggeredMode (true);
+                Widgets::setRGBLight (this, LIGHT_FREQUENCYMODE, rack::componentlibrary::SCHEME_PURPLE, ModeLightLevel);
                 break;
             }
         }
@@ -394,18 +414,21 @@ namespace OuroborosModules::Modules::Pulsar {
             case PulsarFormantMode::Coupled: {
                 formantMode = PulsarFormantMode::Coupled;
                 centerFormantFreq = BaseFrequencyAudio;
+                Widgets::setRGBLight (this, LIGHT_FORMANTMODE, rack::color::BLACK, 0);
                 break;
             }
 
             case PulsarFormantMode::AudioRate: {
                 formantMode = PulsarFormantMode::AudioRate;
                 centerFormantFreq = BaseFrequencyAudio;
+                Widgets::setRGBLight (this, LIGHT_FORMANTMODE, rack::componentlibrary::SCHEME_GREEN, ModeLightLevel);
                 break;
             }
 
             case PulsarFormantMode::LFO: {
                 formantMode = PulsarFormantMode::LFO;
                 centerFormantFreq = BaseFrequencyLFO;
+                Widgets::setRGBLight (this, LIGHT_FORMANTMODE, rack::componentlibrary::SCHEME_BLUE, ModeLightLevel);
                 break;
             }
         }
@@ -424,6 +447,11 @@ namespace OuroborosModules::Modules::Pulsar {
     }
 
     void PulsarModule::onReset (const ResetEvent& e) {
+        displayColor = DisplayColor::createDefault ();
+        displayChannel = 0;
+
+        formantFreqDisplayMode = FormantFreqDisplayMode::Auto;
+
         dcBlockerAudio = true;
         dcBlockerLFO = false;
 
@@ -437,6 +465,21 @@ namespace OuroborosModules::Modules::Pulsar {
     void PulsarModule::onRandomize (const RandomizeEvent& e) {
         ModuleBase::onRandomize (e);
         initializeModule ();
+    }
+
+    FormantFreqDisplayMode PulsarModule::getFormantFreqDisplayMode () const {
+        if (formantFreqDisplayMode != FormantFreqDisplayMode::Auto)
+            return formantFreqDisplayMode;
+
+        switch (formantMode) {
+            default:
+            case PulsarFormantMode::Coupled:
+                return FormantFreqDisplayMode::RelativeVOct;
+
+            case PulsarFormantMode::AudioRate:
+            case PulsarFormantMode::LFO:
+                return FormantFreqDisplayMode::AbsoluteFreq;
+        }
     }
 
     uint8_t PulsarModule::getChannelCount () {

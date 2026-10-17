@@ -50,3 +50,5 @@ DEFINE_STRUCT (DisplayColor, conductor_DefaultDisplayColor, "conductor::DefaultD
 DEFINE_STRUCT (DisplayColor, conductorGrid_DefaultDisplayColor, "conductorGrid::DefaultDisplayColor", DisplayColor::createGlobal ())
 
 DEFINE_STRUCT (DisplayColor, conductorExternal_DefaultDisplayColor, "conductorExternal::DefaultDisplayColor", DisplayColor::createGlobal ())
+
+DEFINE_STRUCT (DisplayColor, pulsar_DefaultDisplayColor, "pulsar::DefaultDisplayColor", DisplayColor::createGlobal ())
