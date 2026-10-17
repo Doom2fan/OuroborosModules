@@ -144,7 +144,7 @@ namespace OuroborosModules::Modules::Pulsar {
         }
 
         // Mark things dirty
-        if (!isDirty && false)
+        if (!isDirty)
             return;
 
         if (needRegen)
