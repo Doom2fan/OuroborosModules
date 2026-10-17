@@ -4,6 +4,7 @@
   * New modules:
     * Crush
     * Diffuse
+    * Pulsar
   * Automata:
     * Added display colour options
     * Initializing the module now resets the trigger options
