@@ -188,7 +188,8 @@ namespace OuroborosModules::Modules::Pulsar {
         windowPoints.reserve (windowInputRes);
 
         // Create RNG
-        rack::random::Xoroshiro128Plus rng (19813519, 5894321);
+        rack::random::Xoroshiro128Plus rng { };
+        rng.seed (19813519, 5894321);
 
         // Fetch parameters
         auto params = curParams;
