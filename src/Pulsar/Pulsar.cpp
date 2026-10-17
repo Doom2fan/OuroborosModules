@@ -164,9 +164,9 @@ namespace OuroborosModules::Modules::Pulsar {
         configParam<FormantQuantity> (PARAM_FORMANT, FormantMinVOct, FormantMaxVOct, 0.f, "Formant", "", 0, 1);
 
         // Wave shape
-        configParam (PARAM_WAVEINDEX, 0.f, WavesCount - 1.f, 0.f, "Waveform index", "", 0, 1, 1);
+        configParam (PARAM_WAVEINDEX, 0.f, WavesCount - 1.f, 0.f, "Wave shape", "", 0, 1, 1);
         configParam (PARAM_CLUSTER, 1.f, 6.f, 1.f, "Cluster", "", 0, 1);
-        configParam (PARAM_WAVESHAPER, 0.f, 1.f, 0.f, "Waveshaper", "", 0, 100);
+        configParam (PARAM_WAVESHAPER, 0.f, 1.f, 0.f, "Wave fold", "", 0, 100);
 
         // Windowing
         configParam (PARAM_WINDOWINDEX, 0.f, WindowsCount - 1.f, 0.f, "Window shape", "", 0, 1, 1);
@@ -182,8 +182,8 @@ namespace OuroborosModules::Modules::Pulsar {
 
         // Mode switches
         configSwitch (PARAM_MASKINGMODE, 0, 1, 0, "Masking mode", { "Burst/Channel", "Probability" });
-        configSwitch (PARAM_FREQUENCY_MODE, 0, 3, 0, "Frequency mode", { "Audio rate", "Low frequency", "Triggered", "Triggered low frequency" });
-        configSwitch (PARAM_FORMANT_MODE, 0, 2, 0, "Frequency decoupling", { "Off", "Audio rate formant", "Low frequency formant" });
+        configSwitch (PARAM_FREQUENCY_MODE, 0, 3, 0, "Frequency mode", { "Audio rate", "Low frequency", "Triggered audio rate", "Triggered low frequency" });
+        configSwitch (PARAM_FORMANT_MODE, 0, 2, 0, "Frequency decoupling", { "Linked", "Decoupled - Audio rate", "Decoupled - Low frequency" });
         configSwitch (PARAM_OVERLAP_MODE, 0, 1, 0, "Overlap mode", { "Off", "On" });
 
         // CV attenuverters
