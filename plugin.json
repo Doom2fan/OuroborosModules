@@ -134,7 +134,7 @@
             "slug": "Pulsar",
             "name": "Pulsar",
             "description": "Pulsar synthesizer based on Curtis Roads' writings",
-            "tags": [ "Oscillator", "Granular", "Low-frequency oscillator", "Polyphonic", "Function generator" ],
+            "tags": [ "Oscillator", "Granular", "Low-frequency oscillator", "Polyphonic" ],
             "manualUrl": "https://github.com/Doom2fan/OuroborosModules/wiki/Pulsar"
         }
     ]
