@@ -282,8 +282,8 @@ namespace OuroborosModules::Modules::Pulsar {
             &PulsarModule::dcBlockerAudio
         ));
         menu->addChild (createBoolPtrMenuItemWithHistory (
-            "DC blocker (LFO)", "",
-            "Toggle Pulsar \"DC blocker (LFO)\"",
+            "DC blocker (Low frequency)", "",
+            "Toggle Pulsar \"DC blocker (Low frequency)\"",
             &PulsarModule::dcBlockerLFO
         ));
     }
