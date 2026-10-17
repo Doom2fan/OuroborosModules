@@ -77,6 +77,7 @@ namespace OuroborosModules::Modules::Pulsar {
     static const PulsarParameters createBrowserParameters () {
         PulsarParameters params { };
 
+        params.frequency = rack::simd::pow (2, 3.f / 12.f) * rack::dsp::FREQ_C4;
         params.cluster = 4.f;
 
         params.shapeIndex = 3.f;
