@@ -383,7 +383,7 @@ namespace OuroborosModules::Modules::Pulsar {
 
     void PulsarDataStore::slotToParams (uint32_t index, PulsarParameters& params) const {
         // Parameters
-        params.isRest = isRest [index];
+        params.isRest = isRest [index] >= .5f;
 
         params.frequency = frequency [index];
         params.cluster = cluster [index];
@@ -652,13 +652,13 @@ namespace OuroborosModules::Modules::Pulsar {
                 auto slot = baseIndex + VectorT (0, 1, 2, 3);
 
                 // Get parameters
-                auto isRest = VectorT::load (pulsars.isRest + baseIndex) >= .5f;
+                auto pulsarRest = VectorT::load (pulsars.isRest + baseIndex) >= .5f;
                 auto edgeFrequency = VectorT::load (pulsars.edgeFrequency + baseIndex);
                 auto edgePhase = VectorT::load (pulsars.edgePhase + baseIndex);
                 auto pulsarFreq = VectorT::load (pulsars.frequency + baseIndex);
 
                 // Calculate slot mask
-                auto slotMask = (slot != pulsarIndex) & (isRest == restMask) & (edgeFrequency <= 0.f);
+                auto slotMask = (slot != pulsarIndex) & (pulsarRest ^ ~restMask) & (edgeFrequency <= 0.f);
 
                 // Calculate and set edge frequency and phase
                 auto pulsarDelta = pulsarFreq * args.sampleTime;
