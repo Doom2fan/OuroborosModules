@@ -24,7 +24,7 @@
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Diffuse {
-    struct DiffuseModule : ModuleBase {
+    struct DiffuseModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamIds {
             PARAM_FREQ,
             PARAM_GAIN,
@@ -65,6 +65,18 @@ namespace OuroborosModules::Modules::Diffuse {
         void process (const ProcessArgs& args) override;
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onUnBypass (const UnBypassEvent& e) override;
+
+      private:
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
+            return {{ std::make_pair ("Input", std::make_pair (INPUT_SIGNAL, -1)), }};
+        }
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{
+                std::make_pair ("Wet output", std::make_pair (OUTPUT_WET, -1)),
+                std::make_pair ("Mix output", std::make_pair (OUTPUT_MIX, -1)),
+            }};
+        }
     };
 
     struct DiffuseWidget : Widgets::ModuleWidgetBase<DiffuseModule> {

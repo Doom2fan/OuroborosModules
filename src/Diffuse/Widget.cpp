@@ -47,7 +47,8 @@ namespace OuroborosModules::Modules::Diffuse {
         addChild (emblemWidget);
 
         // Inputs
-        addInput (createInputCentered<CableJackInput> (findNamed ("input_Signal", Vec ()), moduleT, DiffuseModule::INPUT_SIGNAL));
+        addInput (createInputCentered<CableJackInput> (findNamed ("input_Signal", Vec ()), moduleT, DiffuseModule::INPUT_SIGNAL))
+            ->enableConnectToMixmaster ();
         addInput (createInputCentered<CableJackInput> (findNamed ("input_VOct", Vec ()), moduleT, DiffuseModule::INPUT_VOCT));
 
         addInput (createInputCentered<CableJackInput> (findNamed ("input_FreqCV", Vec ()), moduleT, DiffuseModule::INPUT_FREQ_CV));
@@ -55,8 +56,10 @@ namespace OuroborosModules::Modules::Diffuse {
         addInput (createInputCentered<CableJackInput> (findNamed ("input_MixCV", Vec ()), moduleT, DiffuseModule::INPUT_MIX_CV));
 
         // Outputs
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Wet", Vec ()), moduleT, DiffuseModule::OUTPUT_WET));
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Mix", Vec ()), moduleT, DiffuseModule::OUTPUT_MIX));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Wet", Vec ()), moduleT, DiffuseModule::OUTPUT_WET))
+            ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Mix", Vec ()), moduleT, DiffuseModule::OUTPUT_MIX))
+            ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
 
         // Params
         addChild (createParamCentered<MetalKnobHuge> (findNamed ("param_Freq", Vec ()), moduleT, DiffuseModule::PARAM_FREQ));
