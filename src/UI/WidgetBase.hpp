@@ -304,6 +304,15 @@ namespace OuroborosModules::Widgets {
             EmblemId::forEachValue ([=] (EmblemId id) { menu->addChild (createEmblemOverrideItem (id.getDisplayName (), id)); });
         }
 
+        template<typename T>
+        T* addChild (T* child) {
+            static_assert (!std::is_base_of_v<CableJackBase, T>, "Adding ports with addChild is forbidden");
+
+            TBase::addChild (child);
+
+            return child;
+        }
+
         CableJackInput* addInput (CableJackInput* input) {
             // Check that the port is an input
             assert (input->type == rack::engine::Port::INPUT);
@@ -312,7 +321,7 @@ namespace OuroborosModules::Widgets {
             assert (this->getInput (input->portId) == nullptr);
 
             // Add port
-            this->addChild (input);
+            TBase::addChild (input);
 
             return input;
         }
@@ -325,7 +334,7 @@ namespace OuroborosModules::Widgets {
             assert (this->getOutput (output->portId) == nullptr);
 
             // Add port
-            this->addChild (output);
+            TBase::addChild (output);
 
             return output;
         }
