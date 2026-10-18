@@ -120,8 +120,10 @@ namespace OuroborosModules::Modules::Pulsar {
         addInput (createInputCentered<CableJackInput> (findNamed ("input_Sync", Vec ()), moduleT, PulsarModule::INPUT_SYNC));
 
         /* Outputs */
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Main", Vec ()), moduleT, PulsarModule::OUTPUT_MAIN));
-        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Rest", Vec ()), moduleT, PulsarModule::OUTPUT_REST));
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Main", Vec ()), moduleT, PulsarModule::OUTPUT_MAIN))
+            ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
+        addOutput (createOutputCentered<CableJackOutput> (findNamed ("output_Rest", Vec ()), moduleT, PulsarModule::OUTPUT_REST))
+            ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
 
         /* Widgets */
         auto screenBox = findNamedBox ("widgetScreen", rack::math::Rect ());

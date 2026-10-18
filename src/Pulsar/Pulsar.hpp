@@ -62,7 +62,7 @@ namespace OuroborosModules::Modules::Pulsar {
         return rack::simd::log2 (freq / baseFreq);
     }
 
-    struct PulsarModule : ModuleBase {
+    struct PulsarModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamIds {
             // Frequency
             PARAM_FREQUENCY,
@@ -199,6 +199,14 @@ namespace OuroborosModules::Modules::Pulsar {
         void onSampleRateChange (const SampleRateChangeEvent& e) override;
         void onReset (const ResetEvent& e) override;
         void onRandomize (const RandomizeEvent& e) override;
+
+      private:
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{
+                std::make_pair ("Main output", std::make_pair (OUTPUT_MAIN, -1)),
+                std::make_pair ("Rest output", std::make_pair (OUTPUT_REST, -1)),
+            }};
+        }
     };
 
     struct ScreenWidget;
