@@ -100,7 +100,10 @@ namespace OuroborosModules::Modules::Warp {
         void setOversampleRate (uint32_t newOversampleRate);
 
         std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
-            return {{ std::make_pair ("Input", std::make_pair (INPUT_SIGNAL, -1)) }};
+            return {{
+                std::make_pair ("Signal input", std::make_pair (INPUT_SIGNAL, -1)),
+                std::make_pair ("Modulator input", std::make_pair (INPUT_SIGNAL, -1)),
+            }};
         }
 
         std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
