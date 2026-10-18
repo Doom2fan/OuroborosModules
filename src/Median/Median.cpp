@@ -37,12 +37,13 @@ namespace OuroborosModules::Modules::Median {
         getParamQuantity (PARAM_OVERSAMPLE)->randomizeEnabled = false;
 
         for (int i = 0; i < 3; i++) {
-            configInput (INPUT_VALUES + i, fmt::format (FMT_STRING ("Value {}"), i + 1));
+            char inputName = 'A' + i;
+            configInput (INPUT_VALUES + i, fmt::format (FMT_STRING ("Value {:c}"), inputName));
 
-            auto valScaleText = fmt::format (FMT_STRING ("Value {} attenuverter"), i + 1);
+            auto valScaleText = fmt::format (FMT_STRING ("Value {:c} attenuverter"), inputName);
             configParamAttenuverter (PARAM_VAL_SCALE + i, valScaleText);
 
-            auto valOffsetText = fmt::format (FMT_STRING ("Value {} offset"), i + 1);
+            auto valOffsetText = fmt::format (FMT_STRING ("Value {:c} offset"), inputName);
             configParam (PARAM_VAL_OFFSET + i, -1.f, 1.f, 0.f, valOffsetText, "V", 0, 10);
         }
 
