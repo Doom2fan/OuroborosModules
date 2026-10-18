@@ -15,11 +15,14 @@
     * Added display colour options
   * Conductor - Grid:
     * Fixed the page buttons not being initialized
+  * Median:
+    * Added automatic connection support
   * Meta:
     * Added cable glow option
     * Added cable lights option
   * Warp:
     * Added an option to use an exponential curve for the amount control (On by default for new instances)
+    * Added automatic connection support for the Modulator input
     * Optimizations
   * Added some hardening against NaNs in some modules
   * Added a global default display colour option
