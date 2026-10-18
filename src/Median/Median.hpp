@@ -26,7 +26,7 @@
 #include "../UI/WidgetBase.hpp"
 
 namespace OuroborosModules::Modules::Median {
-    struct MedianModule : ModuleBase {
+    struct MedianModule : ModuleBase, SST_NeighborConnectable_V1 {
         enum ParamId {
             ENUMS (PARAM_VAL_SCALE, 3),
             ENUMS (PARAM_VAL_OFFSET, 3),
@@ -79,6 +79,22 @@ namespace OuroborosModules::Modules::Median {
       private:
         rack::simd::float_4 getBank (int inputNum, int currentChannel);
         void setOversampleRate (int newOversampleRate);
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs () override {
+            return {{
+                std::make_pair ("Input A", std::make_pair (INPUT_VALUES + 0, -1)),
+                std::make_pair ("Input B", std::make_pair (INPUT_VALUES + 1, -1)),
+                std::make_pair ("Input C", std::make_pair (INPUT_VALUES + 2, -1)),
+            }};
+        }
+
+        std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs () override {
+            return {{
+                std::make_pair ("Maximum", std::make_pair (OUTPUT_MAX, -1)),
+                std::make_pair ("Median",  std::make_pair (OUTPUT_MID, -1)),
+                std::make_pair ("Minimum", std::make_pair (OUTPUT_MIN, -1)),
+            }};
+        }
     };
 
     struct MedianWidget : Widgets::ModuleWidgetBase<MedianModule> {

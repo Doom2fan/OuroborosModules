@@ -78,7 +78,8 @@ namespace OuroborosModules::Modules::Median {
             else
                 return;
 
-            addChild (createOutputCentered<CableJackOutput> (pos, moduleT, outputId));
+            addOutput (createOutputCentered<CableJackOutput> (pos, moduleT, outputId))
+                ->enableConnectToMixmaster ()->enableConnectToNeighbor ();
         });
 
         forEachMatched ("light_(Min|Mid|Max)Out", [&] (std::vector<std::string> captures, Rect box) {
