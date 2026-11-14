@@ -3,3 +3,5 @@
 *:include/*
 *:dep/include/*
 missingIncludeSystem
+bitwiseOnBoolean
+assertWithSideEffect
