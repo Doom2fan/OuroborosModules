@@ -9,7 +9,7 @@ Modules for [VCV Rack 2](https://vcvrack.com/).
 ## Download
 The plugin can be installed from the [VCV Library](https://library.vcvrack.com/OuroborosModules) or downloaded from the [Releases page](https://github.com/Doom2fan/OuroborosModules/releases).
 
-Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly) for mainline builds and [here](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly_develop) for development builds. Please see [[this page|Using Nightlies]] for information on using nightlies, as new modules may not appear in the module browser otherwise.
+Nightly builds are also available [here](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly) for mainline builds and [here](https://github.com/Doom2fan/OuroborosModules/releases/tag/Nightly_develop) for development builds. Please see [this page](https://github.com/Doom2fan/OuroborosModules/wiki/Using Nightlies) for information on using nightlies, as new modules may not appear in the module browser otherwise.
 
 ## Links
 * [Manual](https://github.com/Doom2fan/OuroborosModules/wiki)
