@@ -61,7 +61,7 @@ namespace OuroborosModules::UI {
         std::vector<DotChar> charList = { };
         std::vector<bool> charData = { };
 
-        uint32_t height;
+        uint32_t height = 0;
 
         inline const DotChar& getChar (char32_t c) const {
             if (auto search = charMap.find (c); search != charMap.end ())

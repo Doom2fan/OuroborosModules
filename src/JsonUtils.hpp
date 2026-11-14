@@ -99,6 +99,10 @@ namespace OuroborosModules {
             return json_create_array (value, std::size (value));
         else if constexpr (is_std_array<T>::value)
             return json_create_array (value.data (), value.size ());
+        else {
+            assert (false && "Invalid type passed to json_create_array");
+            return nullptr;
+        }
     }
 
     /*
@@ -186,6 +190,8 @@ namespace OuroborosModules {
             return json_try_get_vector (nodeJ, value);
         else if constexpr (std::is_class_v<T>)
             return value.dataFromJson (nodeJ);
+        else
+            assert (false && "Invalid type passed to json_try_get_auto");
 
         return false;
     }
@@ -214,6 +220,8 @@ namespace OuroborosModules {
             return json_create_vector (value);
         else if constexpr (std::is_class_v<T>)
             return value.dataToJson ();
+        else
+            assert (false && "Invalid type passed to json_create_auto");
 
         return nullptr;
     }

@@ -183,7 +183,7 @@ namespace OuroborosModules::DSP {
         }
 
         void reset () {
-            memset (delayLine, 0, sizeof (delayLine));
+            std::fill_n (delayLine, BufferSize, T (0));
             writeIndex = 0;
         }
 
