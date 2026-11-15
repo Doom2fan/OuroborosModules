@@ -681,7 +681,6 @@ namespace OuroborosModules::Modules::Pulsar {
     [[gnu::hot]]
     void PulsarEngine::processPulsarQuad (PulsarFrameArgs& args) {
         using rack::simd::int32_4;
-        using LinearInterp = DSP::WavetableInterpolators::Linear;
 
         auto osFactor = oversampleFactor;
 
@@ -691,10 +690,6 @@ namespace OuroborosModules::Modules::Pulsar {
         auto& pulsars = *args.pulsars;
         auto& wavetables = *args.wavetables;
 
-        float wave0Arr [SIMDBankSize];
-        float wave1Arr [SIMDBankSize];
-        float window0Arr [SIMDBankSize];
-        float window1Arr [SIMDBankSize];
         float noiseArr [SIMDBankSize];
         noiseBuffer.readCount (noiseArr, SIMDBankSize);
         auto noiseVec = VectorT::load (noiseArr);
@@ -723,17 +718,7 @@ namespace OuroborosModules::Modules::Pulsar {
         DSP::WavetableSampler window0Sampler [SIMDBankSize];
         DSP::WavetableSampler window1Sampler [SIMDBankSize];
 
-        uint32_t slotCount = 0;
-        uint32_t slotIndices [SIMDBankSize] = { };
-        for (uint32_t j = 0; j < SIMDBankSize; j++) {
-            if ((slotMask & (1 << j)) == 0)
-                continue;
-
-            slotIndices [slotCount++] = j;
-        }
-
-        for (uint32_t i = 0; i < slotCount; i++) {
-            auto slot = slotIndices [i];
+        for (uint32_t slot = 0; slot < SIMDBankSize; slot++) {
             auto slotIdx = baseIndex + slot;
 
             auto wave0 = pulsars.waveIndex [slotIdx];
@@ -747,36 +732,45 @@ namespace OuroborosModules::Modules::Pulsar {
             window1Sampler [slot] = getSampler (&wavetables.windows [window0 + 1], frame, pulsars.window1Octave [slotIdx]);
         }
 
-        int32_t waveIndices [SIMDBankSize], windowIndices [SIMDBankSize];
-        float waveFracs [SIMDBankSize], windowFracs [SIMDBankSize];
-
         for (uint32_t sampleIdx = 0; sampleIdx < osFactor; sampleIdx++) {
             auto windowPhase = rack::simd::clamp (pulsarPhase, 0, 1);
             auto wavePhase = windowPhase * cluster;
             wavePhase -= rack::simd::floor (wavePhase);
 
-            calcSampleIndex (wavePhase, waveIndices, waveFracs);
-            calcSampleIndex (windowPhase, windowIndices, windowFracs);
+            int32_t waveIndices [SIMDBankSize], windowIndices [SIMDBankSize];
+            VectorT waveFrac, windowFrac;
+            calcSampleIndex (wavePhase, waveIndices, waveFrac);
+            calcSampleIndex (windowPhase, windowIndices, windowFrac);
 
             // Generate signal and window
-            for (uint32_t j = 0; j < slotCount; j++) {
-                auto slot = slotIndices [j];
+            float sample0ArrA [SIMDBankSize], sample0ArrB [SIMDBankSize];
+            float sample1ArrA [SIMDBankSize], sample1ArrB [SIMDBankSize];
 
+            for (uint32_t slot = 0; slot < SIMDBankSize; slot++) {
                 auto sampleIndex = static_cast<uint32_t> (waveIndices [slot]);
-                auto sampleFrac = waveFracs [slot];
-                wave0Arr [slot] = wave0Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
-                wave1Arr [slot] = wave1Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
-
-                sampleIndex = static_cast<uint32_t> (windowIndices [slot]);
-                sampleFrac = windowFracs [slot];
-                window0Arr [slot] = window0Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
-                window1Arr [slot] = window1Sampler [slot].sampleFrac<LinearInterp> (sampleIndex, sampleFrac);
+                sample0ArrA [slot] = wave0Sampler [slot].sample (sampleIndex);
+                sample0ArrB [slot] = wave0Sampler [slot].sample (sampleIndex + 1);
+                sample1ArrA [slot] = wave1Sampler [slot].sample (sampleIndex);
+                sample1ArrB [slot] = wave1Sampler [slot].sample (sampleIndex + 1);
             }
 
-            // Load and crossfade signals
-            auto wave1 = VectorT::load (wave1Arr) + (noiseVec & noiseMask);
-            auto signal = Math::lerp (VectorT::load (wave0Arr), wave1, waveIndexFrac);
-            auto windowSignal = Math::lerp (VectorT::load (window0Arr), VectorT::load (window1Arr), windowIndexFrac);
+            auto signal = Math::lerp (
+                Math::lerp (VectorT::load (sample0ArrA), VectorT::load (sample0ArrB), waveFrac),
+                Math::lerp (VectorT::load (sample1ArrA), VectorT::load (sample1ArrB), waveFrac) + (noiseVec & noiseMask),
+                waveIndexFrac);
+
+            for (uint32_t slot = 0; slot < SIMDBankSize; slot++) {
+                auto sampleIndex = static_cast<uint32_t> (windowIndices [slot]);
+                sample0ArrA [slot] = window0Sampler [slot].sample (sampleIndex);
+                sample0ArrB [slot] = window0Sampler [slot].sample (sampleIndex + 1);
+                sample1ArrA [slot] = window1Sampler [slot].sample (sampleIndex);
+                sample1ArrB [slot] = window1Sampler [slot].sample (sampleIndex + 1);
+            }
+
+            auto windowSignal = Math::lerp (
+                Math::lerp (VectorT::load (sample0ArrA), VectorT::load (sample0ArrB), windowFrac),
+                Math::lerp (VectorT::load (sample1ArrA), VectorT::load (sample1ArrB), windowFrac),
+                windowIndexFrac);
 
             // Apply windowing
             signal *= Math::lerp (VectorT (1.f), windowSignal, windowAmount);
