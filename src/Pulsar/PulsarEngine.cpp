@@ -630,7 +630,7 @@ namespace OuroborosModules::Modules::Pulsar {
         auto deltaPhase = params.frequency / args.sampleRate;
         auto basePhase = -sampleOffset * deltaPhase + emissionPhase * params.frequency * emissionFrequencyInv;
 
-       // Parameters
+        // Parameters
         pulsars.setSlot (pulsarIndex, true);
         pulsars.copyToSlot (pulsarIndex, params);
 

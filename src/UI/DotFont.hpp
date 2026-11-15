@@ -92,7 +92,7 @@ namespace OuroborosModules::UI {
         ) const {
             auto fontScale = size / height;
             auto dotSize = fontScale;
-            auto textWidth = 0u;
+            auto textWidth = 0.f;
 
             // Convert text to UTF-32
             auto textUTF32 = rack::string::UTF8toUTF32 (text);
@@ -101,7 +101,7 @@ namespace OuroborosModules::UI {
             for (auto c : textUTF32)
                 textWidth += getChar (c).width;
             // Add up all the between-character spacing
-            textWidth += (textUTF32.length () - 1.f) * spacing * fontScale;
+            textWidth += (textUTF32.length () - 1.f) * spacing;
 
             switch (alignment & DotFontAlign::HAlign) {
                 default:
@@ -137,7 +137,7 @@ namespace OuroborosModules::UI {
             }
 
             if (finalWidth != nullptr)
-                *finalWidth = textWidth * size;
+                *finalWidth = textWidth * fontScale;
         }
     };
 }
